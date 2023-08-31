@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+@font-face {
+  font-family: 'Alarm Clock';
+  src: url('/fonts/alarm-clock.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  background: #fff;
+  color: black;
+  /* color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb)); */
+}
+
+.title {
+  font-size: 56px;
+  font-weight: 600;
+}
+
+.heading {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.text {
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: normal;
+}
+
+.bigText {
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.smallText {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.smallerText {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.link {
+  color: #4c4c4c;
+  font-size: 16px;
+  font-weight: 600;
+
+  /* &:hover {
+    color: #000;
+  } */
+}
