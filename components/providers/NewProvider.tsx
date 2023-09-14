@@ -112,7 +112,7 @@ const NewProvider = (props: IAirdropEthProps) => {
         onChange={handleTokenAddressChange}
         onKeyDown={handleKeyDown}
         onPaste={handlePaste}
-        placeholder={'0x'}
+        placeholder={"0x"}
       />
 
       <button
@@ -122,11 +122,18 @@ const NewProvider = (props: IAirdropEthProps) => {
         or airdrop {nativeToken}
       </button>
 
+      <button
+        className="text-black text underline text-left mt-4"
+        onClick={() => setSelected(AirdropType.FRIENDTECH)}
+      >
+        or airdrop to Friendtech Key holders
+      </button>
+
       {contractAddress &&
         contractAddress.length === 42 &&
         notAContractAddress && (
           <p className="mt-8 text-black border border-grey p-4 rounded-md">
-            Oops! That doesn&apos;t look like a valid contract address on{' '}
+            Oops! That doesn&apos;t look like a valid contract address on{" "}
             {chain?.name}. Double check the address and please try again.
           </p>
         )}

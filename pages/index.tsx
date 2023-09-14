@@ -8,6 +8,7 @@ import DisconnectedView from '@/components/ui/DisconnectedView';
 import ERC20Provider from '@/components/providers/ERC20Provider';
 import ERC721Provider from '@/components/providers/ERC721Provider';
 import ETHProvider from '@/components/providers/ETHProvider';
+import FriendtechProvider from '@/components/providers/FriendtechProvider';
 import Footer from '@/components/ui/Footer';
 import Navbar from '@/components/ui/Navbar';
 import NewProvider from '@/components/providers/NewProvider';
@@ -136,6 +137,15 @@ const Home = () => {
                           <ETHProvider
                             tokenBalance={balance}
                             setSelected={setAirdropType}
+                            setContractAddress={setContractAddress}
+                          />
+                        );
+                      } else if (airdropType === AirdropType.FRIENDTECH) {
+                        return (
+                          <FriendtechProvider
+                            selected={airdropType}
+                            setSelected={setAirdropType}
+                            contractAddress={contractAddress}
                             setContractAddress={setContractAddress}
                           />
                         );
