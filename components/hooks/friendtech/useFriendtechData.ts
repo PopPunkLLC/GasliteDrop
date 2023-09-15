@@ -2,9 +2,7 @@ import { useState, useEffect } from "react";
 
 export default function useFriendtechData(accountAddress: String) {
 
-  const [holders, setHolders] = useState<
-    { user: string; twitterUsername: string }[]
-  >([]);
+  const [holders, setHolders] = useState<string[]>([]);
   const [error, setError] = useState(null);
 
   const apiURL = `https://prod-api.kosetto.com/users/${accountAddress.toString()}/token/holders`;
@@ -22,10 +20,7 @@ export default function useFriendtechData(accountAddress: String) {
         console.log(data);
 
         // Map over the data to extract the desired properties
-        const extractedData = data.users.map((user: any) => ({
-          user: user.address,
-          twitterUsername: user.twitterUsername,
-        }));
+        const extractedData = data.users.map((user: any) => user.address);
 
         setHolders(extractedData);
       } catch (err) {
@@ -35,6 +30,5 @@ export default function useFriendtechData(accountAddress: String) {
 
     fetchData();
   }, [apiURL]);
-  console.log(holders);
   return { holders, error };
 }

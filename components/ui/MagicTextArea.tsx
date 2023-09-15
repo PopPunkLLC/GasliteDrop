@@ -1,6 +1,7 @@
 import React, {
   FC,
   useState,
+  useEffect,
   Dispatch,
   SetStateAction,
   ChangeEvent,
@@ -13,15 +14,30 @@ interface Props {
   isERC721: boolean;
   displayModal: () => void;
   setRecipients: Dispatch<SetStateAction<[string, string][]>>;
+  holderAddresses?: string[];
 }
 
 const MagicTextArea: FC<Props> = (props: Props) => {
-  const { isERC721, displayModal, setRecipients } = props;
+  const { isERC721, displayModal, setRecipients, holderAddresses } = props;
+  
+  const [friendtechValue, setFriendtechValue] = useState<string>("");
+  
+  const formatFriendtechAirdrop = (addresses: string[] | undefined, friendtechValue: string) => {
+    return addresses?.map((address) => `${address},${friendtechValue}`).join("\n") || "";
+  };
 
-  const [textareaValue, setTextareaValue] = useState<string>('');
+  const [textareaValue, setTextareaValue] = useState<string>(
+    formatFriendtechAirdrop(holderAddresses, friendtechValue)
+  );
+
   const [localRecipients, setLocalRecipients] = useState<[string, string][]>(
     []
   );
+
+  useEffect(() => {
+    setTextareaValue(formatFriendtechAirdrop(holderAddresses, friendtechValue));
+  }, [friendtechValue, holderAddresses]);
+
 
   const placeholder = () => {
     if (isERC721) {
@@ -122,18 +138,33 @@ const MagicTextArea: FC<Props> = (props: Props) => {
 
   return (
     <div className="mt-12">
-      <p className="text">{instructions}</p>
+      {holderAddresses && holderAddresses.length > 0 ? (
+        <>
+          <h2 className="text-2xl text-base-100 mb-2">
+            Enter an amount to send to each address:
+          </h2>
+
+          <input
+            value={friendtechValue}
+            onChange={(e) => setFriendtechValue(e.target.value)}
+            placeholder="Ex: 0.1"
+            className="border-2 border-neutral-700 bg-transparent text-base-100 p-4 text-xl rounded-md mb-2" // added mb-2 here
+          />
+        </>
+      ) : (
+        <p className="text">{instructions}</p>
+      )}
 
       <textarea
         value={textareaValue}
-        className="w-full min-h-[300px] max-h-[600px] mt-4 p-3 text-black border-black border-2 rounded-md"
+        className="w-full min-h-[200px] max-h-[400px] mt-4 p-3 text-black border-black border-2 rounded-md" // adjusted the heights
         onChange={handleTextareaChange}
         placeholder={placeholder()}
       />
 
       <button
         className={`py-4 rounded-md w-full my-4 text-white bg-markPink-900 font-bold tracking-wide ${
-          localRecipients.length ? '' : 'opacity-50'
+          localRecipients.length ? "" : "opacity-50"
         }`}
         onClick={handleClick}
         disabled={localRecipients.length === 0}

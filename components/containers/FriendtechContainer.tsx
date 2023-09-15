@@ -160,7 +160,6 @@ const FriendtechContainer = (props: Props) => {
           ref={inputRef}
           className="border-2 border-neutral-700 bg-transparent text-base-100 p-4 text-xl rounded-md"
           spellCheck={false}
-        //   value={tokenAddress}
           onChange={handleTokenAddressChange}
           placeholder={"0x"}
         />
@@ -185,8 +184,7 @@ const FriendtechContainer = (props: Props) => {
           if (!holders || holders.length === 0) {
             return (
               <p className="mt-8 text-blk-400 border border-white p-4 rounded-md">
-                Please make sure you&apos;re connected with the correct wallet
-                or top up your balance to perform an airdrop with {nativeToken}{" "}
+                Please enter your Friendtech wallet address to perform an airdrop with {nativeToken}{" "}
                 on {chain?.name}.
               </p>
             );

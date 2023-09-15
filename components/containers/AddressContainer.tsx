@@ -43,6 +43,7 @@ const AddressContainer = (props: Props) => {
             isERC721={isERC721}
             displayModal={displayModal}
             setRecipients={setRecipients}
+            holderAddresses={holderAddresses}
           />
           <button
             className="underline text-left smallertText text-black"
