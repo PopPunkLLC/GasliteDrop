@@ -45,62 +45,6 @@ export default function Friendtech(props: IAirdropEthProps) {
 
   const { holders } = useFriendtechData(tokenAddress);
 
-//   const parsedRecipients = useMemo(() => {
-//     try {
-//       return (
-//         recipients.length
-//           ? recipientsParser(tokenDecimals).parse(recipients)
-//           : []
-//       ) as AirdropRecipient[];
-//     } catch (e) {
-//       displayMessage((e as Error).message, "error");
-//       return [] as AirdropRecipient[];
-//     }
-//   }, [tokenDecimals, recipients]);
-
-  // low-priority todo: improve the typing without casting
-//   const totalAllowance = useMemo(() => {
-//     return parsedRecipients.reduce((acc: BigInt, { amount }) => {
-//       const a = BigInt(acc.toString());
-//       const b = BigInt(amount.toString());
-
-//       return a + b;
-//     }, BigInt(0));
-//   }, [parsedRecipients]);
-
-//   const { write: airdropWrite } = useApproveAirdrop(
-//     tokenAddress,
-//     parsedRecipients,
-//     () => displayMessage("Airdrop transaction pending..."),
-//     function onSuccess() {
-//       displayMessage("Airdrop transaction successful!", "success");
-//       setOpenModal("congrats");
-//     },
-//     function onError(error) {
-//       displayMessage(error, "error");
-//     }
-//   );
-
-//   const { allowance, write: approveWrite } = useApproveAllowance(
-//     tokenAddress,
-//     totalAllowance,
-//     () => displayMessage("Approval transaction pending..."), // on Pending
-//     function onSuccess() {
-//       displayMessage("Approval transaction submitted!", "success");
-//       airdropWrite?.();
-//     },
-//     function onError(error) {
-//       displayMessage(error, "error");
-//     }
-//   );
-
-//   // Switch over to ERC-721 if the contract entered is a 721
-//   if (isERC721) {
-//     setContractAddress?.(tokenAddress);
-//     setSelected("ERC721");
-//     return null;
-//   }
-
   const handleTokenAddressChange = (e: ChangeEvent<HTMLInputElement>) => {
     const rawInput = e.target.value;
     if (rawInput.length > 42) return;

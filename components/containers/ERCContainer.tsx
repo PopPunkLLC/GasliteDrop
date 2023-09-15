@@ -31,7 +31,7 @@ interface Props {
   handleTokenAddressChange: (e: ChangeEvent<HTMLInputElement>) => void;
   resetForm: () => void;
   setErrorMessage: Dispatch<SetStateAction<string | false>>;
-  setOpenModal: Dispatch<SetStateAction<false | ModalSelector>>;
+  setOpenModal: Dispatch<SetStateAction<ModalSelector>>;
   setRecipients: Dispatch<SetStateAction<[string, string][]>>;
 }
 
@@ -78,7 +78,7 @@ const ERCContainer = (props: Props) => {
           isERC721={isERC721}
           symbol={tokenSymbol}
           isOpen={openModal === 'confirm'}
-          setIsOpen={(val) => setOpenModal(val ? 'confirm' : false)}
+          setIsOpen={(val) => setOpenModal(val ? 'confirm' : '')}
           recipients={parsedRecipients}
           balanceData={balanceData}
           loadingMessage={loadingMessage || undefined}
@@ -109,7 +109,7 @@ const ERCContainer = (props: Props) => {
             isOpen={openModal === 'congrats'}
             setIsOpen={(val) => {
               resetForm();
-              setOpenModal(val ? 'congrats' : false);
+              setOpenModal(val ? 'congrats' : '');
             }}
             resetForm={resetForm}
           />

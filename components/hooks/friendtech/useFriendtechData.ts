@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 export default function useFriendtechData(accountAddress: String) {
 
   const [holders, setHolders] = useState<string[]>([]);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<any>(null);
 
   const apiURL = `https://prod-api.kosetto.com/users/${accountAddress.toString()}/token/holders`;
 
