@@ -19,7 +19,7 @@ export default function Friendtech(props: IAirdropEthProps) {
     (contractAddress as Address) || ""
   );
   const [recipients, setRecipients] = useState<[string, string][]>([]);
-  const [openModal, setOpenModal] = useState<ModalSelector | false>(false);
+  const [openModal, setOpenModal] = useState<ModalSelector | false>(null);
   const [loadingMessage, setLoadingMessage] = useState<string | false>(false);
   const [errorMessage, setErrorMessage] = useState<string | false>(false);
 
@@ -122,7 +122,7 @@ export default function Friendtech(props: IAirdropEthProps) {
 
   return (
     <FriendtechContainer
-      holders={holders}  
+      holders={holders}
       errorMessage={errorMessage}
       isERC721={false}
       loadingMessage={loadingMessage}

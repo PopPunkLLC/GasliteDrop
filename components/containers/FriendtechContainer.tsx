@@ -21,7 +21,7 @@ import { formatUnits } from "viem";
 import useNetworkNativeToken from "../hooks/networkNativeToken";
 
 interface Props {
-  holders: string[];  
+  holders: string[];
   allowance?: BigInt;
   errorMessage: string | false;
   isERC721: boolean;
@@ -42,6 +42,8 @@ const FriendtechContainer = (props: Props) => {
     displayModal,
     handleTokenAddressChange,
     resetForm,
+      openModal,
+      setOpenModal
   } = props;
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -49,7 +51,6 @@ const FriendtechContainer = (props: Props) => {
   const { address, isConnected } = useAccount();
 
   const [recipients, setRecipients] = useState<[string, string][]>([]);
-  const [openModal, setOpenModal] = useState<ModalSelector | false>(false);
   const [loadingMessage, setLoadingMessage] = useState<string | false>(false);
   const [errorMessage, setErrorMessage] = useState<string | false>(false);
 
