@@ -23,14 +23,10 @@ import useNetworkNativeToken from "../hooks/networkNativeToken";
 interface Props {
   holders: string[];  
   allowance?: BigInt;
-  balanceData: any;
   errorMessage: string | false;
-  formattedTokenBalance: string | undefined;
   isERC721: boolean;
   loadingMessage: string | false;
   openModal: false | ModalSelector;
-  parsedRecipients: AirdropRecipient[];
-  approveWrite: (() => void) | undefined;
   displayModal: () => void;
   handleTokenAddressChange: (e: ChangeEvent<HTMLInputElement>) => void;
   resetForm: () => void;
@@ -42,9 +38,7 @@ interface Props {
 const FriendtechContainer = (props: Props) => {
   const {
     holders,
-    balanceData,
     isERC721,
-    approveWrite,
     displayModal,
     handleTokenAddressChange,
     resetForm,

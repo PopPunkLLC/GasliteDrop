@@ -43,88 +43,63 @@ export default function Friendtech(props: IAirdropEthProps) {
     setErrorMessage(false);
   };
 
-  const {
-    name: tokenName,
-    symbol: tokenSymbol,
-    balance: tokenBalance,
-    decimals: tokenDecimals,
-    isERC721,
-    nameSuccess,
-    symbolSuccess,
-  } = useTokenData(tokenAddress);
-
   const { holders } = useFriendtechData(tokenAddress);
 
-
-  const balanceData = useMemo(
-    () => ({
-      name: tokenName,
-      symbol: tokenSymbol,
-      value: tokenBalance,
-      decimals: tokenDecimals,
-    }),
-    [tokenName, tokenSymbol, tokenBalance, tokenDecimals]
-  );
-
-  const formattedTokenBalance = useMemo(() => {
-    return tokenBalance ? formatUnits(tokenBalance, tokenDecimals || 18) : "0";
-  }, [tokenBalance, tokenDecimals]);
-
-  const parsedRecipients = useMemo(() => {
-    try {
-      return (
-        recipients.length
-          ? recipientsParser(tokenDecimals).parse(recipients)
-          : []
-      ) as AirdropRecipient[];
-    } catch (e) {
-      displayMessage((e as Error).message, "error");
-      return [] as AirdropRecipient[];
-    }
-  }, [tokenDecimals, recipients]);
+//   const parsedRecipients = useMemo(() => {
+//     try {
+//       return (
+//         recipients.length
+//           ? recipientsParser(tokenDecimals).parse(recipients)
+//           : []
+//       ) as AirdropRecipient[];
+//     } catch (e) {
+//       displayMessage((e as Error).message, "error");
+//       return [] as AirdropRecipient[];
+//     }
+//   }, [tokenDecimals, recipients]);
 
   // low-priority todo: improve the typing without casting
-  const totalAllowance = useMemo(() => {
-    return parsedRecipients.reduce((acc: BigInt, { amount }) => {
-      const a = BigInt(acc.toString());
-      const b = BigInt(amount.toString());
+//   const totalAllowance = useMemo(() => {
+//     return parsedRecipients.reduce((acc: BigInt, { amount }) => {
+//       const a = BigInt(acc.toString());
+//       const b = BigInt(amount.toString());
 
-      return a + b;
-    }, BigInt(0));
-  }, [parsedRecipients]);
+//       return a + b;
+//     }, BigInt(0));
+//   }, [parsedRecipients]);
 
-  const { write: airdropWrite } = useApproveAirdrop(
-    tokenAddress,
-    parsedRecipients,
-    () => displayMessage("Airdrop transaction pending..."),
-    function onSuccess() {
-      displayMessage("Airdrop transaction successful!", "success");
-      setOpenModal("congrats");
-    },
-    function onError(error) {
-      displayMessage(error, "error");
-    }
-  );
+//   const { write: airdropWrite } = useApproveAirdrop(
+//     tokenAddress,
+//     parsedRecipients,
+//     () => displayMessage("Airdrop transaction pending..."),
+//     function onSuccess() {
+//       displayMessage("Airdrop transaction successful!", "success");
+//       setOpenModal("congrats");
+//     },
+//     function onError(error) {
+//       displayMessage(error, "error");
+//     }
+//   );
 
-  const { allowance, write: approveWrite } = useApproveAllowance(
-    tokenAddress,
-    totalAllowance,
-    () => displayMessage("Approval transaction pending..."), // on Pending
-    function onSuccess() {
-      displayMessage("Approval transaction submitted!", "success");
-      airdropWrite?.();
-    },
-    function onError(error) {
-      displayMessage(error, "error");
-    }
-  );
+//   const { allowance, write: approveWrite } = useApproveAllowance(
+//     tokenAddress,
+//     totalAllowance,
+//     () => displayMessage("Approval transaction pending..."), // on Pending
+//     function onSuccess() {
+//       displayMessage("Approval transaction submitted!", "success");
+//       airdropWrite?.();
+//     },
+//     function onError(error) {
+//       displayMessage(error, "error");
+//     }
+//   );
 
-  // Switch over to ERC-721 if the contract entered is a 721
-  if (isERC721) {
-    setContractAddress?.(tokenAddress);
-    setSelected("ERC721");
-    return null;
-  }
+//   // Switch over to ERC-721 if the contract entered is a 721
+//   if (isERC721) {
+//     setContractAddress?.(tokenAddress);
+//     setSelected("ERC721");
+//     return null;
+//   }
 
   const handleTokenAddressChange = (e: ChangeEvent<HTMLInputElement>) => {
     const rawInput = e.target.value;
@@ -139,8 +114,6 @@ export default function Friendtech(props: IAirdropEthProps) {
     }
   };
 
-  const validToken = tokenName && tokenSymbol && !isERC721 ? true : false;
-
   const resetForm = () => {
     setSelected("UNSET");
     setRecipients([]);
@@ -150,19 +123,10 @@ export default function Friendtech(props: IAirdropEthProps) {
   return (
     <FriendtechContainer
       holders={holders}  
-      allowance={allowance}
-      balanceData={balanceData}
       errorMessage={errorMessage}
-      formattedTokenBalance={formattedTokenBalance}
       isERC721={false}
       loadingMessage={loadingMessage}
       openModal={openModal}
-      parsedRecipients={parsedRecipients}
-      tokenAddress={tokenAddress}
-      tokenBalance={tokenBalance}
-      tokenSymbol={tokenSymbol || ""}
-      validToken={validToken}
-      approveWrite={approveWrite}
       displayModal={displayModal}
       handleTokenAddressChange={handleTokenAddressChange}
       resetForm={resetForm}
