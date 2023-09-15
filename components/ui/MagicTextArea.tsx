@@ -176,7 +176,7 @@ const MagicTextArea: FC<Props> = (props: Props) => {
 
       <textarea
         value={textareaValue}
-        className="w-full min-h-[200px] max-h-[400px] mt-4 p-3 text-black border-black border-2 rounded-md" // adjusted the heights
+        className="w-full min-h-[200px] max-h-[400px] mt-4 p-3 text-black border-black border-2 rounded-md"
         onChange={handleTextareaChange}
         placeholder={placeholder()}
       />

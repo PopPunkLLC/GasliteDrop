@@ -17,7 +17,7 @@ export default function ERC721(props: IAirdropEthProps) {
     (contractAddress as Address) || ''
   );
   const [recipients, setRecipients] = useState<[string, string][]>([]);
-  const [openModal, setOpenModal] = useState<ModalSelector | false>(false);
+  const [openModal, setOpenModal] = useState<ModalSelector>('');
   const [loadingMessage, setLoadingMessage] = useState<string | false>(false);
   const [errorMessage, setErrorMessage] = useState<string | false>(false);
 

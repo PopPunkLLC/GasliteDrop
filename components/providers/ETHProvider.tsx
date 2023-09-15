@@ -28,7 +28,7 @@ export default function AirdropETH(props: Props) {
     'flex items-center border rounded-md md:rounded-full md:inline-block px-4 py-2 md:py-2 md:px-3 text-sm mt-2 min-h-fit';
 
   const [recipients, setRecipients] = useState<[string, string][]>([]);
-  const [openModal, setOpenModal] = useState<ModalSelector | false>(false);
+  const [openModal, setOpenModal] = useState<ModalSelector>("");
   const [loadingMessage, setLoadingMessage] = useState<string | false>(false);
   const [errorMessage, setErrorMessage] = useState<string | false>(false);
 
@@ -99,7 +99,7 @@ export default function AirdropETH(props: Props) {
       {openModal === 'confirm' && (
         <ConfirmModal
           isOpen={openModal === 'confirm'}
-          setIsOpen={(val) => setOpenModal(val ? 'confirm' : false)}
+          setIsOpen={(val) => setOpenModal(val ? 'confirm' : '')}
           symbol="ETH"
           recipients={parsedRecipients}
           balanceData={balance}
@@ -122,7 +122,7 @@ export default function AirdropETH(props: Props) {
             isOpen={openModal === 'congrats'}
             setIsOpen={(val) => {
               resetForm();
-              setOpenModal(val ? 'congrats' : false);
+              setOpenModal(val ? 'congrats' : '');
             }}
             resetForm={resetForm}
           />
