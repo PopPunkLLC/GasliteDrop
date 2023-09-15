@@ -99,9 +99,9 @@ const MagicTextArea: FC<Props> = (props: Props) => {
   };
 
   const handleERC20 = (value: string) => {
-    const regex = /^0x[a-fA-F0-9]{40}(?= ?[^ ])([=,]?) *(\d+(\.\d+)?)$/;
+    const regex = /^0x[a-fA-F0-9]{40}(?= ?[^ ])([=,]?) *(\d*(\.\d+)?)$/;
     const lines = value.split('\n');
-
+    
     const validLines = lines.filter((line) => regex.test(line));
 
     const addressValueCombos: [string, string][] = [];
@@ -120,7 +120,7 @@ const MagicTextArea: FC<Props> = (props: Props) => {
 
       addressValueCombos.push([address, val]);
     }
-    
+
     if (validLines.length === addressValueCombos.length) {
       setLocalRecipients(addressValueCombos);
     }
