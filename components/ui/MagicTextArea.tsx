@@ -133,8 +133,16 @@ const MagicTextArea: FC<Props> = (props: Props) => {
   };
 
   const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    // Restored to make the original ETH usecase work, doesn't affect FT
     const value = e.target.value;
-    setTextareaValue(value);
+
+    if (isERC721) {
+      handleERC721(value);
+      setTextareaValue(value);
+    } else {
+      handleERC20(value);
+      setTextareaValue(value);
+    }
   };
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
