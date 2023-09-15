@@ -31,7 +31,7 @@ interface Props {
   handleTokenAddressChange: (e: ChangeEvent<HTMLInputElement>) => void;
   resetForm: () => void;
   setErrorMessage: Dispatch<SetStateAction<string | false>>;
-  setOpenModal: Dispatch<SetStateAction<false | ModalSelector>>;
+  setOpenModal: Dispatch<SetStateAction<ModalSelector>>;
   setRecipients: Dispatch<SetStateAction<[string, string][]>>;
 }
 
@@ -116,7 +116,7 @@ const FriendtechContainer = (props: Props) => {
       {openModal === "confirm" && (
         <ConfirmModal
           isOpen={openModal === "confirm"}
-          setIsOpen={(val) => setOpenModal(val ? "confirm" : false)}
+          setIsOpen={(val) => setOpenModal(val ? "confirm" : '')}
           symbol="ETH"
           recipients={parsedRecipients}
           balanceData={balance}
@@ -139,7 +139,7 @@ const FriendtechContainer = (props: Props) => {
             isOpen={openModal === "congrats"}
             setIsOpen={(val) => {
               resetForm();
-              setOpenModal(val ? "congrats" : false);
+              setOpenModal(val ? "congrats" : '');
             }}
             resetForm={resetForm}
           />
