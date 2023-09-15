@@ -19,9 +19,9 @@ interface Props {
 
 const MagicTextArea: FC<Props> = (props: Props) => {
   const { isERC721, displayModal, setRecipients, holderAddresses } = props;
-  
+
   const [friendtechValue, setFriendtechValue] = useState<string>("");
-  
+
   const formatFriendtechAirdrop = (addresses: string[] | undefined, friendtechValue: string) => {
     return addresses?.map((address) => `${address},${friendtechValue}`).join("\n") || "";
   };
@@ -35,9 +35,17 @@ const MagicTextArea: FC<Props> = (props: Props) => {
   );
 
   useEffect(() => {
-    setTextareaValue(formatFriendtechAirdrop(holderAddresses, friendtechValue));
-  }, [friendtechValue, holderAddresses]);
+    const formattedTextValue = formatFriendtechAirdrop(holderAddresses, friendtechValue);
 
+    if (isERC721) {
+      handleERC721(formattedTextValue);
+    } else {
+      handleERC20(formattedTextValue);
+    }
+
+    setTextareaValue(formattedTextValue);
+
+  }, [friendtechValue, holderAddresses]);
 
   const placeholder = () => {
     if (isERC721) {
@@ -93,11 +101,10 @@ const MagicTextArea: FC<Props> = (props: Props) => {
   const handleERC20 = (value: string) => {
     const regex = /^0x[a-fA-F0-9]{40}(?= ?[^ ])([=,]?) *(\d+(\.\d+)?)$/;
     const lines = value.split('\n');
+
     const validLines = lines.filter((line) => regex.test(line));
 
     const addressValueCombos: [string, string][] = [];
-
-    console.log('hello world');
 
     // Loop through validLines
     for (let i = 0; i < validLines.length; i++) {
@@ -113,7 +120,7 @@ const MagicTextArea: FC<Props> = (props: Props) => {
 
       addressValueCombos.push([address, val]);
     }
-
+    
     if (validLines.length === addressValueCombos.length) {
       setLocalRecipients(addressValueCombos);
     }
@@ -121,14 +128,7 @@ const MagicTextArea: FC<Props> = (props: Props) => {
 
   const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
-
-    if (isERC721) {
-      handleERC721(value);
-      setTextareaValue(value);
-    } else {
-      handleERC20(value);
-      setTextareaValue(value);
-    }
+    setTextareaValue(value);
   };
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -150,7 +150,6 @@ const MagicTextArea: FC<Props> = (props: Props) => {
             value={friendtechValue}
             onChange={(e) => {
               setFriendtechValue(e.target.value);
-              handleTextareaChange;
             }}
             placeholder="Ex: 0.1"
             className="border-2 border-neutral-700 bg-transparent text-base-100 p-4 text-xl rounded-md mb-2" // added mb-2 here
