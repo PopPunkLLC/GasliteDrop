@@ -99,24 +99,30 @@ const MagicTextArea: FC<Props> = (props: Props) => {
   };
 
   const handleERC20 = (value: string) => {
-    const regex = /^0x[a-fA-F0-9]{40}(?= ?[^ ])([=,]?) *(\d*(\.\d+)?)$/;
+    const regex = /^0x[a-fA-F0-9]{40}(?= ?[^ ])([=,]?) *(\d*(\.\d*)?)$/;
     const lines = value.split('\n');
-    
+
     const validLines = lines.filter((line) => regex.test(line));
 
     const addressValueCombos: [string, string][] = [];
 
     // Loop through validLines
     for (let i = 0; i < validLines.length; i++) {
-      const regex = /(?=[=,\s]\s*\d)/;
+
       // Split the input on a space, a comma, or an = sign
-      const parts: string[] = validLines[i].split(regex);
+      const parts: string[] = validLines[i].split(',');
 
       // Address is the first element
       const address = parts[0];
+
       // The unsanitized value to send is the last element
       let val: string = parts[parts.length - 1];
+
       val = val.replace(/^[^0-9.]+/, '');
+
+      if(val.startsWith('.')){
+        val = `0${val}`; // add 0 for straight decimal value
+      }
 
       addressValueCombos.push([address, val]);
     }
@@ -132,6 +138,7 @@ const MagicTextArea: FC<Props> = (props: Props) => {
   };
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
+
     if (localRecipients.length === 0) return;
 
     setRecipients(localRecipients);
@@ -167,6 +174,7 @@ const MagicTextArea: FC<Props> = (props: Props) => {
       />
 
       <button
+          type="button"
         className={`py-4 rounded-md w-full my-4 text-white bg-markPink-900 font-bold tracking-wide ${
           localRecipients.length ? "" : "opacity-50"
         }`}
