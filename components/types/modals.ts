@@ -1,1 +1,1 @@
-export type ModalSelector = 'confirm' | 'congrats';
+export type ModalSelector = 'confirm' | 'congrats' | '';
