@@ -8,10 +8,11 @@ interface Props {
   tokenSymbol: string;
   displayModal: () => void;
   setRecipients: Dispatch<SetStateAction<[string, string][]>>;
+  holderAddresses?: string[];
 }
 
 const AddressContainer = (props: Props) => {
-  const { show, isERC721, tokenSymbol, displayModal, setRecipients } = props;
+  const { show, isERC721, tokenSymbol, displayModal, setRecipients, holderAddresses } = props;
 
   const [showCSVUpload, setShowCSVUpload] = useState(false);
 
