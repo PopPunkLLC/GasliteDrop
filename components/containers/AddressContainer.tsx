@@ -8,10 +8,12 @@ interface Props {
   tokenSymbol: string;
   displayModal: () => void;
   setRecipients: Dispatch<SetStateAction<[string, string][]>>;
+  holderAddresses?: string[];
+  isFriendTech?: boolean;
 }
 
 const AddressContainer = (props: Props) => {
-  const { show, isERC721, tokenSymbol, displayModal, setRecipients } = props;
+  const { show, isERC721, tokenSymbol, displayModal, setRecipients, holderAddresses, isFriendTech } = props;
 
   const [showCSVUpload, setShowCSVUpload] = useState(false);
 
@@ -42,12 +44,13 @@ const AddressContainer = (props: Props) => {
             isERC721={isERC721}
             displayModal={displayModal}
             setRecipients={setRecipients}
+            holderAddresses={holderAddresses}
           />
           <button
             className="underline text-left smallertText text-black"
             onClick={() => setShowCSVUpload(true)}
           >
-            Or upload a CSV
+            {isFriendTech ? "" : "Or upload a CSV"}
           </button>
         </>
       );

@@ -4,6 +4,7 @@ export const AirdropType = {
   ERC20: 'ERC20',
   ERC721: 'ERC721',
   ETH: 'ETH',
+  FRIENDTECH: 'FRIENDTECH',
   unset: 'UNSET'
 } as const;
 
