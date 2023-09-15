@@ -14,6 +14,7 @@ import AddressContainer from "./AddressContainer";
 import { formatUnits } from "viem";
 
 interface Props {
+  holders: string[];  
   allowance?: BigInt;
   balanceData: any;
   errorMessage: string | false;
@@ -35,8 +36,9 @@ interface Props {
   setRecipients: Dispatch<SetStateAction<[string, string][]>>;
 }
 
-const ERCContainer = (props: Props) => {
+const FriendtechContainer = (props: Props) => {
   const {
+    holders,
     allowance,
     balanceData,
     errorMessage,
@@ -69,6 +71,8 @@ const ERCContainer = (props: Props) => {
 
   // Focus on the input when rendered
   useEffect(() => inputRef.current?.focus(), []);
+
+  console.log(holders.length);
 
   return (
     <div className="container">
@@ -136,12 +140,12 @@ const ERCContainer = (props: Props) => {
           </div>
 
           <div className={`${pillStyle} border-primary text-primary`}>
-            {validToken ? (
+            {holders ? (
               <>{`You have ${
-                isERC721 ? tokenBalance?.toString() : formattedTokenBalance
-              } ${tokenSymbol} to airdrop`}</>
+                holders.length > 0 ? holders.length : "0"
+              } key holders to airdrop to`}</>
             ) : (
-              `Enter a valid token address to see your available balance.`
+              `Enter your friendtech wallet address to airdrop.`
             )}
           </div>
 
@@ -185,4 +189,4 @@ const ERCContainer = (props: Props) => {
   );
 };
 
-export default ERCContainer;
+export default FriendtechContainer;

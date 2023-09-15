@@ -53,7 +53,8 @@ export default function Friendtech(props: IAirdropEthProps) {
     symbolSuccess,
   } = useTokenData(tokenAddress);
 
-  const result = useFriendtechData(tokenAddress);
+  const { holders } = useFriendtechData(tokenAddress);
+
 
   const balanceData = useMemo(
     () => ({
@@ -148,6 +149,7 @@ export default function Friendtech(props: IAirdropEthProps) {
 
   return (
     <FriendtechContainer
+      holders={holders}  
       allowance={allowance}
       balanceData={balanceData}
       errorMessage={errorMessage}

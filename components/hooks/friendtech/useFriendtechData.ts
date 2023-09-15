@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 export default function useFriendtechData(accountAddress: String) {
 
-  const [usersData, setUsersData] = useState<
+  const [holders, setHolders] = useState<
     { user: string; twitterUsername: string }[]
   >([]);
   const [error, setError] = useState(null);
@@ -27,7 +27,7 @@ export default function useFriendtechData(accountAddress: String) {
           twitterUsername: user.twitterUsername,
         }));
 
-        setUsersData(extractedData);
+        setHolders(extractedData);
       } catch (err) {
         setError(err);
       }
@@ -35,6 +35,6 @@ export default function useFriendtechData(accountAddress: String) {
 
     fetchData();
   }, [apiURL]);
-  console.log(usersData);
-  return { usersData, error };
+  console.log(holders);
+  return { holders, error };
 }
