@@ -97,6 +97,8 @@ const MagicTextArea: FC<Props> = (props: Props) => {
 
     const addressValueCombos: [string, string][] = [];
 
+    console.log('hello world');
+
     // Loop through validLines
     for (let i = 0; i < validLines.length; i++) {
       const regex = /(?=[=,\s]\s*\d)/;
@@ -146,7 +148,10 @@ const MagicTextArea: FC<Props> = (props: Props) => {
 
           <input
             value={friendtechValue}
-            onChange={(e) => setFriendtechValue(e.target.value)}
+            onChange={(e) => {
+              setFriendtechValue(e.target.value);
+              handleTextareaChange;
+            }}
             placeholder="Ex: 0.1"
             className="border-2 border-neutral-700 bg-transparent text-base-100 p-4 text-xl rounded-md mb-2" // added mb-2 here
           />
