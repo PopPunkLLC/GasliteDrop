@@ -192,6 +192,7 @@ const FriendtechContainer = (props: Props) => {
                 displayModal={displayModal}
                 setRecipients={setRecipients}
                 holderAddresses={holders}
+                isFriendTech
               />
             );
           }
