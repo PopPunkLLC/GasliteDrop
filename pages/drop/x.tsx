@@ -1,4 +1,5 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useCallback, useState } from "react";
+import { useRouter } from "next/router";
 import { useAccount, useNetwork, useBalance } from "wagmi";
 import { toast } from "sonner";
 import { MdWarning as WarningIcon } from "react-icons/md";
@@ -10,14 +11,63 @@ import useNetworkNativeToken from "@/components/hooks/useNetworkNativeToken";
 import Input from "@/components/ui/Input";
 import { recipientsParser } from "@/components/types/parsers";
 import useTwitterData from "@/components/hooks/useTwitterData";
+import { toParams } from "@/components/utils";
+import { useDebouncedEffect } from "@react-hookz/web";
+import { isAddress } from "viem";
+import useTokenData from "@/components/hooks/useTokenData";
 
 const TwitterDrop = () => {
   const { chain } = useNetwork();
   const { address } = useAccount();
   const { nativeToken } = useNetworkNativeToken();
-  const [tweetId, setTweetId] = useState(null);
-  const [airdropValue, setAirdropValue] = useState(null);
+  const router = useRouter();
   const [airdrop, setAirdrop] = useState(null);
+
+  const { id = "", dropAddress = "" } = router.query;
+
+  const [tweetId, setTweetId] = useState(id);
+  const [airdropValue, setAirdropValue] = useState(null);
+  const [contractAddress, setContractAddress] = useState(dropAddress);
+
+  useDebouncedEffect(
+    () => {
+      if (!contractAddress || isAddress(contractAddress)) {
+        router.push(
+          `?${toParams({
+            ...router?.query,
+            dropAddress: contractAddress,
+          })}`,
+          null,
+          {
+            shallow: true,
+          }
+        );
+      }
+    },
+    [contractAddress],
+    200,
+    500
+  );
+
+  useDebouncedEffect(
+    () => {
+      if (tweetId) {
+        router.push(
+          `?${toParams({
+            ...router?.query,
+            id: tweetId,
+          })}`,
+          null,
+          {
+            shallow: true,
+          }
+        );
+      }
+    },
+    [tweetId],
+    200,
+    500
+  );
 
   const { data: balance, refetch: onRefresh } = useBalance({
     address,
@@ -25,33 +75,46 @@ const TwitterDrop = () => {
     chainId: chain?.id,
   });
 
-  const { data, isLoading } = useTwitterData({ tweetId });
+  const { data, isLoading } = useTwitterData({ tweetId: id });
 
-  const handleTwitterAirdrop = ({
-    data: addresses,
-    airdropValue: amountPerHolder,
-  }) => {
-    setAirdrop(
-      recipientsParser(18).parse(
-        addresses.map((address) => [address, amountPerHolder])
-      )
-    );
-  };
+  const { isLoading: isLoadingToken, ...token } = useTokenData({
+    contractAddress: dropAddress,
+  });
+
+  const handleTwitterAirdrop = useCallback(
+    ({
+      data: addresses,
+      airdropValue: amountPerHolder,
+      dropAddress: tokenAddress,
+    }) => {
+      setAirdrop(
+        recipientsParser(tokenAddress ? token?.decimals : 18).parse(
+          addresses.map((address) => [address, amountPerHolder])
+        )
+      );
+    },
+    [JSON.stringify(token)]
+  );
 
   return (
     <>
       {airdrop?.length > 0 && (
         <AirdropModal
+          contractAddress={dropAddress}
           recipients={airdrop}
-          token={{
-            isLoading: false,
-            isERC721: false,
-            symbol: "ETH",
-            decimals: 18,
-            balance: balance?.value,
-            formattedBalance: balance?.formatted,
-            onRefresh,
-          }}
+          token={
+            dropAddress
+              ? token
+              : {
+                  isLoading: false,
+                  isERC721: false,
+                  symbol: "ETH",
+                  decimals: 18,
+                  balance: balance?.value,
+                  formattedBalance: balance?.formatted,
+                  onRefresh,
+                }
+          }
           onClose={() => {
             setAirdrop(null);
           }}
@@ -81,20 +144,58 @@ const TwitterDrop = () => {
               <div className="min-h-fit mt-2 space-y-2">
                 <div className="flex flex-col space-y-1">
                   <h2 className="text-2xl text-base-100">
-                    Enter an amount ({nativeToken}) to send to each address:
+                    Enter an amount to send to each address:
                   </h2>
-                  <div className="flex items-center w-full bg-transparent text-base-100 p-4 text-xl rounded-md space-x-1 border-2 border-neutral-700">
-                    <input
-                      className="border-none focus:outline-none w-full"
+                  <p className="text-sm text-gray">
+                    {`Enter a contract address if you'd like to send an ERC20
+                    token instead. Leave empty for ${nativeToken}.`}
+                  </p>
+                  <div className="flex flex-row items-center space-x-2">
+                    <Input
+                      className="border-none focus:outline-none w-full text-base"
                       spellCheck={false}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                        setAirdropValue(e.target.value);
+                      onChange={(contractAddress) => {
+                        if (contractAddress.length > 42) return;
+                        setContractAddress(contractAddress);
+                      }}
+                      placeholder="0x"
+                      value={contractAddress || ""}
+                      isLoading={isLoadingToken}
+                    />
+                    <Input
+                      containerClassName="max-w-[150px]"
+                      className="border-none focus:outline-none w-full text-right text-base"
+                      onChange={(amount) => {
+                        setAirdropValue(amount);
                       }}
                       placeholder={"E.g., 0.1"}
                       value={airdropValue || ""}
-                      autoFocus
                     />
                   </div>
+                  {dropAddress ? (
+                    token?.isValid ? (
+                      <div className="flex flex-row items-center space-x-1">
+                        <Pill>{token?.symbol}</Pill>
+                        <Pill variant="primary">
+                          {`You have ${token?.formattedBalance} ${token?.symbol}`}
+                        </Pill>
+                      </div>
+                    ) : (
+                      <div className="flex flex-row items-center py-1">
+                        <p className="text-black bg-critical bg-opacity-50 border border-critical p-4 rounded-md">
+                          {`Oops! That doesn't look like a valid contract address on
+                  ${chain?.name}. Double check the address and please try again.`}
+                        </p>
+                      </div>
+                    )
+                  ) : (
+                    <div className="flex flex-row items-center space-x-1">
+                      <Pill>{nativeToken}</Pill>
+                      <Pill variant="primary">
+                        {`You have ${balance?.formatted} ${nativeToken}`}
+                      </Pill>
+                    </div>
+                  )}
                 </div>
                 <textarea
                   value={data?.join(
@@ -112,10 +213,13 @@ const TwitterDrop = () => {
                         data.length === 0 || !airdropValue,
                     }
                   )}
-                  onClick={handleTwitterAirdrop.bind(null, {
-                    data,
-                    airdropValue,
-                  })}
+                  onClick={() => {
+                    handleTwitterAirdrop({
+                      data,
+                      airdropValue,
+                      dropAddress,
+                    });
+                  }}
                   disabled={data.length === 0 || !airdropValue}
                 >
                   Continue

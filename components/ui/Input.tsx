@@ -6,7 +6,7 @@ import {
   FaTimesCircle as ClearIcon,
 } from "react-icons/fa";
 
-const Input = ({ onChange, isLoading, value, ...rest }) => {
+const Input = ({ containerClassName, onChange, isLoading, value, ...rest }) => {
   return (
     <div
       className={clsx(
@@ -14,16 +14,15 @@ const Input = ({ onChange, isLoading, value, ...rest }) => {
         {
           "text-primary cursor-default": rest?.readOnly,
           "border-2 border-neutral-700": !rest?.readOnly,
-        }
+        },
+        containerClassName
       )}
     >
       <input
         className="border-none focus:outline-none w-full"
         spellCheck={false}
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
-          const address = e.target.value as Address;
-          if (address.length > 42) return; // Validate address
-          onChange(address);
+          onChange(e.target.value);
         }}
         placeholder="0x"
         value={value || ""}

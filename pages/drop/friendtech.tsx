@@ -82,7 +82,7 @@ const FriendTechDrop = () => {
                   </h2>
                   <div className="flex items-center w-full bg-transparent text-base-100 p-4 text-xl rounded-md space-x-1 border-2 border-neutral-700">
                     <input
-                      className="border-none focus:outline-none w-full"
+                      className="border-none focus:outline-none w-full text-right"
                       spellCheck={false}
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
                         setAirdropValue(e.target.value);

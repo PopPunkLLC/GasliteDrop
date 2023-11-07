@@ -33,6 +33,7 @@ const Home = () => {
       <Input
         value={contractAddress}
         onChange={(address) => {
+          if (address.length > 42) return;
           setContractAddress(address);
         }}
         isLoading={isLoading}
@@ -49,7 +50,7 @@ const Home = () => {
         </Link>
       </div>
       {contractAddress && !isValid && (
-        <p className="mt-8 text-black border border-grey p-4 rounded-md">
+        <p className=" mt-6 text-black bg-critical bg-opacity-50 border border-critical p-4 rounded-md">
           {`Oops! That doesn't look like a valid contract address on
                   ${chain?.name}. Double check the address and please try again.`}
         </p>
