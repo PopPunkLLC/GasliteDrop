@@ -108,7 +108,7 @@ const TwitterDrop = () => {
               : {
                   isLoading: false,
                   isERC721: false,
-                  symbol: "ETH",
+                  symbol: nativeToken,
                   decimals: 18,
                   balance: balance?.value,
                   formattedBalance: balance?.formatted,
