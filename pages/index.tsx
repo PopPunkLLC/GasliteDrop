@@ -44,7 +44,7 @@ const Home = () => {
         <Link href="/drop/friendtech" className="underline">
           or airdrop to Friendtech Key holders
         </Link>
-        <Link href="/drop/twitter" className="underline">
+        <Link href="/drop/x" className="underline">
           or airdrop to X post
         </Link>
       </div>
