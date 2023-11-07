@@ -26,6 +26,7 @@ const TwitterDrop = () => {
   const { id = "", dropAddress = "" } = router.query;
 
   const [tweetId, setTweetId] = useState(id);
+  const [tweetUrl, setTweetUrl] = useState(null);
   const [airdropValue, setAirdropValue] = useState(null);
   const [contractAddress, setContractAddress] = useState(dropAddress);
 
@@ -122,14 +123,23 @@ const TwitterDrop = () => {
       )}
       <div className="flex flex-col h-full w-full">
         <div className="flex flex-col justify-center w-full space-y-3">
-          <PageTitle title="Enter X Post Id" />
+          <PageTitle title="Enter X Post" />
           <Input
-            value={tweetId}
+            value={tweetUrl}
             onChange={(value) => {
-              setTweetId(value);
+              if (!value) {
+                setTweetUrl(null);
+                setTweetId(null);
+              } else if (
+                value.startsWith("https://") &&
+                value.includes("status/")
+              ) {
+                setTweetUrl(value);
+                setTweetId(value?.split("/").pop());
+              }
             }}
             isLoading={isLoading}
-            placeholder="E.g., 1720561127883489534"
+            placeholder="E.g., https://twitter.com/PopPunkOnChain/status/1694775747045462183"
           />
           {error && (
             <div className="flex flex-row items-center py-1">

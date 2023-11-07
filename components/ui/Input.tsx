@@ -10,7 +10,7 @@ const Input = ({ containerClassName, onChange, isLoading, value, ...rest }) => {
   return (
     <div
       className={clsx(
-        "flex items-center w-full bg-transparent text-base-100 p-4 text-xl rounded-md space-x-1",
+        "flex items-center w-full bg-transparent text-base-100 p-4 text-lg rounded-md space-x-1",
         {
           "text-primary cursor-default": rest?.readOnly,
           "border-2 border-neutral-700": !rest?.readOnly,
