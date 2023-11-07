@@ -233,9 +233,7 @@
     "absolutePath": "src/GasliteDrop.sol",
     "id": 46,
     "exportedSymbols": {
-      "GasliteDrop": [
-        45
-      ]
+      "GasliteDrop": [45]
     },
     "nodeType": "SourceUnit",
     "src": "0:7890:0",
@@ -245,11 +243,7 @@
         "nodeType": "PragmaDirective",
         "src": "0:23:0",
         "nodes": [],
-        "literals": [
-          "solidity",
-          "0.8",
-          ".19"
-        ]
+        "literals": ["solidity", "0.8", ".19"]
       },
       {
         "id": 45,
@@ -2632,9 +2626,7 @@
           "text": " @title GasliteDrop\n @notice Turbo gas optimized bulk transfers of ERC20, ERC721, and ETH\n @author Harrison (@PopPunkOnChain)\n @author Gaslite (@GasliteGG)\n @author Pop Punk LLC (@PopPunkLLC)"
         },
         "fullyImplemented": true,
-        "linearizedBaseContracts": [
-          45
-        ],
+        "linearizedBaseContracts": [45],
         "name": "GasliteDrop",
         "nameLocation": "2347:11:0",
         "scope": 46,

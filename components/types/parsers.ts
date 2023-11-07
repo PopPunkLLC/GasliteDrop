@@ -1,10 +1,10 @@
-import { parseUnits, isAddress } from 'viem';
-import { Address } from 'wagmi';
-import z from 'zod';
+import { parseUnits, isAddress } from "viem";
+import { Address } from "wagmi";
+import z from "zod";
 
 export const recipientsParser = (decimals = 18) =>
   z.preprocess(
-    res => {
+    (res) => {
       let arr = res as [string, string][];
       const firstAddress = arr.at(0)?.at(0);
 
@@ -19,15 +19,15 @@ export const recipientsParser = (decimals = 18) =>
     },
     z.array(
       z.object({
-        address: z.coerce.string().startsWith('0x').length(42),
-        amount: z.bigint().refine(b => b >= BigInt(0)),
-      }),
-    ),
+        address: z.coerce.string().startsWith("0x").length(42),
+        amount: z.bigint().refine((b) => b >= BigInt(0)),
+      })
+    )
   );
 
 export const erc721RecipientsParser = () =>
   z.preprocess(
-    res => {
+    (res) => {
       let arr = res as [string, string][];
       const firstAddress = arr.at(0)?.at(0);
 
@@ -37,19 +37,19 @@ export const erc721RecipientsParser = () =>
 
       return arr.map(([address, id]) => ({
         address: address as Address,
-        amount: id
+        amount: id,
       }));
     },
     z.array(
       z.object({
-        address: z.coerce.string().startsWith('0x').length(42),
-        amount: z.string().transform(s => BigInt(s)),
-      }),
-    ),
+        address: z.coerce.string().startsWith("0x").length(42),
+        amount: z.string().transform((s) => BigInt(s)),
+      })
+    )
   );
 
 // Used for ERC-721
-export function findDuplicateTokenIds(data: [string, string][], ): number[] {
+export function findDuplicateTokenIds(data: [string, string][]): number[] {
   const idMap = new Map<number, number>(); // Keeps track of how many times each ID appears
   const duplicateIds: number[] = []; // Stores the IDs that appear more than once
 

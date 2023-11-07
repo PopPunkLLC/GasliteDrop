@@ -1,10 +1,21 @@
-import React, { useEffect } from 'react';
-import type { AppProps } from 'next/app';
-import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
-import { WagmiConfig } from 'wagmi';
-import { client, chains } from '../wagmi';
-import '@/styles/globals.css';
-import '@rainbow-me/rainbowkit/styles.css';
+import React, { useEffect } from "react";
+import type { AppProps } from "next/app";
+import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
+import { WagmiConfig } from "wagmi";
+import { client, chains } from "@/wagmi";
+import Layout from "@/components/ui/Layout";
+import "@/styles/globals.css";
+import "@rainbow-me/rainbowkit/styles.css";
+
+interface BigInt {
+  /** Convert to BigInt to string form in JSON.stringify */
+  toJSON: () => string;
+}
+
+/// Fix BigInt serialization
+BigInt.prototype.toJSON = function () {
+  return this.toString();
+};
 
 export default function App({ Component, pageProps }: AppProps) {
   // This is gross but it solves the autoconnect issues with Wagmi
@@ -16,7 +27,9 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <WagmiConfig config={client}>
       <RainbowKitProvider chains={chains} theme={darkTheme()}>
-        <Component {...pageProps} />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </RainbowKitProvider>
     </WagmiConfig>
   );

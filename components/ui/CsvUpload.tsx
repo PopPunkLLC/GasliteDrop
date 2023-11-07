@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { Icon } from '@iconify/react';
-import type { ParseResult } from 'papaparse';
-import { useCSVReader } from 'react-papaparse';
-import { toast } from 'sonner';
-import { findDuplicateTokenIds } from '../types/parsers';
+import React, { useState } from "react";
+import { Icon } from "@iconify/react";
+import type { ParseResult } from "papaparse";
+import { useCSVReader } from "react-papaparse";
+import { toast } from "sonner";
+import { findDuplicateTokenIds } from "../types/parsers";
 
 interface ICSVUploadProps<T = string[]> {
   isERC721: boolean;
@@ -11,12 +11,15 @@ interface ICSVUploadProps<T = string[]> {
   onReset: () => void;
 }
 
-export default function CSVUpload<T = string[]>(props: ICSVUploadProps<T>) {
-  const { isERC721, onUpload, onReset } = props;
-
+export default function CSVUpload<T = string[]>({
+  isERC721,
+  onUpload,
+  onReset,
+}: ICSVUploadProps<T>) {
   const [fileCompleted, setFileCompleted] = useState<
-    'success' | 'error' | false
+    "success" | "error" | false
   >(false);
+
   const { CSVReader } = useCSVReader();
 
   // Trim any preceeding spaces from the amount/token ID column
@@ -43,43 +46,48 @@ export default function CSVUpload<T = string[]>(props: ICSVUploadProps<T>) {
         const trimmedData = trimAmounts(data);
 
         if (!isERC721) {
-          setFileCompleted('success');
-
           if (data.errors.length > 0) {
-            toast.error(data.errors[0].message);
+            console.error(data.errors);
+            setFileCompleted("error");
+            return toast.error(
+              "Error while processing CSV file. Fix and try again."
+            );
           } else {
-            onUpload(trimmedData);
+            setFileCompleted("success");
+            return onUpload(trimmedData);
           }
-
-          return;
         }
 
         const duplicateIDs = findDuplicateTokenIds(
           trimmedData.data as [string, string][]
         );
 
-        setFileCompleted('success');
-
         if (duplicateIDs.length > 0) {
+          setFileCompleted("error");
           toast.error(
             `Check your CSV, duplicate IDs were found for ID${
-              duplicateIDs.length === 1 ? '' : 's'
-            }: ${duplicateIDs.join(', ')}`
+              duplicateIDs.length === 1 ? "" : "s"
+            }: ${duplicateIDs.join(", ")}`
           );
           return;
         }
 
         if (data.errors.length > 0) {
-          toast.error(data.errors[0].message);
+          setFileCompleted("error");
+          console.error(data.errors);
+          return toast.error(
+            "There was an error while processing CSV file. Fix and try again."
+          );
         } else {
-          onUpload(trimmedData);
+          setFileCompleted("success");
+          return onUpload(trimmedData);
         }
       }}
       onUploadRejected={() => {
-        setFileCompleted('error');
+        setFileCompleted("error");
 
         toast.error(
-          'Upload rejected - check to make sure your CSV is properly formatted'
+          "Upload rejected - check to make sure your CSV is properly formatted"
         );
       }}
       onDragOver={(event: DragEvent) => event.preventDefault()}
@@ -121,9 +129,9 @@ export default function CSVUpload<T = string[]>(props: ICSVUploadProps<T>) {
                     {acceptedFile.name}
                   </span>
                   <div className="badge badge-primary badge-outline px-3 py-2 text text-grey mr-2">
-                    {!fileCompleted && 'Loading...'}
-                    {fileCompleted === 'success' && 'Uploaded'}
-                    {fileCompleted === 'error' && 'Error'}
+                    {!fileCompleted && "Loading..."}
+                    {fileCompleted === "success" && "Uploaded"}
+                    {fileCompleted === "error" && "Error"}
                   </div>
 
                   <div

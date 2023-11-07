@@ -17,61 +17,33 @@
 }
 
 @font-face {
-  font-family: 'Alarm Clock';
-  src: url('/fonts/alarm-clock.ttf') format('truetype');
+  font-family: "Alarm Clock";
+  src: url("/fonts/alarm-clock.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
 
 body {
   background: #fff;
-  color: black;
-  /* color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb)); */
+  color: #000;
 }
 
-.title {
-  font-size: 56px;
-  font-weight: 600;
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.heading {
-  font-size: 24px;
-  font-weight: 500;
+::-webkit-scrollbar-corner {
+  background: #aaa;
 }
 
-.text {
-  font-size: 16px;
-  line-height: 24px;
-  letter-spacing: normal;
+::-webkit-scrollbar-track {
+  background: #aaa;
+  border-radius: 20px;
 }
 
-.bigText {
-  font-size: 32px;
-  font-weight: 600;
-}
-
-.smallText {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.smallerText {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.link {
-  color: #4c4c4c;
-  font-size: 16px;
-  font-weight: 600;
-
-  /* &:hover {
-    color: #000;
-  } */
+::-webkit-scrollbar-thumb {
+  background-color: #4c4c4c;
+  border-radius: 20px;
+  border: 2px #4c4c4c;
 }
