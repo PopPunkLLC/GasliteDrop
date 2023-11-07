@@ -1,7 +1,8 @@
-import React, { ChangeEvent, useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useRouter } from "next/router";
 import { useAccount, useNetwork, useBalance } from "wagmi";
 import { toast } from "sonner";
+import { isAddress } from "viem";
 import { MdWarning as WarningIcon } from "react-icons/md";
 import clsx from "clsx";
 import AirdropModal from "@/components/ui/AirdropModal";
@@ -11,9 +12,8 @@ import useNetworkNativeToken from "@/components/hooks/useNetworkNativeToken";
 import Input from "@/components/ui/Input";
 import { recipientsParser } from "@/components/types/parsers";
 import useTwitterData from "@/components/hooks/useTwitterData";
-import { toParams } from "@/components/utils";
+import { toParams, uniq } from "@/components/utils";
 import { useDebouncedEffect } from "@react-hookz/web";
-import { isAddress } from "viem";
 import useTokenData from "@/components/hooks/useTokenData";
 
 const TwitterDrop = () => {
@@ -75,7 +75,7 @@ const TwitterDrop = () => {
     chainId: chain?.id,
   });
 
-  const { data, isLoading } = useTwitterData({ tweetId: id });
+  const { data, isLoading, error } = useTwitterData({ tweetId: id });
 
   const { isLoading: isLoadingToken, ...token } = useTokenData({
     contractAddress: dropAddress,
@@ -131,9 +131,16 @@ const TwitterDrop = () => {
             isLoading={isLoading}
             placeholder="E.g., 1720561127883489534"
           />
+          {error && (
+            <div className="flex flex-row items-center py-1">
+              <p className="text-black bg-critical bg-opacity-50 border border-critical p-4 rounded-md">
+                {`Oops! Looks like there was an issue pulling down the tweet, perhaps due to rate limiting. Please try again later.`}
+              </p>
+            </div>
+          )}
           <div className="flex flex-row items-center gap-2">
             <Pill>X (Twitter)</Pill>
-            {tweetId && (
+            {id && (
               <Pill variant="primary">{`There were ${
                 data?.length || 0
               } addresses found`}</Pill>
@@ -226,7 +233,7 @@ const TwitterDrop = () => {
                 </button>
               </div>
             </div>
-          ) : tweetId ? (
+          ) : id && !isLoading && !isLoadingToken ? (
             <div className="flex flex-row items-center space-x-4 bg-markPink-100 bg-opacity-50 border border-markPink-200 py-4 pl-4 pr-6 rounded-md mt-10">
               <WarningIcon className="flex-shrink-0 text-2xl text-primary" />
               <p className="text-primary">

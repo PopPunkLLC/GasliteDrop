@@ -1,30 +1,38 @@
 import { useState, useEffect } from "react";
+import { useDebouncedCallback } from "@react-hookz/web";
 
 const useTwitterData = ({ tweetId }) => {
   const [data, setData] = useState<string[]>([]);
   const [error, setError] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<any>(false);
 
-  const fetchData = async () => {
-    try {
-      setIsLoading(true);
-      const { addresses } = await fetch(`/api/tweet?id=${tweetId}`).then(
-        (res) => res.json()
-      );
-      setData(addresses);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const fetchData = useDebouncedCallback(
+    async (id) => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const { addresses, error } = await fetch(`/api/tweet?id=${id}`).then(
+          (res) => res.json()
+        );
+        if (error) {
+          throw new Error(error);
+        }
+        setData(addresses);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [tweetId],
+    1000
+  );
 
   useEffect(() => {
     if (tweetId) {
-      fetchData();
+      fetchData(tweetId);
     } else {
       setData(null);
-      setIsLoading(false);
     }
   }, [tweetId]);
   return { data, error, isLoading };

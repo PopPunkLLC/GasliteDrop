@@ -1,30 +1,62 @@
 import { Client } from "twitter-api-sdk";
+import { uniq } from "@/components/utils";
 
-const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/;
+const ADDRESS_REGEX = /(0x[a-fA-F0-9]{40})/;
+
+const fetchTweetById = async (client, tweetId) =>
+  client.tweets.findTweetById(tweetId);
+
+const fetchAllConversationTweets = async (client, tweetId) => {
+  let allTweets = [];
+  let { data, meta } = await client.tweets.tweetsRecentSearch({
+    query: `conversation_id:${tweetId} is:reply`,
+  });
+  let nextToken = meta?.next_token;
+  while (nextToken) {
+    ({ data, meta } = await client.tweets.tweetsRecentSearch({
+      query: `conversation_id:${tweetId} is:reply`,
+      pagination_token: nextToken,
+    }));
+    allTweets = allTweets.concat(data);
+    if (meta?.next_token !== nextToken) {
+      nextToken = meta?.next_token;
+    } else {
+      nextToken = null;
+    }
+  }
+  return allTweets;
+};
+
+const extractUniqueAddresses = (addresses) =>
+  uniq(
+    addresses
+      .map((result) => {
+        const [addr] = result?.text?.toLowerCase()?.match(ADDRESS_REGEX) || [];
+        return addr;
+      })
+      .filter(Boolean)
+  );
 
 const tweet = async (req, res) => {
   try {
     const { id } = req?.query;
-
     const twitterClient = new Client(process.env.BEARER_TOKEN);
-
-    const { data } = await twitterClient.tweets.tweetsRecentSearch({
-      query: `conversation_id:${id} is:reply`,
-    });
-
-    const addresses = data
-      ?.map((result) => {
-        const [address] = result?.text?.match(ADDRESS_REGEX) || [];
-        return address;
-      })
-      .filter(Boolean);
-
+    const tweet = await fetchTweetById(twitterClient, id);
+    const addresses = await fetchAllConversationTweets(twitterClient, id).then(
+      extractUniqueAddresses
+    );
     return res.json({
+      tweet,
       addresses,
     });
   } catch (e) {
-    console.error(e.message);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({
+      error:
+        e?.status === 429
+          ? "Too many requests. Please wait 15 minutes before trying again!"
+          : "Internal server error",
+      addresses: [],
+    });
   }
 };
 

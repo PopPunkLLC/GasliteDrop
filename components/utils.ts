@@ -10,3 +10,9 @@ export const toParams = (params) =>
       (key) => encodeURIComponent(key) + "=" + encodeURIComponent(params[key])
     )
     .join("&");
+
+export const uniq = (arr) =>
+  arr.reduce((acc, curr) => {
+    if (!acc.includes(curr)) acc.push(curr);
+    return acc;
+  }, []);
