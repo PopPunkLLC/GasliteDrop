@@ -4,11 +4,11 @@ Created by [@PopPunkOnChain](https://twitter.com/PopPunkOnChain) and [@backseats
 
 # Installation
 
-* Clone the repo
-* Install dependencies `yarn`
-* Check out `.env.example`
-* Run the server `yarn dev`
-* Have fun!
+- Clone the repo
+- Install dependencies `yarn`
+- Check out `.env.example`
+- Run the server `yarn dev`
+- Have fun!
 
 ## Code of Conduct
 

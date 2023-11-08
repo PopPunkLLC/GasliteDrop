@@ -1,5 +1,5 @@
-import { defineConfig } from '@wagmi/cli';
-import { foundry, react } from '@wagmi/cli/plugins';
+import { defineConfig } from "@wagmi/cli";
+import { foundry, react } from "@wagmi/cli/plugins";
 import {
   mainnet,
   optimism,
@@ -7,13 +7,14 @@ import {
   arbitrum,
   polygon,
   // bsc,
-  base
-} from '@wagmi/chains'
+  base,
+} from "@wagmi/chains";
 
-export const airdropContractAddress = '0x09350F89e2D7B6e96bA730783c2d76137B045FEF';
+export const airdropContractAddress =
+  "0x09350F89e2D7B6e96bA730783c2d76137B045FEF";
 
 export default defineConfig({
-  out: 'src/generated.ts',
+  out: "src/generated.ts",
   plugins: [
     foundry({
       deployments: {
@@ -27,8 +28,8 @@ export default defineConfig({
           [base.id]: airdropContractAddress,
         },
       },
-      artifacts: '/out',
-      project: './contracts',
+      artifacts: "/out",
+      project: "./contracts",
     }),
     react(),
   ],

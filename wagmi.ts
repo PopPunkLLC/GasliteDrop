@@ -1,4 +1,4 @@
-import { getDefaultWallets } from '@rainbow-me/rainbowkit';
+import { getDefaultWallets } from "@rainbow-me/rainbowkit";
 import {
   sepolia,
   optimism,
@@ -7,10 +7,10 @@ import {
   polygon,
   // bsc,
   base,
-} from '@wagmi/chains';
-import { configureChains, createConfig, WebSocketPublicClient } from 'wagmi';
-import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
-import { publicProvider } from 'wagmi/providers/public';
+} from "@wagmi/chains";
+import { configureChains, createConfig, WebSocketPublicClient } from "wagmi";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { publicProvider } from "wagmi/providers/public";
 
 // NOTE: On the providers, there are some issues with Sepolia currently and Wagmi.
 // The setup below will work. Adding an Alchemy provider, for example, will break things
@@ -24,26 +24,26 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
     polygon,
     base,
     // bsc,
-    ...(process.env.NODE_ENV === 'development' ? [sepolia] : []),
+    ...(process.env.NODE_ENV === "development" ? [sepolia] : []),
   ],
   [
     publicProvider(),
     jsonRpcProvider({
       rpc: () => ({
         http: process.env.NEXT_PUBLIC_SEPOLIA_API!,
-        webSocket: process.env.NEXT_PUBLIC_SEPOLIA_WEBSOCKET!
+        webSocket: process.env.NEXT_PUBLIC_SEPOLIA_WEBSOCKET!,
       }),
     }),
     jsonRpcProvider({
       rpc: () => ({
         http: process.env.NEXT_PUBLIC_QUICKNODE_API!,
       }),
-  }),
-  ],
+    }),
+  ]
 );
 
 const { connectors } = getDefaultWallets({
-  appName: 'Gaslite Drop',
+  appName: "Gaslite Drop",
   projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_API_KEY as string,
   chains,
 });

@@ -6,9 +6,7 @@
     "sources": "src",
     "tests": "test",
     "scripts": "script",
-    "libraries": [
-      "lib"
-    ]
+    "libraries": ["lib"]
   },
   "files": {
     "src/GasliteDrop.sol": {
@@ -27,9 +25,7 @@
           },
           "outputSelection": {
             "*": {
-              "": [
-                "ast"
-              ],
+              "": ["ast"],
               "*": [
                 "abi",
                 "evm.bytecode",
