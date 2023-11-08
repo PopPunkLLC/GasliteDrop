@@ -1,9 +1,20 @@
 import React from "react";
 import { FaExternalLinkAlt as ExternalLinkIcon } from "react-icons/fa";
 import { shortenAddress } from "@/components/utils";
+import { sepolia, optimism, arbitrum, polygon, base } from "@wagmi/chains";
 
 const deriveExternalLink = (tokenAddress, chainId) => {
   switch (chainId) {
+    case sepolia.id:
+      return `https://sepolia.etherscan.io/address/${tokenAddress}`;
+    case optimism.id:
+      return `https://optimistic.etherscan.io/address/${tokenAddress}`;
+    case arbitrum.id:
+      return `https://arbiscan.io/address/${tokenAddress}`;
+    case polygon.id:
+      return `https://polygonscan.com/address/${tokenAddress}`;
+    case base.id:
+      return `https://basescan.org/address/${tokenAddress}`;
     default:
       return `https://etherscan.io/address/${tokenAddress}`;
   }

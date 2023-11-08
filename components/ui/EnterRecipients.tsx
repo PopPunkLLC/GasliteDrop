@@ -56,7 +56,7 @@ const EnterRecipients = ({ isERC721, symbol, decimals, onSubmit }) => {
         ? recipientsParser(Number(decimals)).parse(parseERC20Text(text))
         : erc721RecipientsParser().parse(parseERC721Text(text));
     },
-    [isERC721]
+    [isERC721, decimals]
   );
 
   useEffect(() => {
