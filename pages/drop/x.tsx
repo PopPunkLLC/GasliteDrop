@@ -56,18 +56,16 @@ const TwitterDrop = () => {
 
   useDebouncedEffect(
     () => {
-      if (tweetId) {
-        router.push(
-          `?${toParams({
-            ...router?.query,
-            id: tweetId,
-          })}`,
-          null,
-          {
-            shallow: true,
-          }
-        );
-      }
+      router.push(
+        `?${toParams({
+          ...router?.query,
+          id: tweetId || "",
+        })}`,
+        null,
+        {
+          shallow: true,
+        }
+      );
     },
     [tweetId],
     200,
@@ -80,7 +78,14 @@ const TwitterDrop = () => {
     chainId: chain?.id,
   });
 
-  const { data, isLoading, error } = useTwitterData({ tweetId: id });
+  const { data, isLoading, error } = useTwitterData({
+    tweetId: id,
+    onLoaded: ({ conversation_id, user }) => {
+      if (conversation_id && user?.username) {
+        setTweetUrl(deriveTweetUrl(user?.username, conversation_id));
+      }
+    },
+  });
 
   const { addresses = [], tweet = null } = data || {};
 
@@ -107,14 +112,6 @@ const TwitterDrop = () => {
     () => deriveTweetUrl(tweet?.user?.username, tweet?.conversation_id),
     [JSON.stringify(tweet)]
   );
-
-  useEffect(() => {
-    if (!tweetUrl && tweet?.conversation_id && tweet?.user?.username) {
-      setTweetUrl(
-        deriveTweetUrl(tweet?.user?.username, tweet?.conversation_id)
-      );
-    }
-  }, [tweetUrl, JSON.stringify(tweet)]);
 
   return (
     <>

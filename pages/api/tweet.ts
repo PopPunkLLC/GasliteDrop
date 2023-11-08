@@ -1,7 +1,13 @@
 import { Client } from "twitter-api-sdk";
+import { createPublicClient, http } from "viem";
+import { mainnet } from "viem/chains";
+import { normalize } from "viem/ens";
 import { uniq } from "@/components/utils";
+import { keyBy, values } from "lodash";
 
-const ADDRESS_REGEX = /(0x[a-fA-F0-9]{40})/;
+const ADDRESS_REGEX = /(0x){1}[0-9a-fA-F]{40}/;
+const ENS_REGEX =
+  /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/;
 
 const fetchTweetById = async (client: Client, tweetId) =>
   client.tweets.findTweetById(tweetId, {
@@ -20,11 +26,13 @@ const fetchAllConversationTweets = async (client: Client, tweetId) => {
   let allTweets = [];
   let { data, meta } = await client.tweets.tweetsRecentSearch({
     query: `conversation_id:${tweetId} is:reply`,
+    expansions: ["author_id"],
   });
   let nextToken = meta?.next_token;
   while (nextToken) {
     ({ data, meta } = await client.tweets.tweetsRecentSearch({
       query: `conversation_id:${tweetId} is:reply`,
+      expansions: ["author_id"],
       pagination_token: nextToken,
     }));
     allTweets = allTweets.concat(data);
@@ -34,18 +42,45 @@ const fetchAllConversationTweets = async (client: Client, tweetId) => {
       nextToken = null;
     }
   }
-  return allTweets;
+  // Get single unique tweet
+  return values(keyBy(allTweets, "author_id"));
 };
 
-const extractUniqueAddresses = (addresses) =>
-  uniq(
-    addresses
-      .map((result) => {
-        const [addr] = result?.text?.toLowerCase()?.match(ADDRESS_REGEX) || [];
-        return addr;
+const client = createPublicClient({
+  chain: mainnet,
+  transport: http(process.env.MAINNET_PROVIDER_URL),
+});
+
+const extractUniqueAddresses = async (tweets) => {
+  const addresses = tweets
+    .map((result) => {
+      const [ens] = result?.text?.match(ENS_REGEX) || [];
+      const [addr] = result?.text?.toLowerCase()?.match(ADDRESS_REGEX) || [];
+      return {
+        ens,
+        addr,
+      };
+    })
+    .filter((item) => !item?.ens || !item?.addr);
+
+  const rawAddresses = addresses
+    .filter((item) => item.addr)
+    .map(({ addr }) => addr);
+
+  const ensAddresses = addresses
+    .filter((item) => item.ens && item.ens.indexOf("t.co/") === -1) // Remove null && twitter shortlinks
+    .map(({ ens }) => ens);
+
+  const resolvedAddresses = await Promise.all(
+    ensAddresses.map((ens) =>
+      client.getEnsAddress({
+        name: normalize(ens),
       })
-      .filter(Boolean)
+    )
   );
+
+  return uniq([...rawAddresses, ...resolvedAddresses].filter(Boolean));
+};
 
 const tweet = async (req, res) => {
   try {
@@ -53,6 +88,7 @@ const tweet = async (req, res) => {
     const twitterClient = new Client(process.env.BEARER_TOKEN);
     const tweet = await fetchTweetById(twitterClient, id);
     const allTweets = await fetchAllConversationTweets(twitterClient, id);
+    const addresses = await extractUniqueAddresses(allTweets);
     return res.json({
       tweet: {
         ...tweet?.data,
@@ -60,7 +96,7 @@ const tweet = async (req, res) => {
           ? { user: tweet?.includes?.users?.[0] }
           : {}),
       },
-      addresses: extractUniqueAddresses(allTweets),
+      addresses,
       tweetCount: allTweets?.length,
     });
   } catch (e) {

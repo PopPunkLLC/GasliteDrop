@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDebouncedCallback } from "@react-hookz/web";
 
-const useTwitterData = ({ tweetId }) => {
+const useTwitterData = ({ tweetId, onLoaded }) => {
   const [data, setData] = useState<string[]>([]);
   const [error, setError] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<any>(false);
@@ -21,6 +21,10 @@ const useTwitterData = ({ tweetId }) => {
           addresses,
           tweet,
         });
+
+        if (onLoaded) {
+          onLoaded(tweet);
+        }
       } catch (err) {
         setError(err);
       } finally {
