@@ -149,7 +149,7 @@ const useTokenDrop = ({ contractAddress, recipients, token }) => {
           setIsProcessing(true);
           const { request } = await prepareWriteContract(approvalConfig);
           const { hash } = await writeContract(request);
-          return waitForTransaction({
+          await waitForTransaction({
             hash,
           });
         } catch (e) {
@@ -164,7 +164,7 @@ const useTokenDrop = ({ contractAddress, recipients, token }) => {
           setIsProcessing(true);
           const { request } = await prepareWriteContract(airdropConfig);
           const { hash } = await writeContract(request);
-          return waitForTransaction({
+          await waitForTransaction({
             hash,
           });
         } catch (e) {
