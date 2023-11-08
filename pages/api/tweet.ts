@@ -3,10 +3,20 @@ import { uniq } from "@/components/utils";
 
 const ADDRESS_REGEX = /(0x[a-fA-F0-9]{40})/;
 
-const fetchTweetById = async (client, tweetId) =>
-  client.tweets.findTweetById(tweetId);
+const fetchTweetById = async (client: Client, tweetId) =>
+  client.tweets.findTweetById(tweetId, {
+    expansions: ["author_id"],
+    "tweet.fields": ["conversation_id", "public_metrics"],
+    "user.fields": [
+      "created_at",
+      "description",
+      "name",
+      "username",
+      "profile_image_url",
+    ],
+  });
 
-const fetchAllConversationTweets = async (client, tweetId) => {
+const fetchAllConversationTweets = async (client: Client, tweetId) => {
   let allTweets = [];
   let { data, meta } = await client.tweets.tweetsRecentSearch({
     query: `conversation_id:${tweetId} is:reply`,
@@ -42,12 +52,16 @@ const tweet = async (req, res) => {
     const { id } = req?.query;
     const twitterClient = new Client(process.env.BEARER_TOKEN);
     const tweet = await fetchTweetById(twitterClient, id);
-    const addresses = await fetchAllConversationTweets(twitterClient, id).then(
-      extractUniqueAddresses
-    );
+    const allTweets = await fetchAllConversationTweets(twitterClient, id);
     return res.json({
-      tweet,
-      addresses,
+      tweet: {
+        ...tweet?.data,
+        ...(tweet?.includes?.users
+          ? { user: tweet?.includes?.users?.[0] }
+          : {}),
+      },
+      addresses: extractUniqueAddresses(allTweets),
+      tweetCount: allTweets?.length,
     });
   } catch (e) {
     return res.status(500).json({

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { useAccount, useNetwork, useBalance } from "wagmi";
 import { toast } from "sonner";
@@ -12,9 +12,13 @@ import useNetworkNativeToken from "@/components/hooks/useNetworkNativeToken";
 import Input from "@/components/ui/Input";
 import { recipientsParser } from "@/components/types/parsers";
 import useTwitterData from "@/components/hooks/useTwitterData";
-import { toParams, uniq } from "@/components/utils";
+import { shortenAddress, toParams, uniq } from "@/components/utils";
 import { useDebouncedEffect } from "@react-hookz/web";
 import useTokenData from "@/components/hooks/useTokenData";
+import { FaExternalLinkAlt as ExternalLinkIcon } from "react-icons/fa";
+
+const deriveTweetUrl = (username, id) =>
+  `https://twitter.com/${username}/status/${id}`;
 
 const TwitterDrop = () => {
   const { chain } = useNetwork();
@@ -78,6 +82,8 @@ const TwitterDrop = () => {
 
   const { data, isLoading, error } = useTwitterData({ tweetId: id });
 
+  const { addresses = [], tweet = null } = data || {};
+
   const { isLoading: isLoadingToken, ...token } = useTokenData({
     contractAddress: dropAddress,
   });
@@ -96,6 +102,19 @@ const TwitterDrop = () => {
     },
     [JSON.stringify(token)]
   );
+
+  const foundTweetUrl = useMemo(
+    () => deriveTweetUrl(tweet?.user?.username, tweet?.conversation_id),
+    [JSON.stringify(tweet)]
+  );
+
+  useEffect(() => {
+    if (!tweetUrl && tweet?.conversation_id && tweet?.user?.username) {
+      setTweetUrl(
+        deriveTweetUrl(tweet?.user?.username, tweet?.conversation_id)
+      );
+    }
+  }, [tweetUrl, JSON.stringify(tweet)]);
 
   return (
     <>
@@ -122,7 +141,7 @@ const TwitterDrop = () => {
         />
       )}
       <div className="flex flex-col h-full w-full">
-        <div className="flex flex-col justify-center w-full space-y-3">
+        <div className="flex flex-col justify-center w-full space-y-2">
           <PageTitle title="Enter X Post" />
           <Input
             value={tweetUrl}
@@ -141,6 +160,24 @@ const TwitterDrop = () => {
             isLoading={isLoading}
             placeholder="E.g., https://twitter.com/PopPunkOnChain/status/1694775747045462183"
           />
+          {tweet && (
+            <div className="flex flex-row items-center justify-between text-sm">
+              <a
+                href={foundTweetUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex flex-row items-center space-x-2 hover:underline text-primary"
+              >
+                <span>View post</span>
+                <ExternalLinkIcon className="text-sm" />
+              </a>
+              <span className="text-grey text-sm">
+                {tweet?.public_metrics?.reply_count} replies,{" "}
+                {tweet?.public_metrics?.like_count} likes,{" "}
+                {tweet?.public_metrics?.impression_count} views
+              </span>
+            </div>
+          )}
           {error && (
             <div className="flex flex-row items-center py-1">
               <p className="text-black bg-critical bg-opacity-50 border border-critical p-4 rounded-md">
@@ -152,11 +189,11 @@ const TwitterDrop = () => {
             <Pill>X (Twitter)</Pill>
             {id && (
               <Pill variant="primary">{`There were ${
-                data?.length || 0
+                addresses?.length || 0
               } addresses found`}</Pill>
             )}
           </div>
-          {data?.length > 0 ? (
+          {addresses?.length > 0 ? (
             <div className="flex flex-col space-y-1">
               <div className="min-h-fit mt-2 space-y-2">
                 <div className="flex flex-col space-y-1">
@@ -215,7 +252,7 @@ const TwitterDrop = () => {
                   )}
                 </div>
                 <textarea
-                  value={data?.join(
+                  value={addresses?.join(
                     `,${airdropValue ? `${airdropValue},` : ""}\n`
                   )}
                   className="w-full min-h-[200px] max-h-[400px] p-3 text-black border-black border-2 rounded-md"
@@ -227,17 +264,17 @@ const TwitterDrop = () => {
                     "py-4 rounded-md w-full my-4 text-white bg-markPink-900 font-bold tracking-wide",
                     {
                       "opacity-30 cursor-not-allowed":
-                        data.length === 0 || !airdropValue,
+                        addresses.length === 0 || !airdropValue,
                     }
                   )}
                   onClick={() => {
                     handleTwitterAirdrop({
-                      data,
+                      data: addresses,
                       airdropValue,
                       dropAddress,
                     });
                   }}
-                  disabled={data.length === 0 || !airdropValue}
+                  disabled={addresses.length === 0 || !airdropValue}
                 >
                   Continue
                 </button>

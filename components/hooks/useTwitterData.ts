@@ -11,13 +11,16 @@ const useTwitterData = ({ tweetId }) => {
       try {
         setIsLoading(true);
         setError(null);
-        const { addresses, error } = await fetch(`/api/tweet?id=${id}`).then(
-          (res) => res.json()
-        );
+        const { addresses, tweet, error } = await fetch(
+          `/api/tweet?id=${id}`
+        ).then((res) => res.json());
         if (error) {
           throw new Error(error);
         }
-        setData(addresses);
+        setData({
+          addresses,
+          tweet,
+        });
       } catch (err) {
         setError(err);
       } finally {
