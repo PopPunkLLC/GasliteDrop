@@ -8,11 +8,11 @@ const DisconnectedView = () => {
         Airdrop ETH, ERC-20, and ERC-721 tokens to your community
       </div>
 
-      <div className="hidden md:flex flex-row justify-center mt-12 text-xl">
+      <div className="flex flex-row justify-center mt-12 text-xl">
         <ConnectButton label="Connect Your Wallet to Begin" />
       </div>
 
-      <div className="md:hidden border px-4 py-2 border-grey rounded-md text">
+      <div className="md:hidden border px-4 py-2 border-grey rounded-md text mt-8">
         ⚠️ Gaslite Drop is best used on your desktop or laptop
       </div>
     </div>
