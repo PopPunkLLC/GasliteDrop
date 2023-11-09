@@ -18,6 +18,7 @@ import useTokenData from "@/components/hooks/useTokenData";
 import { FaExternalLinkAlt as ExternalLinkIcon } from "react-icons/fa";
 import TwitterAddressModal from "@/components/ui/TwitterAddressModal";
 import { differenceInWeeks } from "date-fns";
+import { DEFAULT_TWITTER_EXCLUSIONS } from "@/components/ui/constants";
 
 const deriveTweetUrl = (username, id) =>
   `https://twitter.com/${username}/status/${id}`;
@@ -28,9 +29,7 @@ const TwitterDrop = () => {
   const { nativeToken } = useNetworkNativeToken();
   const router = useRouter();
   const [airdrop, setAirdrop] = useState(null);
-
-  const [exclusions, setExclusions] = useState({});
-
+  const [exclusions, setExclusions] = useState(DEFAULT_TWITTER_EXCLUSIONS);
   const [isShowingAddresses, setIsShowingAddresses] = useState(false);
 
   const { id = "", dropAddress = "" } = router.query;
@@ -129,32 +128,35 @@ const TwitterDrop = () => {
     }));
   };
 
-  const filteredSummary = useMemo(
-    () =>
-      summary?.reduce((acc, item) => {
-        if (
-          // Below min follower count
-          item?.user?.public_metrics?.followers_count <=
-            exclusions.minFollowerCount ||
-          // Below min tweet count
-          item?.user?.public_metrics?.tweet_count <= exclusions.minTweetCount ||
-          // Below min age
-          differenceInWeeks(new Date(), new Date(item?.user?.created_at)) <=
-            exclusions.minAccountAge ||
-          // No picture
-          (exclusions.hasProfile && !item?.user?.profile_image_url) ||
-          // No description
-          (exclusions.hasDescription && !item?.user?.description) ||
-          // No location
-          (exclusions.hasLocation && !item?.user?.location)
-        ) {
-          return acc;
-        }
-        acc.push(item);
+  const filteredSummary = useMemo(() => {
+    return summary?.reduce((acc, item) => {
+      console.log(
+        "diff",
+        differenceInWeeks(new Date(), new Date(item?.user?.created_at))
+      );
+
+      if (
+        // Below min follower count
+        item?.user?.public_metrics?.followers_count <=
+          exclusions.minFollowerCount ||
+        // Below min tweet count
+        item?.user?.public_metrics?.tweet_count <= exclusions.minTweetCount ||
+        // Below min age
+        differenceInWeeks(new Date(), new Date(item?.user?.created_at)) <=
+          exclusions.minAccountAge ||
+        // No picture
+        (exclusions.hasProfile && !item?.user?.profile_image_url) ||
+        // No description
+        (exclusions.hasDescription && !item?.user?.description) ||
+        // No location
+        (exclusions.hasLocation && !item?.user?.location)
+      ) {
         return acc;
-      }, []),
-    [JSON.stringify(exclusions), JSON.stringify(summary)]
-  );
+      }
+      acc.push(item);
+      return acc;
+    }, []);
+  }, [JSON.stringify(exclusions), JSON.stringify(summary)]);
 
   const addresses = filteredSummary?.map((item) => item.addr);
 
@@ -238,19 +240,21 @@ const TwitterDrop = () => {
             </div>
           )}
           <div className="flex flex-row items-center gap-2">
-            <Pill>X (Twitter)</Pill>
             {id && addresses?.length > 0 && (
-              <Pill variant="primary">
-                <button
-                  type="button"
-                  className="underline"
-                  onClick={() => {
-                    setIsShowingAddresses(true);
-                  }}
-                >
-                  {`View ${addresses?.length || 0} addresses found`}
-                </button>
-              </Pill>
+              <>
+                <Pill>ERC20</Pill>
+                <Pill variant="primary">
+                  <button
+                    type="button"
+                    className="underline"
+                    onClick={() => {
+                      setIsShowingAddresses(true);
+                    }}
+                  >
+                    {`View ${addresses?.length || 0} addresses found`}
+                  </button>
+                </Pill>
+              </>
             )}
           </div>
           {addresses?.length > 0 ? (
@@ -340,7 +344,7 @@ const TwitterDrop = () => {
                 </button>
               </div>
             </div>
-          ) : id && !isLoading && !isLoadingToken ? (
+          ) : id && tweet && !isLoading && !isLoadingToken && !error ? (
             <div className="flex flex-row items-center space-x-4 bg-markPink-100 bg-opacity-50 border border-markPink-200 py-4 pl-4 pr-6 rounded-md mt-10">
               <WarningIcon className="flex-shrink-0 text-2xl text-primary" />
               <p className="text-primary">

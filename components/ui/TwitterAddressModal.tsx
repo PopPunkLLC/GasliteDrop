@@ -3,7 +3,11 @@ import { useDebouncedEffect, useKeyboardEvent } from "@react-hookz/web";
 import { MdCheck as CheckIcon, MdClose as CloseIcon } from "react-icons/md";
 import { shortenAddress } from "@/components/utils";
 import { formatDistance } from "date-fns";
-import { AGE_OPTIONS } from "@/components/ui/constants";
+import {
+  AGE_OPTIONS,
+  DEFAULT_TWITTER_EXCLUSIONS,
+} from "@/components/ui/constants";
+import { isEqual } from "lodash";
 
 const TwitterTable = ({ data }) => (
   <table className="w-full">
@@ -78,14 +82,7 @@ const TwitterTable = ({ data }) => (
 );
 
 const TwitterAddressModal = ({ data, onClose, onApplyExclusion }) => {
-  const [exclusions, setExclusions] = useState({
-    minFollowerCount: 100,
-    minTweetCount: 100,
-    minAccountAge: 4,
-    hasProfile: true,
-    hasDescription: false,
-    hasLocation: false,
-  });
+  const [exclusions, setExclusions] = useState(DEFAULT_TWITTER_EXCLUSIONS);
 
   useEffect(() => {
     window.document.body.style.overflow = "hidden";
@@ -119,7 +116,20 @@ const TwitterAddressModal = ({ data, onClose, onApplyExclusion }) => {
       <div className="absolute top-0 left-0 h-full w-full z-[1] bg-white text-black bg-opacity-90" />
       <div className="flex flex-col w-4/5 md:w-3/4 mx-auto bg-white text-black rounded-md border-[2px] border-grey/[.3] z-[2] p-6">
         <header className="flex flex-row items-center justify-between">
-          <h1 className="text-2xl">Twitter Matches ({data.length})</h1>
+          <div className="flex flex-row space-x-2 items-center">
+            <h1 className="text-2xl">Twitter Matches ({data.length})</h1>
+            {!isEqual(exclusions, DEFAULT_TWITTER_EXCLUSIONS) && (
+              <button
+                type="button"
+                className="flex text-xs hover:underline items-center justify-center h-[32px]"
+                onClick={() => {
+                  setExclusions(DEFAULT_TWITTER_EXCLUSIONS);
+                }}
+              >
+                reset
+              </button>
+            )}
+          </div>
           <button onClick={onClose}>
             <CloseIcon className="text-2xl text-grey" />
           </button>
