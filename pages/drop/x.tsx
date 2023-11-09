@@ -17,6 +17,7 @@ import { useDebouncedEffect } from "@react-hookz/web";
 import useTokenData from "@/components/hooks/useTokenData";
 import { FaExternalLinkAlt as ExternalLinkIcon } from "react-icons/fa";
 import TwitterAddressModal from "@/components/ui/TwitterAddressModal";
+import { differenceInWeeks } from "date-fns";
 
 const deriveTweetUrl = (username, id) =>
   `https://twitter.com/${username}/status/${id}`;
@@ -27,12 +28,16 @@ const TwitterDrop = () => {
   const { nativeToken } = useNetworkNativeToken();
   const router = useRouter();
   const [airdrop, setAirdrop] = useState(null);
+
+  const [exclusions, setExclusions] = useState({});
+
   const [isShowingAddresses, setIsShowingAddresses] = useState(false);
 
   const { id = "", dropAddress = "" } = router.query;
 
   const [tweetId, setTweetId] = useState(id);
   const [tweetUrl, setTweetUrl] = useState(null);
+  const [tweetData, setTweetData] = useState(null);
   const [airdropValue, setAirdropValue] = useState(null);
   const [contractAddress, setContractAddress] = useState(dropAddress);
 
@@ -80,16 +85,18 @@ const TwitterDrop = () => {
     chainId: chain?.id,
   });
 
-  const { data, isLoading, error } = useTwitterData({
+  const { isLoading, error } = useTwitterData({
     tweetId: id,
-    onLoaded: ({ conversation_id, user }) => {
+    onLoaded: (data) => {
+      const { conversation_id, user } = data?.tweet;
       if (conversation_id && user?.username) {
         setTweetUrl(deriveTweetUrl(user?.username, conversation_id));
       }
+      setTweetData(data);
     },
   });
 
-  const { addresses = [], tweet = null, summary = [] } = data || {};
+  const { tweet = null, summary = [] } = tweetData || {};
 
   const { isLoading: isLoadingToken, ...token } = useTokenData({
     contractAddress: dropAddress,
@@ -115,35 +122,50 @@ const TwitterDrop = () => {
     [JSON.stringify(tweet)]
   );
 
+  const onApplyExclusion = (change) => {
+    setExclusions((prev) => ({
+      ...prev,
+      ...change,
+    }));
+  };
+
+  const filteredSummary = useMemo(
+    () =>
+      summary?.reduce((acc, item) => {
+        if (
+          // Below min follower count
+          item?.user?.public_metrics?.followers_count <=
+            exclusions.minFollowerCount ||
+          // Below min tweet count
+          item?.user?.public_metrics?.tweet_count <= exclusions.minTweetCount ||
+          // Below min age
+          differenceInWeeks(new Date(), new Date(item?.user?.created_at)) <=
+            exclusions.minAccountAge ||
+          // No picture
+          (exclusions.hasProfile && !item?.user?.profile_image_url) ||
+          // No description
+          (exclusions.hasDescription && !item?.user?.description) ||
+          // No location
+          (exclusions.hasLocation && !item?.user?.location)
+        ) {
+          return acc;
+        }
+        acc.push(item);
+        return acc;
+      }, []),
+    [JSON.stringify(exclusions), JSON.stringify(summary)]
+  );
+
+  const addresses = filteredSummary?.map((item) => item.addr);
+
   return (
     <>
       {isShowingAddresses && (
         <TwitterAddressModal
-          data={summary}
+          data={filteredSummary}
+          onApplyExclusion={onApplyExclusion}
           onClose={() => {
             setIsShowingAddresses(false);
-          }}
-        />
-      )}
-      {airdrop?.length > 0 && (
-        <AirdropModal
-          contractAddress={dropAddress}
-          recipients={airdrop}
-          token={
-            dropAddress
-              ? token
-              : {
-                  isLoading: false,
-                  isERC721: false,
-                  symbol: nativeToken,
-                  decimals: 18,
-                  balance: balance?.value,
-                  formattedBalance: balance?.formatted,
-                  onRefresh,
-                }
-          }
-          onClose={() => {
-            setAirdrop(null);
           }}
         />
       )}
@@ -219,6 +241,7 @@ const TwitterDrop = () => {
             {id && addresses?.length > 0 && (
               <Pill variant="primary">
                 <button
+                  type="button"
                   className="underline"
                   onClick={() => {
                     setIsShowingAddresses(true);

@@ -24,7 +24,11 @@ const useTwitterData = ({ tweetId, onLoaded }) => {
         });
 
         if (onLoaded) {
-          onLoaded(tweet);
+          onLoaded({
+            addresses,
+            tweet,
+            summary,
+          });
         }
       } catch (err) {
         setError(err);

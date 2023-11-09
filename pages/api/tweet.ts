@@ -28,7 +28,15 @@ const fetchAllConversationTweets = async (client: Client, tweetId) => {
   let { data, meta, includes } = await client.tweets.tweetsRecentSearch({
     query: `conversation_id:${tweetId} is:reply`,
     expansions: ["author_id"],
-    "user.fields": ["username", "profile_image_url"],
+    "user.fields": [
+      "location",
+      "username",
+      "profile_image_url",
+      "public_metrics",
+      "verified",
+      "created_at",
+      "description",
+    ],
   });
 
   let userLookup = keyBy(includes?.users, "id");
@@ -39,7 +47,15 @@ const fetchAllConversationTweets = async (client: Client, tweetId) => {
     ({ data, meta, includes } = await client.tweets.tweetsRecentSearch({
       query: `conversation_id:${tweetId} is:reply`,
       expansions: ["author_id"],
-      "user.fields": ["username", "profile_image_url"],
+      "user.fields": [
+        "location",
+        "username",
+        "profile_image_url",
+        "public_metrics",
+        "verified",
+        "created_at",
+        "description",
+      ],
       pagination_token: nextToken,
     }));
 
@@ -113,13 +129,26 @@ const extractUniqueAddresses = async (tweets) => {
 const tweet = async (req, res) => {
   try {
     const { id } = req?.query;
+
     const twitterClient = new Client(process.env.BEARER_TOKEN);
+
     const tweet = await fetchTweetById(twitterClient, id);
+
     const { users, tweets } = await fetchAllConversationTweets(
       twitterClient,
       id
     );
-    const { matches, addresses } = await extractUniqueAddresses(tweets);
+
+    const { matches } = await extractUniqueAddresses(tweets);
+
+    const summary = matches
+      .map(({ addr, ens, context }) => ({
+        user: users[context?.author_id] || null,
+        addr: addr,
+        ens,
+      }))
+      .filter(({ addr }) => !!addr);
+
     return res.json({
       tweet: {
         ...tweet?.data,
@@ -127,14 +156,8 @@ const tweet = async (req, res) => {
           ? { user: tweet?.includes?.users?.[0] }
           : {}),
       },
-      addresses,
-      summary: matches
-        .map(({ addr, ens, context }) => ({
-          user: users[context?.author_id] || null,
-          addr: addr,
-          ens,
-        }))
-        .filter(({ addr }) => !!addr),
+      addresses: summary.map(({ addr }) => addr),
+      summary,
       tweetCount: tweets?.length,
     });
   } catch (e) {
