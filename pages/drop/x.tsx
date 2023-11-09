@@ -232,7 +232,8 @@ const TwitterDrop = () => {
           {error && (
             <div className="flex flex-row items-center py-1">
               <p className="text-black bg-critical bg-opacity-50 border border-critical p-4 rounded-md">
-                {`Oops! Looks like there was an issue pulling down the tweet, perhaps due to rate limiting. Please try again later.`}
+                {error?.message ||
+                  `Oops! Looks like there was an issue pulling down the tweet, perhaps due to rate limiting. Please try again later.`}
               </p>
             </div>
           )}
