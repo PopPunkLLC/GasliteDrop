@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useDebouncedEffect, useKeyboardEvent } from "@react-hookz/web";
+import React, { useEffect } from "react";
+import { useKeyboardEvent } from "@react-hookz/web";
 import { MdCheck as CheckIcon, MdClose as CloseIcon } from "react-icons/md";
 import { shortenAddress } from "@/components/utils";
 import { formatDistance } from "date-fns";
@@ -81,9 +81,12 @@ const TwitterTable = ({ data }) => (
   </table>
 );
 
-const TwitterAddressModal = ({ data, onClose, onApplyExclusion }) => {
-  const [exclusions, setExclusions] = useState(DEFAULT_TWITTER_EXCLUSIONS);
-
+const TwitterAddressModal = ({
+  exclusions,
+  data,
+  onClose,
+  onSetExclusions,
+}) => {
   useEffect(() => {
     window.document.body.style.overflow = "hidden";
     return () => {
@@ -102,15 +105,6 @@ const TwitterAddressModal = ({ data, onClose, onApplyExclusion }) => {
     { eventOptions: { passive: true } }
   );
 
-  useDebouncedEffect(
-    () => {
-      onApplyExclusion(exclusions);
-    },
-    [JSON.stringify(exclusions)],
-    200,
-    500
-  );
-
   return (
     <div className="flex items-center justify-center fixed top-0 left-0 w-full h-[100dvh] z-[10000]">
       <div className="absolute top-0 left-0 h-full w-full z-[1] bg-white text-black bg-opacity-90" />
@@ -123,7 +117,7 @@ const TwitterAddressModal = ({ data, onClose, onApplyExclusion }) => {
                 type="button"
                 className="flex text-xs hover:underline items-center justify-center h-[32px]"
                 onClick={() => {
-                  setExclusions(DEFAULT_TWITTER_EXCLUSIONS);
+                  onSetExclusions(DEFAULT_TWITTER_EXCLUSIONS);
                 }}
               >
                 reset
@@ -145,7 +139,7 @@ const TwitterAddressModal = ({ data, onClose, onApplyExclusion }) => {
                 type="button"
                 className="flex h-[32px] items-center justify-center"
                 onClick={() => {
-                  setExclusions((prev) => ({
+                  onSetExclusions((prev) => ({
                     ...prev,
                     hasProfile: !prev.hasProfile,
                   }));
@@ -165,7 +159,7 @@ const TwitterAddressModal = ({ data, onClose, onApplyExclusion }) => {
                 type="button"
                 className="flex h-[32px] items-center justify-center"
                 onClick={() => {
-                  setExclusions((prev) => ({
+                  onSetExclusions((prev) => ({
                     ...prev,
                     hasDescription: !prev.hasDescription,
                   }));
@@ -185,7 +179,7 @@ const TwitterAddressModal = ({ data, onClose, onApplyExclusion }) => {
                 type="button"
                 className="flex h-[32px] items-center justify-center"
                 onClick={() => {
-                  setExclusions((prev) => ({
+                  onSetExclusions((prev) => ({
                     ...prev,
                     hasLocation: !prev.hasLocation,
                   }));
@@ -208,7 +202,7 @@ const TwitterAddressModal = ({ data, onClose, onApplyExclusion }) => {
                 value={exclusions?.minFollowerCount}
                 step={1}
                 onChange={(e) => {
-                  setExclusions((prev) => ({
+                  onSetExclusions((prev) => ({
                     ...prev,
                     minFollowerCount: Number(e.target.value),
                   }));
@@ -229,7 +223,7 @@ const TwitterAddressModal = ({ data, onClose, onApplyExclusion }) => {
                 value={exclusions?.minTweetCount}
                 step={1}
                 onChange={(e) => {
-                  setExclusions((prev) => ({
+                  onSetExclusions((prev) => ({
                     ...prev,
                     minTweetCount: Number(e.target.value),
                   }));
@@ -248,7 +242,7 @@ const TwitterAddressModal = ({ data, onClose, onApplyExclusion }) => {
                 className="max-w-[100px] border border-2 h-[32px] text-sm rounded-md"
                 value={exclusions?.minAccountAge}
                 onChange={(e) => {
-                  setExclusions((prev) => ({
+                  onSetExclusions((prev) => ({
                     ...prev,
                     minAccountAge: e.target.value,
                   }));

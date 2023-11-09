@@ -130,11 +130,6 @@ const TwitterDrop = () => {
 
   const filteredSummary = useMemo(() => {
     return summary?.reduce((acc, item) => {
-      console.log(
-        "diff",
-        differenceInWeeks(new Date(), new Date(item?.user?.created_at))
-      );
-
       if (
         // Below min follower count
         item?.user?.public_metrics?.followers_count <=
@@ -164,6 +159,8 @@ const TwitterDrop = () => {
     <>
       {isShowingAddresses && (
         <TwitterAddressModal
+          exclusions={exclusions}
+          onSetExclusions={setExclusions}
           data={filteredSummary}
           onApplyExclusion={onApplyExclusion}
           onClose={() => {
@@ -251,7 +248,9 @@ const TwitterDrop = () => {
                       setIsShowingAddresses(true);
                     }}
                   >
-                    {`View ${addresses?.length || 0} addresses found`}
+                    {`Including ${addresses?.length || 0} of ${
+                      summary.length
+                    } addresses found`}
                   </button>
                 </Pill>
               </>
