@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { useAccount, useNetwork, useBalance } from "wagmi";
 import { toast } from "sonner";
@@ -12,10 +12,11 @@ import useNetworkNativeToken from "@/components/hooks/useNetworkNativeToken";
 import Input from "@/components/ui/Input";
 import { recipientsParser } from "@/components/types/parsers";
 import useTwitterData from "@/components/hooks/useTwitterData";
-import { shortenAddress, toParams, uniq } from "@/components/utils";
+import { toParams } from "@/components/utils";
 import { useDebouncedEffect } from "@react-hookz/web";
 import useTokenData from "@/components/hooks/useTokenData";
 import { FaExternalLinkAlt as ExternalLinkIcon } from "react-icons/fa";
+import TwitterAddressModal from "@/components/ui/TwitterAddressModal";
 
 const deriveTweetUrl = (username, id) =>
   `https://twitter.com/${username}/status/${id}`;
@@ -26,6 +27,7 @@ const TwitterDrop = () => {
   const { nativeToken } = useNetworkNativeToken();
   const router = useRouter();
   const [airdrop, setAirdrop] = useState(null);
+  const [isShowingAddresses, setIsShowingAddresses] = useState(false);
 
   const { id = "", dropAddress = "" } = router.query;
 
@@ -87,7 +89,7 @@ const TwitterDrop = () => {
     },
   });
 
-  const { addresses = [], tweet = null } = data || {};
+  const { addresses = [], tweet = null, summary = [] } = data || {};
 
   const { isLoading: isLoadingToken, ...token } = useTokenData({
     contractAddress: dropAddress,
@@ -115,6 +117,36 @@ const TwitterDrop = () => {
 
   return (
     <>
+      {isShowingAddresses && (
+        <TwitterAddressModal
+          data={summary}
+          onClose={() => {
+            setIsShowingAddresses(false);
+          }}
+        />
+      )}
+      {airdrop?.length > 0 && (
+        <AirdropModal
+          contractAddress={dropAddress}
+          recipients={airdrop}
+          token={
+            dropAddress
+              ? token
+              : {
+                  isLoading: false,
+                  isERC721: false,
+                  symbol: nativeToken,
+                  decimals: 18,
+                  balance: balance?.value,
+                  formattedBalance: balance?.formatted,
+                  onRefresh,
+                }
+          }
+          onClose={() => {
+            setAirdrop(null);
+          }}
+        />
+      )}
       {airdrop?.length > 0 && (
         <AirdropModal
           contractAddress={dropAddress}
@@ -184,10 +216,17 @@ const TwitterDrop = () => {
           )}
           <div className="flex flex-row items-center gap-2">
             <Pill>X (Twitter)</Pill>
-            {id && (
-              <Pill variant="primary">{`There were ${
-                addresses?.length || 0
-              } addresses found`}</Pill>
+            {id && addresses?.length > 0 && (
+              <Pill variant="primary">
+                <button
+                  className="underline"
+                  onClick={() => {
+                    setIsShowingAddresses(true);
+                  }}
+                >
+                  {`View ${addresses?.length || 0} addresses found`}
+                </button>
+              </Pill>
             )}
           </div>
           {addresses?.length > 0 ? (

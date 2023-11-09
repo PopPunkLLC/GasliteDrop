@@ -3,11 +3,11 @@ import { createPublicClient, http } from "viem";
 import { mainnet } from "viem/chains";
 import { normalize } from "viem/ens";
 import { uniq } from "@/components/utils";
-import { keyBy, values } from "lodash";
+import { keyBy, values, zipObject } from "lodash";
 
 const ADDRESS_REGEX = /(0x){1}[0-9a-fA-F]{40}/;
 const ENS_REGEX =
-  /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/;
+  /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.eth\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/;
 
 const fetchTweetById = async (client: Client, tweetId) =>
   client.tweets.findTweetById(tweetId, {
@@ -24,18 +24,32 @@ const fetchTweetById = async (client: Client, tweetId) =>
 
 const fetchAllConversationTweets = async (client: Client, tweetId) => {
   let allTweets = [];
-  let { data, meta } = await client.tweets.tweetsRecentSearch({
+
+  let { data, meta, includes } = await client.tweets.tweetsRecentSearch({
     query: `conversation_id:${tweetId} is:reply`,
     expansions: ["author_id"],
+    "user.fields": ["username", "profile_image_url"],
   });
+
+  let userLookup = keyBy(includes?.users, "id");
+
   let nextToken = meta?.next_token;
+
   while (nextToken) {
-    ({ data, meta } = await client.tweets.tweetsRecentSearch({
+    ({ data, meta, includes } = await client.tweets.tweetsRecentSearch({
       query: `conversation_id:${tweetId} is:reply`,
       expansions: ["author_id"],
+      "user.fields": ["username", "profile_image_url"],
       pagination_token: nextToken,
     }));
+
+    userLookup = {
+      ...userLookup,
+      ...keyBy(includes?.users, "id"),
+    };
+
     allTweets = allTweets.concat(data);
+
     if (meta?.next_token !== nextToken) {
       nextToken = meta?.next_token;
     } else {
@@ -43,7 +57,10 @@ const fetchAllConversationTweets = async (client: Client, tweetId) => {
     }
   }
   // Get single unique tweet
-  return values(keyBy(allTweets, "author_id"));
+  return {
+    users: userLookup,
+    tweets: values(keyBy(allTweets, "author_id")),
+  };
 };
 
 const client = createPublicClient({
@@ -59,6 +76,7 @@ const extractUniqueAddresses = async (tweets) => {
       return {
         ens,
         addr,
+        context: result,
       };
     })
     .filter((item) => !item?.ens || !item?.addr);
@@ -79,7 +97,17 @@ const extractUniqueAddresses = async (tweets) => {
     )
   );
 
-  return uniq([...rawAddresses, ...resolvedAddresses].filter(Boolean));
+  const ensLookup = zipObject(ensAddresses, resolvedAddresses);
+
+  return {
+    matches: addresses.map((address) => ({
+      ...address,
+      ...(address.ens && ensLookup?.[address.ens]
+        ? { addr: ensLookup?.[address.ens] }
+        : {}),
+    })),
+    addresses: uniq([...rawAddresses, ...resolvedAddresses].filter(Boolean)),
+  };
 };
 
 const tweet = async (req, res) => {
@@ -87,8 +115,11 @@ const tweet = async (req, res) => {
     const { id } = req?.query;
     const twitterClient = new Client(process.env.BEARER_TOKEN);
     const tweet = await fetchTweetById(twitterClient, id);
-    const allTweets = await fetchAllConversationTweets(twitterClient, id);
-    const addresses = await extractUniqueAddresses(allTweets);
+    const { users, tweets } = await fetchAllConversationTweets(
+      twitterClient,
+      id
+    );
+    const { matches, addresses } = await extractUniqueAddresses(tweets);
     return res.json({
       tweet: {
         ...tweet?.data,
@@ -97,7 +128,14 @@ const tweet = async (req, res) => {
           : {}),
       },
       addresses,
-      tweetCount: allTweets?.length,
+      summary: matches
+        .map(({ addr, ens, context }) => ({
+          user: users[context?.author_id] || null,
+          addr: addr,
+          ens,
+        }))
+        .filter(({ addr }) => !!addr),
+      tweetCount: tweets?.length,
     });
   } catch (e) {
     return res.status(500).json({

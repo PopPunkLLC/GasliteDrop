@@ -11,7 +11,7 @@ const useTwitterData = ({ tweetId, onLoaded }) => {
       try {
         setIsLoading(true);
         setError(null);
-        const { addresses, tweet, error } = await fetch(
+        const { addresses, tweet, summary, error } = await fetch(
           `/api/tweet?id=${id}`
         ).then((res) => res.json());
         if (error) {
@@ -20,6 +20,7 @@ const useTwitterData = ({ tweetId, onLoaded }) => {
         setData({
           addresses,
           tweet,
+          summary,
         });
 
         if (onLoaded) {
