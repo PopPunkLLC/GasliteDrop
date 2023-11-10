@@ -308,7 +308,7 @@ const TwitterDrop = () => {
             )}
           </div>
           {addresses?.length > 0 ? (
-            <div className="flex flex-col space-y-1">
+            <div className="flex flex-col space-y-1 py-4">
               <div className="min-h-fit mt-2 space-y-2">
                 <div className="flex flex-col space-y-1">
                   <h2 className="text-2xl text-base-100">
