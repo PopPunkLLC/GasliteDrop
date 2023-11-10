@@ -30,7 +30,7 @@ const NativeTokenDrop = () => {
           token={{
             isLoading: false,
             isERC721: false,
-            symbol: "ETH",
+            symbol: nativeToken,
             decimals: 18,
             balance: balance?.value,
             formattedBalance: balance?.formatted,
@@ -39,6 +39,7 @@ const NativeTokenDrop = () => {
           onClose={() => {
             setAirdrop(null);
           }}
+          isNative
         />
       )}
       <div className="flex flex-col h-full w-full">
@@ -54,7 +55,7 @@ const NativeTokenDrop = () => {
             <div className="flex flex-col space-y-1">
               <EnterRecipients
                 isERC721={false}
-                symbol="ETH"
+                symbol={nativeToken}
                 decimals={18}
                 onSubmit={(recipients) => {
                   setAirdrop(recipients);

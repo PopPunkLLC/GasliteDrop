@@ -211,6 +211,8 @@ const AirdropModal = ({
   contractAddress = null, // Native tx if null
   recipients = [],
   token,
+  isNative = false,
+  congratsRenderer = null,
   onClose,
 }) => {
   const [isShowingCongrats, setShowingCongrats] = useState(false);
@@ -332,7 +334,15 @@ const AirdropModal = ({
               <h1 className="text-3xl text-black font-bold text-primary">
                 Congratulations!
               </h1>
-              <p className="text-xl">Your tokens have been sent</p>
+              {congratsRenderer ? (
+                congratsRenderer({
+                  token,
+                  recipients,
+                  isNative,
+                })
+              ) : (
+                <p className="text-xl">Your tokens have been sent</p>
+              )}
               <p className="pt-6 text-sm text-grey">
                 Thanks for using Gaslite Drop
               </p>
@@ -422,7 +432,7 @@ const AirdropModal = ({
                           ) : (
                             <span>{`Set Approval for ${symbol}`}</span>
                           );
-                        } else if (symbol === "ETH") {
+                        } else if (isNative) {
                           return (
                             <span>{`Send ${formattedTotal} ${symbol}`}</span>
                           );

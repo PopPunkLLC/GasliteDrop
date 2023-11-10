@@ -4,6 +4,7 @@ import { mainnet } from "viem/chains";
 import { normalize } from "viem/ens";
 import { uniq } from "@/components/utils";
 import { keyBy, values, zipObject } from "lodash";
+import { kv } from "@vercel/kv";
 
 const ADDRESS_REGEX = /(0x){1}[0-9a-fA-F]{40}/;
 const ENS_REGEX =
@@ -132,6 +133,22 @@ const tweet = async (req, res) => {
 
     const twitterClient = new Client(process.env.BEARER_TOKEN);
 
+    // Check cache
+    const cacheKey = `tweet:${id}`;
+
+    const data = await kv.get(cacheKey);
+
+    try {
+      if (data) {
+        return res.json(data);
+      }
+    } catch (e) {
+      console.error(e);
+      console.log("Error parsing cache into json");
+    }
+
+    console.log("No cache found for", id);
+
     const tweet = await fetchTweetById(twitterClient, id);
 
     const { users, tweets } = await fetchAllConversationTweets(
@@ -149,7 +166,7 @@ const tweet = async (req, res) => {
       }))
       .filter(({ addr }) => !!addr);
 
-    return res.json({
+    const cacheable = {
       tweet: {
         ...tweet?.data,
         ...(tweet?.includes?.users
@@ -159,7 +176,15 @@ const tweet = async (req, res) => {
       addresses: summary.map(({ addr }) => addr),
       summary,
       tweetCount: tweets?.length,
+    };
+
+    // Cache for 900 seconds, ~15 minutes
+    await kv.set(cacheKey, JSON.stringify(cacheable), {
+      ex: 900,
+      nx: true,
     });
+
+    return res.json(cacheable);
   } catch (e) {
     return res.status(500).json({
       error:
