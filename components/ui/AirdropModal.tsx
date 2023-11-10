@@ -3,23 +3,25 @@ import { useKeyboardEvent } from "@react-hookz/web";
 import { formatUnits } from "viem";
 import { toast } from "sonner";
 import { FaSpinner as SpinnerIcon } from "react-icons/fa";
-import { MdClose as CloseIcon } from "react-icons/md";
 import clsx from "clsx";
 import { erc20ABI, erc721ABI, useChainId } from "wagmi";
+import { MdCheck as CheckIcon, MdClose as CloseIcon } from "react-icons/md";
 import {
   prepareWriteContract,
   waitForTransaction,
   writeContract,
 } from "@wagmi/core";
-import Button from "@/components/ui/Button";
 import { airdropContractAddress } from "@/components/airdropContractAddress";
 import { abi } from "@/components/abi";
 import { shortenAddress } from "@/components/utils";
 
-const RecipientsTable = ({ data, decimals, isERC721 }) => (
+const RecipientsTable = ({ data, decimals, isERC721, onExclude }) => (
   <table className="w-full">
     <thead>
       <tr className="border-b-2 border-neutral-700">
+        <th className="bg-white text-grey capitalize p-2 sticky top-0 text-left">
+          <span />
+        </th>
         <th className="bg-white text-grey capitalize p-2 sticky top-0 text-left">
           Recipient
         </th>
@@ -29,8 +31,31 @@ const RecipientsTable = ({ data, decimals, isERC721 }) => (
       </tr>
     </thead>
     <tbody className="overflow-auto">
-      {data.map(({ address, amount }, index) => (
-        <tr key={address + index}>
+      {data.map(({ address, amount, excluded }, index) => (
+        <tr
+          key={`${address}_${index}_${excluded}`}
+          className={clsx({
+            "opacity-50 duration-300 ease-in": excluded,
+          })}
+        >
+          <td className="capitalize bg-transparent text-black bg-white p-2 border-t-2 border-neutral-700 text-left">
+            <button
+              type="button"
+              className={clsx({
+                "text-primary": !excluded,
+                "text-grey": excluded,
+              })}
+              onClick={() => {
+                onExclude(index);
+              }}
+            >
+              {!excluded ? (
+                <CheckIcon className="text-xl" />
+              ) : (
+                <CloseIcon className="text-xl" />
+              )}
+            </button>
+          </td>
           <td className="capitalize bg-transparent text-black bg-white p-2 border-t-2 border-neutral-700 text-left">
             <span className="hidden md:flex">{address}</span>
             <span className="flex md:hidden">{shortenAddress(address, 6)}</span>
@@ -58,8 +83,13 @@ const useTokenDrop = ({ contractAddress, recipients, token }) => {
   const chainId = useChainId();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const recipientAddresses = recipients?.map(({ address }) => address);
-  const recipientAmounts = recipients?.map(({ amount }) => amount);
+  const recipientAddresses = recipients
+    ?.filter(({ excluded }) => !excluded)
+    .map(({ address }) => address);
+
+  const recipientAmounts = recipients
+    ?.filter(({ excluded }) => !excluded)
+    .map(({ amount }) => amount);
 
   const requiredAllowance = useMemo(
     () =>
@@ -185,6 +215,13 @@ const AirdropModal = ({
 }) => {
   const [isShowingCongrats, setShowingCongrats] = useState(false);
 
+  const [editableRecipients, setEditableRecipients] = useState(
+    recipients.map((recipient) => ({
+      ...recipient,
+      excluded: false,
+    }))
+  );
+
   useEffect(() => {
     window.document.body.style.overflow = "hidden";
     return () => {
@@ -221,7 +258,7 @@ const AirdropModal = ({
     actions,
   } = useTokenDrop({
     contractAddress,
-    recipients,
+    recipients: editableRecipients,
     token,
   });
 
@@ -240,7 +277,7 @@ const AirdropModal = ({
     return remainingBalance
       ? formatUnits(remainingBalance, isERC721 ? 0 : decimals || 18)
       : "0";
-  }, [isERC721, balance, requiredAllowance, recipients.length]);
+  }, [isERC721, balance, requiredAllowance, editableRecipients.length]);
 
   const onHandleAirdrop = async () => {
     try {
@@ -264,6 +301,22 @@ const AirdropModal = ({
       toast.error(e.message);
     }
   };
+
+  const onHandleExcludeRecipient = (index) => {
+    const currentExclusion = editableRecipients[index].excluded;
+    setEditableRecipients((prev) => {
+      prev.splice(index, 1, {
+        ...prev[index],
+        excluded: !currentExclusion,
+      });
+      return [...prev];
+    });
+  };
+
+  const totalRecipients = editableRecipients?.reduce(
+    (acc, item) => (item.excluded ? 0 : 1) + acc,
+    0
+  );
 
   return (
     <div className="flex items-center justify-center fixed top-0 left-0 w-full h-[100dvh] z-[10000]">
@@ -314,7 +367,8 @@ const AirdropModal = ({
                 style={{ height: "calc(50vh - 5em)" }}
               >
                 <RecipientsTable
-                  data={recipients}
+                  data={editableRecipients}
+                  onExclude={onHandleExcludeRecipient}
                   symbol={symbol}
                   decimals={decimals}
                   isERC721={isERC721}
@@ -325,6 +379,11 @@ const AirdropModal = ({
                   title="Beginning balance"
                   value={formattedBalance}
                   symbol={symbol}
+                />
+                <AirdropDetail
+                  title="Recipient(s)"
+                  value={totalRecipients}
+                  symbol="addresses"
                 />
                 <AirdropDetail
                   title="Total to send"
@@ -359,7 +418,7 @@ const AirdropModal = ({
                       {(() => {
                         if (isERC721) {
                           return hasApprovals ? (
-                            <span>{`Send ${recipients.length} ${symbol}`}</span>
+                            <span>{`Send ${editableRecipients.length} ${symbol}`}</span>
                           ) : (
                             <span>{`Set Approval for ${symbol}`}</span>
                           );
