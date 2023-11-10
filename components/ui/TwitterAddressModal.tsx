@@ -89,6 +89,7 @@ const TwitterAddressModal = ({
   data,
   onClose,
   onSetExclusions,
+  matchTotal,
 }) => {
   useEffect(() => {
     window.document.body.style.overflow = "hidden";
@@ -114,7 +115,9 @@ const TwitterAddressModal = ({
       <div className="flex flex-col w-11/12 md:w-3/4 mx-auto bg-white text-black rounded-md border-[2px] border-grey/[.3] z-[2] p-6">
         <header className="flex flex-row items-center justify-between">
           <div className="flex flex-row space-x-2 items-center">
-            <h1 className="text-2xl">Twitter Matches ({data.length})</h1>
+            <h1 className="text-2xl">
+              Twitter Matches ({data.length} / {matchTotal})
+            </h1>
             {!isEqual(exclusions, DEFAULT_TWITTER_EXCLUSIONS) && (
               <button
                 type="button"

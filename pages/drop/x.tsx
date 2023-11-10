@@ -213,6 +213,7 @@ const TwitterDrop = () => {
           exclusions={exclusions}
           onSetExclusions={setExclusions}
           data={filteredSummary}
+          matchTotal={summary?.length}
           onApplyExclusion={onApplyExclusion}
           onClose={() => {
             setIsShowingAddresses(false);
