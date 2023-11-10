@@ -25,7 +25,9 @@ const deriveTweetUrl = (username, id) =>
 
 const deriveSharedTweet = ({ token, recipients, isNativeToken, tweetId }) => {
   console.log(token, recipients, isNativeToken, tweetId);
-  return `https://twitter.com/intent/tweet?text=asd&via=gasliteGG&in_reply_to=${tweetId}`;
+  return `https://twitter.com/intent/tweet?text=You%20were%20airdropped! ${recipients
+    .map(({ user }) => `@${user.username}`)
+    .join(" ")}&via=gasliteGG&in_reply_to=${tweetId}`;
 };
 
 const useOwnershipData = ({ address, chainId }) => {
@@ -270,6 +272,11 @@ const TwitterDrop = () => {
       <div className="flex flex-col h-full w-full">
         <div className="flex flex-col justify-center w-full space-y-2">
           <PageTitle title="Enter X Post" />
+          <div className="flex flex-row items-center">
+            <span className="text-xs">
+              The airdrop data updates every 15 minutes.
+            </span>
+          </div>
           <Input
             value={tweetUrl}
             onChange={(value) => {
@@ -305,11 +312,6 @@ const TwitterDrop = () => {
               </span>
             </div>
           )}
-          <div className="flex flex-row items-center">
-            <span className="text-xs">
-              The post airdrop data updates every 15 minutes.
-            </span>
-          </div>
           {error && (
             <div className="flex flex-row items-center py-1">
               <p className="text-black bg-critical bg-opacity-50 border border-critical p-4 rounded-md">

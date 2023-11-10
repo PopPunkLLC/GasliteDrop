@@ -140,7 +140,7 @@ const tweet = async (req, res) => {
 
     try {
       if (data) {
-        return res.json(JSON.parse(data));
+        return res.json(data);
       }
     } catch (e) {
       console.error(e);

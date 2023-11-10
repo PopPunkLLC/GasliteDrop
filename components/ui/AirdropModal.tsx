@@ -328,7 +328,7 @@ const AirdropModal = ({
           <div className="flex w-full h-full items-center justify-center">
             <SpinnerIcon className="animate-spin text-5xl text-primary" />
           </div>
-        ) : true ? (
+        ) : isShowingCongrats ? (
           <>
             <div className="mx-auto text-center my-8 space-y-4">
               <h1 className="text-3xl text-black font-bold text-primary">
