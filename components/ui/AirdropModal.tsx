@@ -212,6 +212,7 @@ const AirdropModal = ({
   recipients = [],
   token,
   isNative = false,
+  congratsRenderer = null,
   onClose,
 }) => {
   const [isShowingCongrats, setShowingCongrats] = useState(false);
@@ -327,13 +328,21 @@ const AirdropModal = ({
           <div className="flex w-full h-full items-center justify-center">
             <SpinnerIcon className="animate-spin text-5xl text-primary" />
           </div>
-        ) : isShowingCongrats ? (
+        ) : true ? (
           <>
             <div className="mx-auto text-center my-8 space-y-4">
               <h1 className="text-3xl text-black font-bold text-primary">
                 Congratulations!
               </h1>
-              <p className="text-xl">Your tokens have been sent</p>
+              {congratsRenderer ? (
+                congratsRenderer({
+                  token,
+                  recipients,
+                  isNative,
+                })
+              ) : (
+                <p className="text-xl">Your tokens have been sent</p>
+              )}
               <p className="pt-6 text-sm text-grey">
                 Thanks for using Gaslite Drop
               </p>

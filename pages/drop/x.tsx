@@ -23,6 +23,11 @@ import { DEFAULT_TWITTER_EXCLUSIONS } from "@/components/ui/constants";
 const deriveTweetUrl = (username, id) =>
   `https://twitter.com/${username}/status/${id}`;
 
+const deriveSharedTweet = ({ token, recipients, isNativeToken, tweetId }) => {
+  console.log(token, recipients, isNativeToken, tweetId);
+  return `https://twitter.com/intent/tweet?text=asd&via=gasliteGG&in_reply_to=${tweetId}`;
+};
+
 const useOwnershipData = ({ address, chainId }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [owners, setOwners] = useState(null);
@@ -240,6 +245,26 @@ const TwitterDrop = () => {
           onClose={() => {
             setAirdrop(null);
           }}
+          congratsRenderer={({ token, isNativeToken }) => {
+            return (
+              <div className="flex flex-col space-y-2">
+                <p>You airdropped {filteredSummary.length} addresses</p>
+                <a
+                  className="text-xl text-primary underline"
+                  href={deriveSharedTweet({
+                    token,
+                    recipients: filteredSummary,
+                    isNativeToken,
+                    tweetId,
+                  })}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Share on X
+                </a>
+              </div>
+            );
+          }}
         />
       )}
       <div className="flex flex-col h-full w-full">
@@ -280,6 +305,11 @@ const TwitterDrop = () => {
               </span>
             </div>
           )}
+          <div className="flex flex-row items-center">
+            <span className="text-xs">
+              The post airdrop data updates every 15 minutes.
+            </span>
+          </div>
           {error && (
             <div className="flex flex-row items-center py-1">
               <p className="text-black bg-critical bg-opacity-50 border border-critical p-4 rounded-md">
@@ -367,9 +397,9 @@ const TwitterDrop = () => {
                   )}
                 </div>
                 <textarea
-                  value={addresses?.join(
-                    `,${airdropValue ? `${airdropValue},` : ""}\n`
-                  )}
+                  value={addresses
+                    ?.map((addr) => `${addr}, ${airdropValue || ""}`)
+                    .join("\n")}
                   className="w-full min-h-[200px] max-h-[400px] p-3 text-black border-black border-2 rounded-md"
                   readOnly
                 />
