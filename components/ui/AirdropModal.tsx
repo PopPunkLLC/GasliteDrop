@@ -211,6 +211,7 @@ const AirdropModal = ({
   contractAddress = null, // Native tx if null
   recipients = [],
   token,
+  isNative = false,
   onClose,
 }) => {
   const [isShowingCongrats, setShowingCongrats] = useState(false);
@@ -422,7 +423,7 @@ const AirdropModal = ({
                           ) : (
                             <span>{`Set Approval for ${symbol}`}</span>
                           );
-                        } else if (symbol === "ETH") {
+                        } else if (isNative) {
                           return (
                             <span>{`Send ${formattedTotal} ${symbol}`}</span>
                           );
