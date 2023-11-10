@@ -1,8 +1,8 @@
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useNetwork } from 'wagmi';
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useAccount, useNetwork } from "wagmi";
 import {
   mainnet,
   arbitrum,
@@ -11,14 +11,14 @@ import {
   sepolia,
   // bsc,
   base,
-} from '@wagmi/chains';
-import { airdropContractAddress } from '../airdropContractAddress';
+} from "@wagmi/chains";
+import { airdropContractAddress } from "../airdropContractAddress";
 
 export default function Navbar() {
   const { isConnected } = useAccount();
   const { chain } = useNetwork();
 
-  const chainName = chain?.name?.toUpperCase().replace(' ', '_') ?? 'ETHEREUM';
+  const chainName = chain?.name?.toUpperCase().replace(" ", "_") ?? "ETHEREUM";
 
   const getBlockExplorer = (chainName: string) => {
     const explorers: any = {
@@ -35,7 +35,7 @@ export default function Navbar() {
   };
 
   const getContractReaderURL = (chainName: string) => {
-    const base = 'https://contractreader.io/contract';
+    const base = "https://contractreader.io/contract";
 
     const explorers: any = {
       ETHEREUM: `${base}/mainnet/${airdropContractAddress}`,
@@ -53,44 +53,40 @@ export default function Navbar() {
   const explorerURL = `${getBlockExplorer(chainName)}`;
   const contractReaderURL = `${getContractReaderURL(chainName)}`;
 
-  const size = '20';
+  const size = "20";
 
   return (
-    <div className="flex flex-row justify-between w-9/12 mx-auto mb-4 mt-[4px]">
-      <div /> {/* For spacing */}
-      <div className="flex flex-row items-center mt-4">
-        <Link
-          href={contractReaderURL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hidden md:block"
-        >
-          <Image
-            src={`/contractreader-logo.svg`}
-            alt="ContractReader.io Logo"
-            className="w-7 h-7 mr-4"
-            width={size}
-            height={size}
-          />
-        </Link>
+    <header className="flex flex-row min-h-[80px] items-center justify-center w-full mx-auto mb-4 mt-[4px] space-x-2">
+      <Link
+        href={contractReaderURL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hidden md:block flex-shrink-0"
+      >
+        <Image
+          src={`/contractreader-logo.svg`}
+          alt="ContractReader.io Logo"
+          className="w-7 h-7 mr-4"
+          width={size}
+          height={size}
+        />
+      </Link>
 
-        <Link
-          href={explorerURL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hidden md:block"
-        >
-          <Image
-            src={`/etherscan-logo.svg`}
-            alt="Etherscan Logo"
-            className="w-7 h-7 mr-4"
-            width={size}
-            height={size}
-          />
-        </Link>
-
-        {isConnected && <ConnectButton label="Connect Your Wallet" />}
-      </div>
-    </div>
+      <Link
+        href={explorerURL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hidden md:block flex-shrink-0"
+      >
+        <Image
+          src={`/etherscan-logo.svg`}
+          alt="Etherscan Logo"
+          className="w-7 h-7 mr-4"
+          width={size}
+          height={size}
+        />
+      </Link>
+      {isConnected && <ConnectButton label="Connect Your Wallet" />}
+    </header>
   );
 }
