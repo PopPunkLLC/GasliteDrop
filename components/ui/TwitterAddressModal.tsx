@@ -1,18 +1,21 @@
 import React, { useEffect } from "react";
 import { useKeyboardEvent } from "@react-hookz/web";
+import { isEqual } from "lodash";
 import { MdCheck as CheckIcon, MdClose as CloseIcon } from "react-icons/md";
-import { shortenAddress } from "@/components/utils";
+import { FaTimesCircle as ClearIcon } from "react-icons/fa";
+import clsx from "clsx";
 import { formatDistance } from "date-fns";
 import {
   AGE_OPTIONS,
   DEFAULT_TWITTER_EXCLUSIONS,
 } from "@/components/ui/constants";
-import { isEqual } from "lodash";
+import { shortenAddress } from "@/components/utils";
+import { chains } from "@/wagmi";
 
 const TwitterTable = ({ data }) => (
   <table className="w-full">
     <thead>
-      <tr className="border-b-2 border-neutral-700">
+      <tr className="border-b-2 border-neutral-700 z-[2]">
         <th className="hidden lg:table-cell bg-white text-grey capitalize p-2 sticky top-0 w-[60px]">
           <span />
         </th>
@@ -108,7 +111,7 @@ const TwitterAddressModal = ({
   return (
     <div className="flex items-center justify-center fixed top-0 left-0 w-full h-[100dvh] z-[10000]">
       <div className="absolute top-0 left-0 h-full w-full z-[1] bg-white text-black bg-opacity-90" />
-      <div className="flex flex-col w-4/5 md:w-3/4 mx-auto bg-white text-black rounded-md border-[2px] border-grey/[.3] z-[2] p-6">
+      <div className="flex flex-col w-11/12 md:w-3/4 mx-auto bg-white text-black rounded-md border-[2px] border-grey/[.3] z-[2] p-6">
         <header className="flex flex-row items-center justify-between">
           <div className="flex flex-row space-x-2 items-center">
             <h1 className="text-2xl">Twitter Matches ({data.length})</h1>
@@ -197,7 +200,7 @@ const TwitterAddressModal = ({
               <input
                 id="minFollowerCount"
                 name="minFollowerCount"
-                className="max-w-[80px] border border-2 pl-2 h-[32px] text-sm rounded-md"
+                className="max-w-[120px] border border-2 pl-2 h-[32px] text-sm rounded-md"
                 type="number"
                 value={exclusions?.minFollowerCount}
                 step={1}
@@ -218,7 +221,7 @@ const TwitterAddressModal = ({
               <input
                 id="minTweetCount"
                 name="minTweetCount"
-                className="max-w-[80px] border border-2 pl-2 h-[32px] text-sm rounded-md"
+                className="max-w-[120px] border border-2 pl-2 h-[32px] text-sm rounded-md"
                 type="number"
                 value={exclusions?.minTweetCount}
                 step={1}
@@ -239,7 +242,7 @@ const TwitterAddressModal = ({
               <select
                 id="minAccountAge"
                 name="minAccountAge"
-                className="max-w-[100px] border border-2 h-[32px] text-sm rounded-md"
+                className="max-w-[120px] border border-2 h-[32px] text-sm rounded-md"
                 value={exclusions?.minAccountAge}
                 onChange={(e) => {
                   onSetExclusions((prev) => ({
@@ -257,6 +260,71 @@ const TwitterAddressModal = ({
             </label>
           </div>
         </div>
+        <div className="flex flex-col">
+          <span className="text-[10px] text-grey uppercase font-semibold">
+            Token Gate
+          </span>
+          <div className="flex flex-row items-center space-x-1">
+            <select
+              id="tokenChainId"
+              name="tokenChainId"
+              className="max-w-[120px] border border-2 h-[32px] text-sm rounded-md"
+              value={exclusions?.token?.chainId}
+              onChange={(e) => {
+                onSetExclusions((prev) => ({
+                  ...prev,
+                  token: {
+                    ...prev.token,
+                    chainId: e.target.value,
+                  },
+                }));
+              }}
+            >
+              <option value="">Select chain</option>
+              {chains.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.name}
+                </option>
+              ))}
+            </select>
+            <div className="flex items-center w-full max-w-[400px] bg-[#ffffff] text-base-100 text-base rounded-md space-x-1 border border-2">
+              <input
+                id="tokenContractAddress"
+                name="tokenContractAddress"
+                placeholder="0x"
+                className="w-full p-2 h-[32px] text-sm rounded-md focus:outline-none"
+                value={exclusions?.token?.address}
+                onChange={(e) => {
+                  const address = e.target.value;
+                  if (address.length > 42) return;
+                  onSetExclusions((prev) => ({
+                    ...prev,
+                    token: {
+                      ...prev.token,
+                      address,
+                    },
+                  }));
+                }}
+              />
+              {exclusions.token?.address && (
+                <button
+                  className="flex items-center justify-center h-[32px] w-[30px] pr-2"
+                  onClick={() => {
+                    onSetExclusions((prev) => ({
+                      ...prev,
+                      token: {
+                        ...prev.token,
+                        address: "",
+                      },
+                    }));
+                  }}
+                >
+                  <ClearIcon />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
         <div className="flex flex-col w-full pt-4 space-y-4">
           <div
             className="w-full border-2 border-neutral-700 bg-transparent rounded-md border-separate border-spacing-0 overflow-auto"
@@ -264,6 +332,19 @@ const TwitterAddressModal = ({
           >
             <TwitterTable data={data} />
           </div>
+          <button
+            type="button"
+            className={clsx(
+              "py-4 rounded-md w-full my-4 text-white bg-markPink-900 font-bold tracking-wide",
+              {
+                "opacity-30 cursor-not-allowed": data.length === 0,
+              }
+            )}
+            onClick={onClose}
+            disabled={data.length === 0}
+          >
+            Continue
+          </button>
         </div>
       </div>
     </div>

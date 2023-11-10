@@ -1,9 +1,9 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { useAccount, useNetwork, useBalance } from "wagmi";
 import { toast } from "sonner";
 import { isAddress } from "viem";
-import { MdWarning as WarningIcon } from "react-icons/md";
+import { MdWarning as WarningIcon, MdEdit as EditIcon } from "react-icons/md";
 import clsx from "clsx";
 import AirdropModal from "@/components/ui/AirdropModal";
 import PageTitle from "@/components/ui/PageTitle";
@@ -23,13 +23,50 @@ import { DEFAULT_TWITTER_EXCLUSIONS } from "@/components/ui/constants";
 const deriveTweetUrl = (username, id) =>
   `https://twitter.com/${username}/status/${id}`;
 
+const useOwnershipData = ({ address, chainId }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [owners, setOwners] = useState(null);
+
+  useEffect(() => {
+    (async function () {
+      if (address && chainId) {
+        try {
+          setIsLoading(true);
+          const { addresses } = await fetch(
+            `/api/ownership?contractAddress=${address}&chainId=${chainId}`
+          ).then((res) => res.json());
+          setOwners(addresses);
+        } catch (e) {
+          console.error(e);
+          setOwners({});
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    })();
+  }, [address, chainId]);
+
+  return {
+    isLoading,
+    owners,
+  };
+};
+
 const TwitterDrop = () => {
   const { chain } = useNetwork();
   const { address } = useAccount();
   const { nativeToken } = useNetworkNativeToken();
   const router = useRouter();
   const [airdrop, setAirdrop] = useState(null);
-  const [exclusions, setExclusions] = useState(DEFAULT_TWITTER_EXCLUSIONS);
+
+  const [exclusions, setExclusions] = useState({
+    ...DEFAULT_TWITTER_EXCLUSIONS,
+    token: {
+      address: null,
+      chainId: chain?.id,
+    },
+  });
+
   const [isShowingAddresses, setIsShowingAddresses] = useState(false);
 
   const { id = "", dropAddress = "" } = router.query;
@@ -101,6 +138,8 @@ const TwitterDrop = () => {
     contractAddress: dropAddress,
   });
 
+  const { owners } = useOwnershipData(exclusions?.token);
+
   const handleTwitterAirdrop = useCallback(
     ({
       data: addresses,
@@ -121,12 +160,18 @@ const TwitterDrop = () => {
     [JSON.stringify(tweet)]
   );
 
-  const onApplyExclusion = (change) => {
+  const onApplyExclusion = async (change) => {
     setExclusions((prev) => ({
       ...prev,
       ...change,
     }));
   };
+
+  useEffect(() => {
+    if (exclusions?.token.address) {
+      // fetch
+    }
+  }, [JSON.stringify(exclusions?.token), chain?.id]);
 
   const filteredSummary = useMemo(() => {
     return summary?.reduce((acc, item) => {
@@ -144,14 +189,20 @@ const TwitterDrop = () => {
         // No description
         (exclusions.hasDescription && !item?.user?.description) ||
         // No location
-        (exclusions.hasLocation && !item?.user?.location)
+        (exclusions.hasLocation && !item?.user?.location) ||
+        // No ownership
+        (exclusions?.token?.address && !owners?.[item.addr?.toLowerCase()])
       ) {
         return acc;
       }
       acc.push(item);
       return acc;
     }, []);
-  }, [JSON.stringify(exclusions), JSON.stringify(summary)]);
+  }, [
+    JSON.stringify(exclusions),
+    JSON.stringify(summary),
+    JSON.stringify(owners),
+  ]);
 
   const addresses = filteredSummary?.map((item) => item.addr);
 
@@ -239,18 +290,18 @@ const TwitterDrop = () => {
           <div className="flex flex-row items-center gap-2">
             {id && addresses?.length > 0 && (
               <>
-                <Pill>ERC20</Pill>
-                <Pill variant="primary">
+                <Pill>
                   <button
                     type="button"
-                    className="underline"
+                    className="hover:text-primary underline flex flex-row items-center space-x-2"
                     onClick={() => {
                       setIsShowingAddresses(true);
                     }}
                   >
-                    {`Including ${addresses?.length || 0} of ${
+                    <span>{`Filtered to ${addresses?.length || 0} of ${
                       summary.length
-                    } addresses found`}
+                    } addresses found`}</span>
+                    <EditIcon />
                   </button>
                 </Pill>
               </>

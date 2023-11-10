@@ -28,4 +28,8 @@ export const DEFAULT_TWITTER_EXCLUSIONS = {
   hasProfile: true,
   hasDescription: false,
   hasLocation: false,
+  token: {
+    address: "",
+    chainId: "",
+  },
 };
