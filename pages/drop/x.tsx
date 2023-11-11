@@ -174,12 +174,6 @@ const TwitterDrop = () => {
     }));
   };
 
-  useEffect(() => {
-    if (exclusions?.token.address) {
-      // fetch
-    }
-  }, [JSON.stringify(exclusions?.token), chain?.id]);
-
   const filteredSummary = useMemo(() => {
     return summary?.reduce((acc, item) => {
       if (

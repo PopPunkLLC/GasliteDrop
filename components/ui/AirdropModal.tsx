@@ -182,23 +182,27 @@ const useTokenDrop = ({ contractAddress, recipients, token }) => {
           await waitForTransaction({
             hash,
           });
+          return true;
         } catch (e) {
           console.error(e);
+          return false;
         } finally {
           setIsProcessing(false);
         }
       },
       onAirdrop: async () => {
         try {
-          if (!airdropConfig) return;
+          if (!airdropConfig) return false;
           setIsProcessing(true);
           const { request } = await prepareWriteContract(airdropConfig);
           const { hash } = await writeContract(request);
           await waitForTransaction({
             hash,
           });
+          return true;
         } catch (e) {
           console.error(e);
+          return false;
         } finally {
           setIsProcessing(false);
         }
