@@ -11,7 +11,6 @@
     "pretty": "npx prettier . --write"
   },
   "dependencies": {
-    "@adraffy/ens-normalize": "^1.10.0",
     "@iconify/react": "^4.1.0",
     "@rainbow-me/rainbowkit": "^1.0.6",
     "@react-hookz/web": "^23.1.0",
