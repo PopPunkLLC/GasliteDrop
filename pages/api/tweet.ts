@@ -26,7 +26,6 @@ const fetchAllConversationTweets = async (client: Client, tweetId) => {
 
   let { data, meta, includes } = await client.tweets.tweetsRecentSearch({
     query: `conversation_id:${tweetId} is:reply`,
-    max_results: 50,
     expansions: ["author_id"],
     "user.fields": [
       "location",
@@ -46,7 +45,6 @@ const fetchAllConversationTweets = async (client: Client, tweetId) => {
   while (nextToken) {
     ({ data, meta, includes } = await client.tweets.tweetsRecentSearch({
       query: `conversation_id:${tweetId} is:reply`,
-      max_results: 50,
       expansions: ["author_id"],
       "user.fields": [
         "location",
@@ -142,6 +140,15 @@ const tweet = async (req, res) => {
 
     const twitterClient = new Client(process.env.BEARER_TOKEN);
 
+    const tweet = await fetchTweetById(twitterClient, id);
+
+    if (tweet?.data?.public_metrics?.reply_count > 500) {
+      return res.status(422).json({
+        error: `Too many tweet replies (${tweet?.data?.public_metrics?.reply_count}). This free service cannot handle large reply tweets at the moment.`,
+        addresses: [],
+      });
+    }
+
     // Check cache
     const cacheKey = `tweet:${id}`;
 
@@ -158,8 +165,6 @@ const tweet = async (req, res) => {
     }
 
     console.log("No cache found for", id);
-
-    const tweet = await fetchTweetById(twitterClient, id);
 
     const { users, tweets } = await fetchAllConversationTweets(
       twitterClient,
