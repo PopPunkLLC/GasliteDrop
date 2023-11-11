@@ -217,6 +217,7 @@ const TwitterDrop = () => {
     <>
       {isShowingAddresses && (
         <TwitterAddressModal
+          tweetId={id}
           exclusions={exclusions}
           onSetExclusions={setExclusions}
           data={filteredSummary}
