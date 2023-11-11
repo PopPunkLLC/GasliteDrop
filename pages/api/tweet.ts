@@ -26,6 +26,7 @@ const fetchAllConversationTweets = async (client: Client, tweetId) => {
 
   let { data, meta, includes } = await client.tweets.tweetsRecentSearch({
     query: `conversation_id:${tweetId} is:reply`,
+    max_results: 50,
     expansions: ["author_id"],
     "user.fields": [
       "location",
@@ -45,6 +46,7 @@ const fetchAllConversationTweets = async (client: Client, tweetId) => {
   while (nextToken) {
     ({ data, meta, includes } = await client.tweets.tweetsRecentSearch({
       query: `conversation_id:${tweetId} is:reply`,
+      max_results: 50,
       expansions: ["author_id"],
       "user.fields": [
         "location",
@@ -63,13 +65,9 @@ const fetchAllConversationTweets = async (client: Client, tweetId) => {
       ...keyBy(includes?.users, "id"),
     };
 
-    allTweets = allTweets.concat(data);
+    nextToken = meta?.next_token;
 
-    if (meta?.next_token !== nextToken) {
-      nextToken = meta?.next_token;
-    } else {
-      nextToken = null;
-    }
+    allTweets = allTweets.concat(data);
   }
   // Get single unique tweet
   return {
@@ -151,6 +149,7 @@ const tweet = async (req, res) => {
 
     try {
       if (data) {
+        console.log("Cache found for", id);
         return res.json(data);
       }
     } catch (e) {
