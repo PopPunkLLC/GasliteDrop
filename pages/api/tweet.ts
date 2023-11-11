@@ -6,8 +6,7 @@ import { uniq, keyBy, values, zipObject } from "lodash";
 import { kv } from "@vercel/kv";
 
 const ADDRESS_REGEX = /(0x){1}[0-9a-fA-F]{40}/;
-const ENS_REGEX =
-  /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.eth\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/;
+const ENS_REGEX = /[-a-zA-Z0-9@:%._\+~#=$]{1,256}\.eth/;
 
 const fetchTweetById = async (client: Client, tweetId) =>
   client.tweets.findTweetById(tweetId, {
@@ -27,6 +26,7 @@ const fetchAllConversationTweets = async (client: Client, tweetId) => {
 
   let { data, meta, includes } = await client.tweets.tweetsRecentSearch({
     query: `conversation_id:${tweetId} is:reply`,
+    max_results: 50,
     expansions: ["author_id"],
     "user.fields": [
       "location",
@@ -46,6 +46,7 @@ const fetchAllConversationTweets = async (client: Client, tweetId) => {
   while (nextToken) {
     ({ data, meta, includes } = await client.tweets.tweetsRecentSearch({
       query: `conversation_id:${tweetId} is:reply`,
+      max_results: 50,
       expansions: ["author_id"],
       "user.fields": [
         "location",
@@ -64,13 +65,9 @@ const fetchAllConversationTweets = async (client: Client, tweetId) => {
       ...keyBy(includes?.users, "id"),
     };
 
-    allTweets = allTweets.concat(data);
+    nextToken = meta?.next_token;
 
-    if (meta?.next_token !== nextToken) {
-      nextToken = meta?.next_token;
-    } else {
-      nextToken = null;
-    }
+    allTweets = allTweets.concat(data);
   }
   // Get single unique tweet
   return {
@@ -114,11 +111,16 @@ const extractUniqueAddresses = async (tweets, users) => {
     .map(({ ens }) => ens);
 
   const resolvedAddresses = await Promise.all(
-    ensAddresses.map((ens) =>
-      client.getEnsAddress({
-        name: normalize(ens),
-      })
-    )
+    ensAddresses.map(async (ens) => {
+      try {
+        return await client.getEnsAddress({
+          name: normalize(ens),
+        });
+      } catch (e) {
+        console.log(e);
+        return "";
+      }
+    })
   );
 
   const ensLookup = zipObject(ensAddresses, resolvedAddresses);
@@ -147,6 +149,7 @@ const tweet = async (req, res) => {
 
     try {
       if (data) {
+        console.log("Cache found for", id);
         return res.json(data);
       }
     } catch (e) {
@@ -209,6 +212,7 @@ const tweet = async (req, res) => {
 
     return res.json(cacheable);
   } catch (e) {
+    console.error(e);
     return res.status(500).json({
       error:
         e?.status === 429
