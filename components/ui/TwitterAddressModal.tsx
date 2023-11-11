@@ -85,6 +85,7 @@ const TwitterTable = ({ data }) => (
 );
 
 const TwitterAddressModal = ({
+  tweetId,
   exclusions,
   data,
   onClose,
@@ -335,19 +336,74 @@ const TwitterAddressModal = ({
           >
             <TwitterTable data={data} />
           </div>
-          <button
-            type="button"
-            className={clsx(
-              "py-4 rounded-md w-full my-4 text-white bg-markPink-900 font-bold tracking-wide",
-              {
-                "opacity-30 cursor-not-allowed": data.length === 0,
-              }
-            )}
-            onClick={onClose}
-            disabled={data.length === 0}
-          >
-            Continue
-          </button>
+          <div className="flex flex-row space-x-2 items-center">
+            <button
+              type="button"
+              className={clsx(
+                "py-4 rounded-md w-full my-4 text-white bg-markPink-900 font-bold tracking-wide",
+                {
+                  "opacity-30 cursor-not-allowed": data.length === 0,
+                }
+              )}
+              onClick={onClose}
+              disabled={data.length === 0}
+            >
+              Continue
+            </button>
+            <button
+              type="button"
+              className={clsx(
+                "py-4 rounded-md w-full my-4 text-white bg-blue-400 font-bold tracking-wide",
+                {
+                  "opacity-30 cursor-not-allowed": data.length === 0,
+                }
+              )}
+              onClick={() => {
+                // Headers
+                let csvData = `${[
+                  "Name",
+                  "Username",
+                  "Description",
+                  "Address",
+                  "ENS",
+                  "Image",
+                  "Followers",
+                  "Following",
+                  "Likes",
+                  "Tweets",
+                ].join(",")}\n`;
+
+                // Body
+                csvData += data?.map(
+                  (item) =>
+                    `${[
+                      item?.user?.name,
+                      item?.user?.username,
+                      item?.user?.description,
+                      item?.addr,
+                      item?.ens,
+                      item?.user?.profile_image_url,
+                      item?.user?.public_metrics?.followers_count,
+                      item?.user?.public_metrics?.following_count,
+                      item?.user?.public_metrics?.like_count,
+                      item?.user?.public_metrics?.tweet_count,
+                    ].join(",")}\n`
+                );
+
+                const blob = new Blob([csvData], {
+                  type: "text/csv;charset=utf-8,",
+                });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.setAttribute("href", url);
+                a.setAttribute("download", `${tweetId}_airdrop.csv`);
+                a.click();
+              }}
+              disabled={data.length === 0}
+            >
+              Download CSV
+            </button>
+          </div>
         </div>
       </div>
     </div>

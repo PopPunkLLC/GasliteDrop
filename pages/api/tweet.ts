@@ -2,8 +2,7 @@ import { Client } from "twitter-api-sdk";
 import { createPublicClient, http } from "viem";
 import { mainnet } from "viem/chains";
 import { normalize } from "viem/ens";
-import { uniq } from "@/components/utils";
-import { keyBy, values, zipObject } from "lodash";
+import { uniq, keyBy, values, zipObject } from "lodash";
 import { kv } from "@vercel/kv";
 
 const ADDRESS_REGEX = /(0x){1}[0-9a-fA-F]{40}/;
@@ -85,11 +84,19 @@ const client = createPublicClient({
   transport: http(process.env.MAINNET_PROVIDER_URL),
 });
 
-const extractUniqueAddresses = async (tweets) => {
+const extractUniqueAddresses = async (tweets, users) => {
   const addresses = tweets
     .map((result) => {
-      const [ens] = result?.text?.match(ENS_REGEX) || [];
+      let [ens] = result?.text?.match(ENS_REGEX) || [];
+
       const [addr] = result?.text?.toLowerCase()?.match(ADDRESS_REGEX) || [];
+      const user = users[result?.author_id];
+
+      // Check username for ens
+      if (user && !ens && !addr) {
+        [ens] = user?.name?.match(ENS_REGEX) || [];
+      }
+
       return {
         ens,
         addr,
@@ -156,15 +163,30 @@ const tweet = async (req, res) => {
       id
     );
 
-    const { matches } = await extractUniqueAddresses(tweets);
+    const { matches } = await extractUniqueAddresses(tweets, users);
 
-    const summary = matches
-      .map(({ addr, ens, context }) => ({
-        user: users[context?.author_id] || null,
-        addr: addr,
-        ens,
-      }))
-      .filter(({ addr }) => !!addr);
+    const dupeLookup = {};
+    const dupes = [];
+
+    const summary = matches.reduce((acc, { addr, ens, context }) => {
+      if (!addr) return acc;
+
+      if (!dupeLookup[addr]) {
+        acc.push({
+          user: users[context?.author_id] || null,
+          addr: addr,
+          ens,
+        });
+        dupeLookup[addr] = true;
+      } else {
+        dupes.push({
+          user: users[context?.author_id] || null,
+          addr: addr,
+          ens,
+        });
+      }
+      return acc;
+    }, []);
 
     const cacheable = {
       tweet: {
@@ -176,6 +198,7 @@ const tweet = async (req, res) => {
       addresses: summary.map(({ addr }) => addr),
       summary,
       tweetCount: tweets?.length,
+      dupes,
     };
 
     // Cache for 900 seconds, ~15 minutes
