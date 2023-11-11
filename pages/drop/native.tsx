@@ -46,7 +46,7 @@ const NativeTokenDrop = () => {
         <div className="flex flex-col justify-center w-full space-y-3">
           <PageTitle title={`Airdrop ${nativeToken}`} />
           <div className="flex flex-row items-center gap-2">
-            <Pill>ETH</Pill>
+            <Pill>{nativeToken}</Pill>
             <Pill variant="primary">
               {`You have ${balance?.formatted} ${nativeToken}`}
             </Pill>
