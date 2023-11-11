@@ -7,7 +7,7 @@ import { kv } from "@vercel/kv";
 
 const ADDRESS_REGEX = /(0x){1}[0-9a-fA-F]{40}/;
 const ENS_REGEX =
-  /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.eth\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/;
+  /[-a-zA-Z0-9@:%._\+~#=$]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/;
 
 const fetchTweetById = async (client: Client, tweetId) =>
   client.tweets.findTweetById(tweetId, {
@@ -113,6 +113,10 @@ const extractUniqueAddresses = async (tweets, users) => {
     .filter((item) => item.ens && item.ens.indexOf("t.co/") === -1) // Remove null && twitter shortlinks
     .map(({ ens }) => ens);
 
+  console.log({
+    ensAddresses,
+  });
+
   const resolvedAddresses = await Promise.all(
     ensAddresses.map((ens) =>
       client.getEnsAddress({
@@ -209,6 +213,7 @@ const tweet = async (req, res) => {
 
     return res.json(cacheable);
   } catch (e) {
+    console.error(e);
     return res.status(500).json({
       error:
         e?.status === 429
