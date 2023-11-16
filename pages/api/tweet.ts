@@ -27,6 +27,7 @@ const fetchAllConversationTweets = async (client: Client, tweetId) => {
   let { data, meta, includes } = await client.tweets.tweetsRecentSearch({
     query: `conversation_id:${tweetId} is:reply`,
     expansions: ["author_id"],
+    max_results: 100,
     "user.fields": [
       "location",
       "username",
@@ -38,6 +39,8 @@ const fetchAllConversationTweets = async (client: Client, tweetId) => {
     ],
   });
 
+  allTweets = allTweets.concat(data);
+
   let userLookup = keyBy(includes?.users, "id");
 
   let nextToken = meta?.next_token;
@@ -45,6 +48,7 @@ const fetchAllConversationTweets = async (client: Client, tweetId) => {
   while (nextToken) {
     ({ data, meta, includes } = await client.tweets.tweetsRecentSearch({
       query: `conversation_id:${tweetId} is:reply`,
+      max_results: 100,
       expansions: ["author_id"],
       "user.fields": [
         "location",
