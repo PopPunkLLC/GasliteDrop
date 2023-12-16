@@ -117,10 +117,23 @@ const EnterRecipients = ({ standard, symbol, decimals, onSubmit }) => {
       return setRecipients([]);
     }
 
+    let csvText;
+
     // Process csv data back into string and validate lines
-    const csvText = data
-      .map(([address, value]) => `${address}${value ? `, ${value}` : ""}`)
-      .join("\n");
+    if (standard === "ERC1155") {
+      csvText = data
+        .map(
+          ([address, tokenId, amount]) =>
+            `${address}${tokenId ? `, ${tokenId}` : ""}${
+              amount ? `, ${amount}` : ""
+            }`
+        )
+        .join("\n");
+    } else {
+      csvText = data
+        .map(([address, amount]) => `${address}${amount ? `, ${amount}` : ""}`)
+        .join("\n");
+    }
 
     // Set text if they want to manually edit the csv
     setTextValue(csvText);

@@ -45,7 +45,7 @@ export default function CSVUpload<T = string[]>({
       onUploadAccepted={(data: ParseResult<T>) => {
         const trimmedData = trimAmounts(data);
 
-        if (standard === "ERC20") {
+        if (standard === "ERC20" || standard === "ERC1155") {
           if (data.errors.length > 0) {
             console.error(data.errors);
             setFileCompleted("error");
@@ -56,8 +56,6 @@ export default function CSVUpload<T = string[]>({
             setFileCompleted("success");
             return onUpload(trimmedData);
           }
-        } else if (standard === "ERC1155") {
-          // TODO
         } else if (standard === "ERC721") {
           const duplicateIDs = findDuplicateTokenIds(
             trimmedData.data as [string, string][]
