@@ -4,18 +4,47 @@ import { formatUnits } from "viem";
 import { toast } from "sonner";
 import { FaSpinner as SpinnerIcon } from "react-icons/fa";
 import clsx from "clsx";
-import { erc20ABI, erc721ABI, useChainId } from "wagmi";
+import { erc20ABI, erc721ABI, useAccount, useChainId, useNetwork } from "wagmi";
+import {
+  keyBy,
+  zipObject,
+  map as mapObject,
+  groupBy,
+  reduce as reduceObject,
+} from "lodash";
 import { MdCheck as CheckIcon, MdClose as CloseIcon } from "react-icons/md";
 import {
   prepareWriteContract,
+  readContracts,
   waitForTransaction,
   writeContract,
 } from "@wagmi/core";
-import { airdropContractAddress } from "@/components/airdropContractAddress";
-import { abi } from "@/components/abi";
 import { shortenAddress } from "@/components/utils";
+import { abi, airdrop1155Abi, erc1155ABI } from "@/lib/abis";
+import {
+  airdropContractAddress,
+  airdrop1155ContractAddress,
+} from "@/lib/contracts";
+import { arbitrum, base, optimism, polygon, sepolia } from "@wagmi/chains";
 
-const RecipientsTable = ({ data, decimals, isERC721, onExclude }) => (
+const deriveExternalLink = (txHash, chainId) => {
+  switch (chainId) {
+    case sepolia.id:
+      return `https://sepolia.etherscan.io/tx/${txHash}`;
+    case optimism.id:
+      return `https://optimistic.etherscan.io/tx/${txHash}`;
+    case arbitrum.id:
+      return `https://arbiscan.io/tx/${txHash}`;
+    case polygon.id:
+      return `https://polygonscan.com/tx/${txHash}`;
+    case base.id:
+      return `https://basescan.org/tx/${txHash}`;
+    default:
+      return `https://etherscan.io/tx/${txHash}`;
+  }
+};
+
+const RecipientsTable = ({ data, decimals, standard, onExclude }) => (
   <table className="w-full">
     <thead>
       <tr className="border-b-2 border-neutral-700">
@@ -26,12 +55,17 @@ const RecipientsTable = ({ data, decimals, isERC721, onExclude }) => (
           Recipient
         </th>
         <th className="bg-white text-grey capitalize p-2 sticky top-0 text-right">
-          {isERC721 ? "Token ID" : "Amount"}
+          {standard === "ERC20" ? "Amount" : "Token ID"}
         </th>
+        {standard === "ERC1155" && (
+          <th className="bg-white text-grey capitalize p-2 sticky top-0 text-right">
+            Amount
+          </th>
+        )}
       </tr>
     </thead>
     <tbody className="overflow-auto">
-      {data.map(({ address, amount, excluded }, index) => (
+      {data.map(({ address, amount, excluded, tokenId }, index) => (
         <tr
           key={`${address}_${index}_${excluded}`}
           className={clsx({
@@ -61,8 +95,20 @@ const RecipientsTable = ({ data, decimals, isERC721, onExclude }) => (
             <span className="flex md:hidden">{shortenAddress(address, 6)}</span>
           </td>
           <td className="capitalize bg-transparent text-black bg-white p-2 border-t-2 border-neutral-700 text-right">
-            {formatUnits(BigInt(amount?.toString()), isERC721 ? 0 : decimals)}
+            {formatUnits(
+              BigInt(
+                standard === "ERC1155"
+                  ? tokenId?.toString()
+                  : amount?.toString()
+              ),
+              standard === "ERC20" ? decimals : 0
+            )}
           </td>
+          {standard === "ERC1155" && (
+            <td className="capitalize bg-transparent text-black bg-white p-2 border-t-2 border-neutral-700 text-right">
+              {formatUnits(BigInt(amount?.toString()), 0)}
+            </td>
+          )}
         </tr>
       ))}
     </tbody>
@@ -81,34 +127,43 @@ const AirdropDetail = ({ title, value, symbol, critical = false }) => (
 const useTokenDrop = ({ contractAddress, recipients, token }) => {
   const isNativeToken = !contractAddress;
   const chainId = useChainId();
+  const { address } = useAccount();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isCheckingBalances, setIsCheckingBalance] = useState(false);
+  const [insufficientFunds, setInsufficientFunds] = useState(false);
 
-  const recipientAddresses = recipients
-    ?.filter(({ excluded }) => !excluded)
-    .map(({ address }) => address);
+  const validRecipients = recipients?.filter(({ excluded }) => !excluded);
 
-  const recipientAmounts = recipients
-    ?.filter(({ excluded }) => !excluded)
-    .map(({ amount }) => amount);
+  const recipientAddresses = validRecipients.map(({ address }) => address);
 
-  const requiredAllowance = useMemo(
-    () =>
-      recipientAmounts.reduce(
-        (acc, amount) => acc + (token?.isERC721 ? 1n : amount),
-        0n
-      ),
-    [JSON.stringify(recipientAmounts)]
-  );
+  const recipientAmounts = validRecipients.map(({ amount }) => amount);
+
+  const requiredAllowance = useMemo(() => {
+    return (
+      // ERC721/ERC1155 just use setApproval for all check
+      token?.standard !== "ERC20" ||
+      recipientAmounts.reduce((acc, amount) => acc + amount, 0n)
+    );
+  }, [JSON.stringify(recipientAmounts)]);
 
   const approvalConfig = useMemo(() => {
     if (!contractAddress) return null; // No approvals required for native token
     // ERC721
-    if (token.isERC721) {
+    if (token.standard === "ERC721") {
       return {
         address: contractAddress,
         abi: erc721ABI,
         functionName: "setApprovalForAll",
         args: [airdropContractAddress, true],
+        enabled: Boolean(contractAddress),
+        chainId,
+      };
+    } else if (token.standard === "ERC1155") {
+      return {
+        address: contractAddress,
+        abi: erc1155ABI,
+        functionName: "setApprovalForAll",
+        args: [airdrop1155ContractAddress, true],
         enabled: Boolean(contractAddress),
         chainId,
       };
@@ -126,14 +181,48 @@ const useTokenDrop = ({ contractAddress, recipients, token }) => {
 
   const airdropConfig = useMemo(() => {
     if (contractAddress) {
-      // ERC721
-      if (token.isERC721) {
+      if (token.standard === "ERC721") {
         return {
           address: airdropContractAddress,
           abi,
           functionName: "airdropERC721",
           args: [contractAddress, recipientAddresses, recipientAmounts],
-          enabled: recipients?.length > 0,
+          enabled: validRecipients?.length > 0,
+          chainId,
+        };
+      } else if (token.standard === "ERC1155") {
+        const tokenGroups = groupBy(validRecipients, "tokenId");
+
+        // Generate tuples of tuples
+        const airdropTokens = reduceObject(
+          tokenGroups,
+          (acc, tokenRecipients, tokenId) => {
+            const amountGroups = groupBy(tokenRecipients, "amount");
+            acc.push([
+              BigInt(tokenId),
+              reduceObject(
+                amountGroups,
+                (accInner, amountRecipients, amount) => {
+                  accInner.push([
+                    BigInt(amount),
+                    mapObject(amountRecipients, "address"),
+                  ]);
+                  return accInner;
+                },
+                []
+              ),
+            ]);
+            return acc;
+          },
+          []
+        );
+
+        return {
+          address: airdrop1155ContractAddress,
+          abi: airdrop1155Abi,
+          functionName: "airdropERC1155",
+          args: [contractAddress, airdropTokens],
+          enabled: validRecipients?.length > 0,
           chainId,
         };
       }
@@ -148,7 +237,7 @@ const useTokenDrop = ({ contractAddress, recipients, token }) => {
           recipientAmounts,
           requiredAllowance,
         ],
-        enabled: recipients?.length > 0,
+        enabled: validRecipients?.length > 0,
         chainId,
       };
     }
@@ -158,20 +247,77 @@ const useTokenDrop = ({ contractAddress, recipients, token }) => {
       abi,
       functionName: "airdropETH",
       args: [recipientAddresses, recipientAmounts],
-      enabled: recipients?.length > 0,
+      enabled: validRecipients?.length > 0,
       chainId,
       value: requiredAllowance,
     };
-  }, [contractAddress, JSON.stringify(recipients), JSON.stringify(token)]);
+  }, [contractAddress, JSON.stringify(validRecipients), JSON.stringify(token)]);
+
+  // Update enough balance
+  useEffect(() => {
+    if (token?.standard !== "ERC1155") {
+      // TODO: Probably should check ownership of each token id for ERC721 in the future and not just balance
+      return setInsufficientFunds(token?.balance < requiredAllowance);
+    }
+    // Dynamically check balances for ERC1155
+    (async function () {
+      setIsCheckingBalance(true);
+      try {
+        // For each distinct token id check balance
+        const distinctTokenIds = Object.keys(keyBy(validRecipients, "tokenId"));
+
+        // Pull balances on a per token basis
+        const tokenBalances = await readContracts({
+          contracts: distinctTokenIds.map((tokenId) => ({
+            address: contractAddress,
+            abi: erc1155ABI,
+            functionName: "balanceOf",
+            args: [address!, tokenId],
+            enabled: address && contractAddress,
+            chainId,
+          })),
+        })
+          .then((data) => data.map(({ result }) => result))
+          .then((balances) => zipObject(distinctTokenIds, balances));
+
+        // Get total quantity required for each token id
+        const requiredBalances = validRecipients?.reduce((acc, recipient) => {
+          if (!acc[recipient?.tokenId]) {
+            acc[recipient?.tokenId] = 0n;
+          }
+          acc[recipient?.tokenId] += recipient.amount;
+          return acc;
+        }, {});
+
+        setInsufficientFunds(
+          mapObject(
+            requiredBalances,
+            (total, tokenId) => total <= tokenBalances[tokenId]
+          ).some((item) => !item)
+        );
+      } catch (e) {
+        console.error(e);
+        toast.error("Error while checking balances for ERC1155 tokens");
+      } finally {
+        setIsCheckingBalance(false);
+      }
+    })();
+  }, [
+    JSON.stringify(validRecipients),
+    token?.balance,
+    requiredAllowance,
+    token?.standard,
+  ]);
 
   return {
     isProcessing,
     requiredAllowance,
-    insufficientFunds: token?.balance < requiredAllowance,
+    isCheckingBalances,
+    insufficientFunds,
     hasApprovals:
       isNativeToken ||
-      (token?.isERC721 && token?.isApprovedForAll) ||
-      (!token?.isERC721 && requiredAllowance <= token?.allowance),
+      (token?.standard !== "ERC20" && token?.isApprovedForAll) ||
+      (token?.standard === "ERC20" && requiredAllowance <= token?.allowance),
     actions: {
       onApprove: async () => {
         try {
@@ -199,7 +345,7 @@ const useTokenDrop = ({ contractAddress, recipients, token }) => {
           await waitForTransaction({
             hash,
           });
-          return true;
+          return hash;
         } catch (e) {
           console.error(e);
           return false;
@@ -219,7 +365,8 @@ const AirdropModal = ({
   congratsRenderer = null,
   onClose,
 }) => {
-  const [isShowingCongrats, setShowingCongrats] = useState(false);
+  const { chain } = useNetwork();
+  const [airdropHash, setAirdropHash] = useState(null);
 
   const [editableRecipients, setEditableRecipients] = useState(
     recipients.map((recipient) => ({
@@ -248,7 +395,7 @@ const AirdropModal = ({
 
   const {
     isLoading,
-    isERC721,
+    standard,
     symbol,
     decimals,
     balance,
@@ -271,19 +418,22 @@ const AirdropModal = ({
   const formattedTotal = useMemo(
     () =>
       requiredAllowance
-        ? isERC721
+        ? standard === "ERC721"
           ? String(requiredAllowance)
           : formatUnits(requiredAllowance, decimals || 18)
         : "0",
-    [requiredAllowance, decimals, isERC721]
+    [requiredAllowance, decimals, standard]
   );
 
   const formattedRemaining = useMemo(() => {
     const remainingBalance = balance - requiredAllowance;
     return remainingBalance
-      ? formatUnits(remainingBalance, isERC721 ? 0 : decimals || 18)
+      ? formatUnits(
+          remainingBalance,
+          standard === "ERC721" ? 0 : decimals || 18
+        )
       : "0";
-  }, [isERC721, balance, requiredAllowance, editableRecipients.length]);
+  }, [standard, balance, requiredAllowance, editableRecipients.length]);
 
   const onHandleAirdrop = async () => {
     try {
@@ -298,10 +448,10 @@ const AirdropModal = ({
         toast.success("Token approved for airdrop");
       }
 
-      const airdrop = await actions.onAirdrop();
-      if (!airdrop) throw new Error("Airdrop unsuccessful");
+      const airdropHash = await actions.onAirdrop();
+      if (!airdropHash) throw new Error("Airdrop unsuccessful");
 
-      setShowingCongrats(true);
+      setAirdropHash(airdropHash);
     } catch (e) {
       console.error(e);
       toast.error(e.message);
@@ -332,7 +482,7 @@ const AirdropModal = ({
           <div className="flex w-full h-full items-center justify-center">
             <SpinnerIcon className="animate-spin text-5xl text-primary" />
           </div>
-        ) : isShowingCongrats ? (
+        ) : airdropHash ? (
           <>
             <div className="mx-auto text-center my-8 space-y-4">
               <h1 className="text-3xl text-black font-bold text-primary">
@@ -345,7 +495,17 @@ const AirdropModal = ({
                   isNative,
                 })
               ) : (
-                <p className="text-xl">Your tokens have been sent</p>
+                <div className="flex flex-col">
+                  <p className="text-xl">Your tokens have been sent</p>
+                  <a
+                    className="underline text-primary my-2"
+                    href={deriveExternalLink(airdropHash, chain.id)}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View transaction
+                  </a>
+                </div>
               )}
               <p className="pt-6 text-sm text-grey">
                 Thanks for using Gaslite Drop
@@ -365,7 +525,10 @@ const AirdropModal = ({
           <>
             <header className="flex flex-row items-center justify-between">
               <h1 className="text-2xl">
-                Confirm Recipients and {isERC721 ? "Token IDs" : "Amounts"}
+                Confirm Recipients and{" "}
+                {standard === "ERC20"
+                  ? "Amounts"
+                  : `Token IDs ${standard === "ERC1155" ? "+ amounts" : ""}`}
               </h1>
               <button onClick={onClose}>
                 <CloseIcon className="text-2xl text-grey" />
@@ -385,32 +548,42 @@ const AirdropModal = ({
                   onExclude={onHandleExcludeRecipient}
                   symbol={symbol}
                   decimals={decimals}
-                  isERC721={isERC721}
+                  standard={standard}
                 />
               </div>
-              <div className="flex flex-col gap-2 mt-4 text">
-                <AirdropDetail
-                  title="Beginning balance"
-                  value={formattedBalance}
-                  symbol={symbol}
-                />
-                <AirdropDetail
-                  title="Recipient(s)"
-                  value={totalRecipients}
-                  symbol="addresses"
-                />
-                <AirdropDetail
-                  title="Total to send"
-                  value={formattedTotal}
-                  symbol={symbol}
-                />
-                <AirdropDetail
-                  title="Remaining"
-                  value={formattedRemaining}
-                  symbol={symbol}
-                  critical={insufficientFunds}
-                />
-              </div>
+              {token?.standard === "ERC1155" ? (
+                <div className="flex flex-col gap-2 mt-4 text">
+                  <AirdropDetail
+                    title="Recipient(s)"
+                    value={totalRecipients}
+                    symbol="addresses"
+                  />
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2 mt-4 text">
+                  <AirdropDetail
+                    title="Beginning balance"
+                    value={formattedBalance}
+                    symbol={symbol}
+                  />
+                  <AirdropDetail
+                    title="Recipient(s)"
+                    value={totalRecipients}
+                    symbol="addresses"
+                  />
+                  <AirdropDetail
+                    title="Total to send"
+                    value={formattedTotal}
+                    symbol={symbol}
+                  />
+                  <AirdropDetail
+                    title="Remaining"
+                    value={formattedRemaining}
+                    symbol={symbol}
+                    critical={insufficientFunds}
+                  />
+                </div>
+              )}
               <button
                 className={clsx(
                   "flex flex-row items-center justify-center bg-markPink-700 font-medium spacing-wide py-4 rounded-md text-white backdrop-blur w-full capitalize",
@@ -430,11 +603,17 @@ const AirdropModal = ({
                   <div className="flex flex-row items-center font-bold tracking-wide">
                     <div className="mx-auto flex flex-row items-center ml-2">
                       {(() => {
-                        if (isERC721) {
+                        if (standard === "ERC721") {
                           return hasApprovals ? (
-                            <span>{`Send ${editableRecipients.length} ${symbol}`}</span>
+                            <span>{`Send ${symbol}`}</span>
                           ) : (
                             <span>{`Set Approval for ${symbol}`}</span>
+                          );
+                        } else if (standard === "ERC1155") {
+                          return hasApprovals ? (
+                            <span>{`Send tokens`}</span>
+                          ) : (
+                            <span>{`Set Approvals`}</span>
                           );
                         } else if (isNative) {
                           return (

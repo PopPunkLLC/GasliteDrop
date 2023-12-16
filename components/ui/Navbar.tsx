@@ -12,7 +12,10 @@ import {
   // bsc,
   base,
 } from "@wagmi/chains";
-import { airdropContractAddress } from "../airdropContractAddress";
+import {
+  airdropContractAddress,
+  airdrop1155ContractAddress,
+} from "@/lib/contracts";
 
 export default function Navbar() {
   const { isConnected } = useAccount();
@@ -57,6 +60,7 @@ export default function Navbar() {
 
   return (
     <header className="flex flex-row min-h-[80px] items-center justify-center w-full mx-auto mb-4 mt-[4px] space-x-2">
+      {/* TODO: add dropdown to show both contract addresses */}
       <Link
         href={contractReaderURL}
         target="_blank"

@@ -48,6 +48,32 @@ export const erc721RecipientsParser = () =>
     )
   );
 
+export const erc1155RecipientsParser = () =>
+  z.preprocess(
+    (res) => {
+      let arr = res as [string, string, string][];
+
+      const firstAddress = arr.at(0)?.at(0);
+
+      if (!firstAddress || !isAddress(firstAddress)) {
+        arr = arr.slice(1);
+      }
+
+      return arr.map(([address, tokenId, amount]) => ({
+        address: address as Address,
+        tokenId,
+        amount,
+      }));
+    },
+    z.array(
+      z.object({
+        address: z.coerce.string().startsWith("0x").length(42),
+        tokenId: z.string().transform((s) => BigInt(s)),
+        amount: z.string().transform((s) => BigInt(s)),
+      })
+    )
+  );
+
 // Used for ERC-721
 export function findDuplicateTokenIds(data: [string, string][]): number[] {
   const idMap = new Map<number, number>(); // Keeps track of how many times each ID appears

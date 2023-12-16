@@ -32,17 +32,10 @@ const TokenDrop = () => {
     );
   }
 
-  const {
-    symbol,
-    balance,
-    decimals,
-    isERC721,
-    standard,
-    allowance,
-    formattedBalance,
-  } = token ?? {};
+  const { symbol, balance, decimals, standard, allowance, formattedBalance } =
+    token ?? {};
 
-  const hasBalance = balance > 0n;
+  const hasBalance = standard === "ERC1155" || balance > 0n; // We check ERC1155 balance more dynamically as we need token id references
 
   return (
     <>
@@ -58,14 +51,18 @@ const TokenDrop = () => {
       )}
       <div className="flex flex-col h-full w-full">
         <div className="flex flex-col justify-center w-full space-y-3">
-          <PageTitle title={`${standard} Airdrop (${symbol})`} />
+          <PageTitle
+            title={`${standard} Airdrop ${symbol ? `(${symbol})` : ""}`}
+          />
           <ExternalContractLink address={contractAddress} chainId={chain?.id} />
           <div className="flex flex-row items-center gap-2">
             <Pill>{standard}</Pill>
-            <Pill variant="primary">
-              {`You have ${formattedBalance} ${symbol}`}
-            </Pill>
-            {!isERC721 && hasBalance && (
+            {symbol && (
+              <Pill variant="primary">
+                {`You have ${formattedBalance} ${symbol}`}
+              </Pill>
+            )}
+            {standard === "ERC20" && hasBalance && symbol && (
               <Pill>
                 {`Your allowance is ${formatUnits(
                   BigInt(allowance?.toString()),
@@ -77,7 +74,7 @@ const TokenDrop = () => {
           {hasBalance ? (
             <div className="flex flex-col space-y-1">
               <EnterRecipients
-                isERC721={isERC721}
+                standard={standard}
                 symbol={symbol}
                 decimals={decimals}
                 onSubmit={(recipients) => {

@@ -29,7 +29,7 @@ const NativeTokenDrop = () => {
           recipients={airdrop}
           token={{
             isLoading: false,
-            isERC721: false,
+            standard: "ERC20",
             symbol: nativeToken,
             decimals: 18,
             balance: balance?.value,
@@ -54,7 +54,7 @@ const NativeTokenDrop = () => {
           {hasBalance ? (
             <div className="flex flex-col space-y-1">
               <EnterRecipients
-                isERC721={false}
+                standard="ERC20"
                 symbol={nativeToken}
                 decimals={18}
                 onSubmit={(recipients) => {

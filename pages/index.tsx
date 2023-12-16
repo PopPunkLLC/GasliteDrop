@@ -13,7 +13,7 @@ const Home = () => {
   const [contractAddress, setContractAddress] = useState<Address>(null);
 
   // Fetch token information
-  const { isLoading, isValid, ...tokenData } = useTokenData({
+  const { isLoading, isValid } = useTokenData({
     contractAddress,
   });
 
@@ -28,7 +28,7 @@ const Home = () => {
     <div className="flex flex-col">
       <p className="mb-2 text-2xl">{`Let's get started!`}</p>
       <p className="text-base mb-6 text-grey">
-        Enter an ERC-20 or ERC-721 contract address:
+        Enter an ERC-20, ERC-721, ERC1155 contract address:
       </p>
       <Input
         value={contractAddress}
@@ -49,7 +49,7 @@ const Home = () => {
           or airdrop to X post
         </Link>
       </div>
-      {contractAddress && !isValid && (
+      {contractAddress && !isValid && !isLoading && (
         <p className=" mt-6 text-black bg-critical bg-opacity-50 border border-critical p-4 rounded-md">
           {`Oops! That doesn't look like a valid contract address on
                   ${chain?.name}. Double check the address and please try again.`}

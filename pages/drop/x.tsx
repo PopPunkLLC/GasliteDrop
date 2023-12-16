@@ -231,7 +231,7 @@ const TwitterDrop = () => {
               ? token
               : {
                   isLoading: false,
-                  isERC721: false,
+                  standard: "ERC20",
                   symbol: nativeToken,
                   decimals: 18,
                   balance: balance?.value,
