@@ -26,6 +26,7 @@ import {
   airdrop1155ContractAddress,
 } from "@/lib/contracts";
 import { arbitrum, base, optimism, polygon, sepolia } from "@wagmi/chains";
+import { baseSepolia } from "viem/chains";
 
 const deriveExternalLink = (txHash, chainId) => {
   switch (chainId) {
@@ -39,6 +40,8 @@ const deriveExternalLink = (txHash, chainId) => {
       return `https://polygonscan.com/tx/${txHash}`;
     case base.id:
       return `https://basescan.org/tx/${txHash}`;
+    case baseSepolia.id:
+      return `${baseSepolia.blockExplorers.default.url}/tx/${txHash}`;
     default:
       return `https://etherscan.io/tx/${txHash}`;
   }
@@ -154,7 +157,7 @@ const useTokenDrop = ({ contractAddress, recipients, token }) => {
         address: contractAddress,
         abi: erc721ABI,
         functionName: "setApprovalForAll",
-        args: [airdropContractAddress, true],
+        args: [airdropContractAddress?.[chainId], true],
         enabled: Boolean(contractAddress),
         chainId,
       };
@@ -163,7 +166,7 @@ const useTokenDrop = ({ contractAddress, recipients, token }) => {
         address: contractAddress,
         abi: erc1155ABI,
         functionName: "setApprovalForAll",
-        args: [airdrop1155ContractAddress, true],
+        args: [airdrop1155ContractAddress?.[chainId], true],
         enabled: Boolean(contractAddress),
         chainId,
       };
@@ -173,7 +176,7 @@ const useTokenDrop = ({ contractAddress, recipients, token }) => {
       address: contractAddress,
       abi: erc20ABI,
       functionName: "approve",
-      args: [airdropContractAddress, requiredAllowance],
+      args: [airdropContractAddress?.[chainId], requiredAllowance],
       enabled: Boolean(contractAddress),
       chainId,
     };
@@ -183,7 +186,7 @@ const useTokenDrop = ({ contractAddress, recipients, token }) => {
     if (contractAddress) {
       if (token.standard === "ERC721") {
         return {
-          address: airdropContractAddress,
+          address: airdropContractAddress?.[chainId],
           abi,
           functionName: "airdropERC721",
           args: [contractAddress, recipientAddresses, recipientAmounts],
@@ -218,7 +221,7 @@ const useTokenDrop = ({ contractAddress, recipients, token }) => {
         );
 
         return {
-          address: airdrop1155ContractAddress,
+          address: airdrop1155ContractAddress?.[chainId],
           abi: airdrop1155Abi,
           functionName: "airdropERC1155",
           args: [contractAddress, airdropTokens],
@@ -228,7 +231,7 @@ const useTokenDrop = ({ contractAddress, recipients, token }) => {
       }
       // ERC20
       return {
-        address: airdropContractAddress,
+        address: airdropContractAddress?.[chainId],
         abi,
         functionName: "airdropERC20",
         args: [
@@ -243,7 +246,7 @@ const useTokenDrop = ({ contractAddress, recipients, token }) => {
     }
     // Native
     return {
-      address: airdropContractAddress,
+      address: airdropContractAddress?.[chainId],
       abi,
       functionName: "airdropETH",
       args: [recipientAddresses, recipientAmounts],

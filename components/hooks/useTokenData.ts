@@ -86,7 +86,7 @@ const useTokenData = ({ contractAddress }) => {
               address: contractAddress,
               abi: erc721ABI,
               functionName: "isApprovedForAll",
-              args: [address!, airdropContractAddress], // the signing wallet, the airdrop contract (operator)
+              args: [address!, airdropContractAddress?.[chainId]], // the signing wallet, the airdrop contract (operator)
               enabled: address && contractAddress,
               chainId,
             },
@@ -118,7 +118,7 @@ const useTokenData = ({ contractAddress }) => {
               address: contractAddress,
               abi: erc1155ABI,
               functionName: "isApprovedForAll",
-              args: [address!, airdrop1155ContractAddress], // the signing wallet, the airdrop contract (operator)
+              args: [address!, airdrop1155ContractAddress?.[chainId]], // the signing wallet, the airdrop contract (operator)
               enabled: address && contractAddress,
               chainId,
             },
@@ -181,7 +181,7 @@ const useTokenData = ({ contractAddress }) => {
           address: contractAddress,
           abi: erc20ABI,
           functionName: "allowance",
-          args: [address!, airdropContractAddress],
+          args: [address!, airdropContractAddress?.[chainId]],
           enabled: isValid,
           chainId,
         });

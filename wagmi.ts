@@ -11,6 +11,7 @@ import {
 import { configureChains, createConfig, WebSocketPublicClient } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { publicProvider } from "wagmi/providers/public";
+import { baseSepolia } from "viem/chains";
 
 // NOTE: On the providers, there are some issues with Sepolia currently and Wagmi.
 // The setup below will work. Adding an Alchemy provider, for example, will break things
@@ -23,7 +24,8 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
     optimism,
     polygon,
     base,
-    // bsc,
+    // bsc
+    baseSepolia,
     ...(process.env.NODE_ENV === "development" ? [sepolia] : []),
   ],
   [
