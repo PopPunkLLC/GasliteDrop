@@ -33,7 +33,7 @@ export const airdropContractAddress = {
   [optimism.id]: "0x09350F89e2D7B6e96bA730783c2d76137B045FEF",
   [polygon.id]: "0x09350F89e2D7B6e96bA730783c2d76137B045FEF",
   [base.id]: "0x09350F89e2D7B6e96bA730783c2d76137B045FEF",
-  [baseSepolia.id]: "0x09350F89e2D7B6e96bA730783c2d76137B045FEF",
+  [baseSepolia.id]: "0xf6c3555139aeA30f4a2be73EBC46ba64BAB8ac12",
 };
 
 export const airdrop1155ContractAddress = {
