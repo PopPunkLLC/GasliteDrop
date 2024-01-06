@@ -12,7 +12,8 @@ import {
   // bsc,
   base,
 } from "@wagmi/chains";
-import { airdropContractAddress } from "../airdropContractAddress";
+import { airdropContractAddress } from "@/lib/contracts";
+import { baseSepolia } from "viem/chains";
 
 export default function Navbar() {
   const { isConnected } = useAccount();
@@ -22,13 +23,28 @@ export default function Navbar() {
 
   const getBlockExplorer = (chainName: string) => {
     const explorers: any = {
-      ETHEREUM: `${mainnet.blockExplorers.etherscan.url}/address/${airdropContractAddress}`,
-      ARBITRUM: `${arbitrum.blockExplorers.etherscan.url}/address/${airdropContractAddress}`,
-      MATIC: `${polygon.blockExplorers.etherscan.url}/address/${airdropContractAddress}`,
-      OPTIMISM: `${optimism.blockExplorers.etherscan.url}/address/${airdropContractAddress}`,
-      SEPOLIA: `${sepolia.blockExplorers.etherscan.url}/address/${airdropContractAddress}`,
-      // BSC: `${bsc.blockExplorers.etherscan.url}/address/${airdropContractAddress}`,
-      BASE: `${base.blockExplorers.etherscan.url}/address/${airdropContractAddress}`,
+      ETHEREUM: `${mainnet.blockExplorers.etherscan.url}/address/${
+        airdropContractAddress?.[chain?.id]
+      }`,
+      ARBITRUM: `${arbitrum.blockExplorers.etherscan.url}/address/${
+        airdropContractAddress?.[chain?.id]
+      }`,
+      MATIC: `${polygon.blockExplorers.etherscan.url}/address/${
+        airdropContractAddress?.[chain?.id]
+      }`,
+      OPTIMISM: `${optimism.blockExplorers.etherscan.url}/address/${
+        airdropContractAddress?.[chain?.id]
+      }`,
+      SEPOLIA: `${sepolia.blockExplorers.etherscan.url}/address/${
+        airdropContractAddress?.[chain?.id]
+      }`,
+      // BSC: `${bsc.blockExplorers.etherscan.url}/address/${airdropContractAddress?.[chain?.id]}`,
+      BASE: `${base.blockExplorers.etherscan.url}/address/${
+        airdropContractAddress?.[chain?.id]
+      }`,
+      BASE_SEPOLIA: `${baseSepolia.blockExplorers.default.url}/address/${
+        airdropContractAddress?.[chain?.id]
+      }`,
     };
 
     return explorers[chainName];
@@ -38,13 +54,14 @@ export default function Navbar() {
     const base = "https://contractreader.io/contract";
 
     const explorers: any = {
-      ETHEREUM: `${base}/mainnet/${airdropContractAddress}`,
-      ARBITRUM: `${base}/arbitrum/${airdropContractAddress}`,
-      MATIC: `${base}/polygon/${airdropContractAddress}`,
-      OPTIMISM: `${base}/optimism/${airdropContractAddress}`,
-      SEPOLIA: `${base}/sepolia/${airdropContractAddress}`,
-      // BSC: `${base}/bsc/${airdropContractAddress}`,
-      BASE: `${base}/base/${airdropContractAddress}`,
+      ETHEREUM: `${base}/mainnet/${airdropContractAddress?.[chain?.id]}`,
+      ARBITRUM: `${base}/arbitrum/${airdropContractAddress?.[chain?.id]}`,
+      MATIC: `${base}/polygon/${airdropContractAddress?.[chain?.id]}`,
+      OPTIMISM: `${base}/optimism/${airdropContractAddress?.[chain?.id]}`,
+      SEPOLIA: `${base}/sepolia/${airdropContractAddress?.[chain?.id]}`,
+      // BSC: `${base}/bsc/${airdropContractAddress?.[chain?.id]}`,
+      BASE: `${base}/base/${airdropContractAddress?.[chain?.id]}`,
+      BASE_SEPOLIA: `${base}/base/${airdropContractAddress?.[chain?.id]}`,
     };
 
     return explorers[chainName];
@@ -57,6 +74,7 @@ export default function Navbar() {
 
   return (
     <header className="flex flex-row min-h-[80px] items-center justify-center w-full mx-auto mb-4 mt-[4px] space-x-2">
+      {/* TODO: add dropdown to show both contract addresses */}
       <Link
         href={contractReaderURL}
         target="_blank"

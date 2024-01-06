@@ -2,6 +2,7 @@ import React from "react";
 import { FaExternalLinkAlt as ExternalLinkIcon } from "react-icons/fa";
 import { shortenAddress } from "@/components/utils";
 import { sepolia, optimism, arbitrum, polygon, base } from "@wagmi/chains";
+import { baseSepolia } from "viem/chains";
 
 const deriveExternalLink = (tokenAddress, chainId) => {
   switch (chainId) {
@@ -15,6 +16,8 @@ const deriveExternalLink = (tokenAddress, chainId) => {
       return `https://polygonscan.com/address/${tokenAddress}`;
     case base.id:
       return `https://basescan.org/address/${tokenAddress}`;
+    case baseSepolia.id:
+      return `${baseSepolia.blockExplorers.default.url}/address/${tokenAddress}`;
     default:
       return `https://etherscan.io/address/${tokenAddress}`;
   }

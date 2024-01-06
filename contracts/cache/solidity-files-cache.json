@@ -6,12 +6,14 @@
     "sources": "src",
     "tests": "test",
     "scripts": "script",
-    "libraries": ["lib"]
+    "libraries": [
+      "lib"
+    ]
   },
   "files": {
     "src/GasliteDrop.sol": {
-      "lastModificationDate": 1693444879184,
-      "contentHash": "26d58f993cc91d6dbd4b05fb90bf974a",
+      "lastModificationDate": 1694787972662,
+      "contentHash": "9e0f717276960de7303eef67f32efd4a",
       "sourceName": "src/GasliteDrop.sol",
       "solcConfig": {
         "settings": {
@@ -20,12 +22,15 @@
             "runs": 200
           },
           "metadata": {
+            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
           "outputSelection": {
             "*": {
-              "": ["ast"],
+              "": [
+                "ast"
+              ],
               "*": [
                 "abi",
                 "evm.bytecode",
@@ -43,7 +48,7 @@
       "versionRequirement": "=0.8.19",
       "artifacts": {
         "GasliteDrop": {
-          "0.8.19+commit.7dd6d404.Darwin.appleclang": "GasliteDrop.sol/GasliteDrop.json"
+          "0.8.19+commit.7dd6d404.Windows.msvc": "GasliteDrop.sol\\GasliteDrop.json"
         }
       }
     }

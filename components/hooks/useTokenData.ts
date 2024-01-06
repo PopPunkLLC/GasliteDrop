@@ -1,30 +1,15 @@
 import { useEffect, useState } from "react";
 import { erc20ABI, erc721ABI, useAccount, useChainId } from "wagmi";
 import { readContract, readContracts } from "@wagmi/core";
-import { airdropContractAddress } from "@/components/airdropContractAddress";
 import { formatUnits } from "viem";
+import {
+  airdropContractAddress,
+  airdrop1155ContractAddress,
+} from "@/lib/contracts";
+import { erc1155ABI, supportsInterfaceABI } from "@/lib/abis";
 
-const supportsInterfaceABI = [
-  {
-    inputs: [
-      {
-        internalType: "bytes4",
-        name: "interfaceId",
-        type: "bytes4",
-      },
-    ],
-    name: "supportsInterface",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-];
+const ERC1155InterfaceId: string = "0xd9b67a26";
+const ERC721InterfaceId: string = "0x80ac58cd";
 
 const useTokenData = ({ contractAddress }) => {
   const [token, setToken] = useState(null);
@@ -34,28 +19,45 @@ const useTokenData = ({ contractAddress }) => {
   const chainId = useChainId();
 
   const fetchTokenData = async () => {
-    let isERC721: boolean;
+    let tokenType = "ERC20";
 
     setIsLoading(true);
 
-    // Check for ERC721 supports interface
     try {
-      const supportsInterface = await readContract({
-        address: contractAddress,
-        abi: supportsInterfaceABI,
-        functionName: "supportsInterface",
-        args: ["0x80ac58cd"],
-        enabled: contractAddress,
-        chainId,
+      const [is721, is1155] = await readContracts({
+        contracts: [
+          // Check 721 support
+          {
+            address: contractAddress,
+            abi: supportsInterfaceABI,
+            functionName: "supportsInterface",
+            args: [ERC721InterfaceId],
+            enabled: contractAddress,
+            chainId,
+          },
+          // Check 1155 support
+          {
+            address: contractAddress,
+            abi: supportsInterfaceABI,
+            functionName: "supportsInterface",
+            args: [ERC1155InterfaceId],
+            enabled: contractAddress,
+            chainId,
+          },
+        ],
       });
-      isERC721 = Boolean(supportsInterface);
+
+      if (is721?.result) {
+        tokenType = "ERC721";
+      } else if (is1155?.result) {
+        tokenType = "ERC1155";
+      }
     } catch (e) {
       // console.error(e);
-      isERC721 = false;
     }
 
     try {
-      if (isERC721) {
+      if (tokenType === "ERC721") {
         const data = await readContracts({
           contracts: [
             {
@@ -84,7 +86,7 @@ const useTokenData = ({ contractAddress }) => {
               address: contractAddress,
               abi: erc721ABI,
               functionName: "isApprovedForAll",
-              args: [address!, airdropContractAddress], // the signing wallet, the airdrop contract (operator)
+              args: [address!, airdropContractAddress?.[chainId]], // the signing wallet, the airdrop contract (operator)
               enabled: address && contractAddress,
               chainId,
             },
@@ -104,11 +106,36 @@ const useTokenData = ({ contractAddress }) => {
             ? formatUnits(balance?.result, 0)
             : "0",
           isApprovedForAll: isApprovedForAll?.result,
-          isERC721: true,
           isValid,
           name: name?.result,
           standard: "ERC721",
           symbol: symbol?.result,
+        });
+      } else if (tokenType === "ERC1155") {
+        const data = await readContracts({
+          contracts: [
+            {
+              address: contractAddress,
+              abi: erc1155ABI,
+              functionName: "isApprovedForAll",
+              args: [address!, airdrop1155ContractAddress?.[chainId]], // the signing wallet, the airdrop contract (operator)
+              enabled: address && contractAddress,
+              chainId,
+            },
+          ],
+        });
+
+        const [isApprovedForAll] = data ?? [];
+
+        setToken({
+          contractAddress,
+          decimals: 0,
+          isApprovedForAll: isApprovedForAll?.result,
+          isValid: true,
+          standard: "ERC1155",
+          // Use contract metadata via `contractURI`? meh, non-standard
+          name: "",
+          symbol: "",
         });
       } else {
         const data = await readContracts({
@@ -154,7 +181,7 @@ const useTokenData = ({ contractAddress }) => {
           address: contractAddress,
           abi: erc20ABI,
           functionName: "allowance",
-          args: [address!, airdropContractAddress],
+          args: [address!, airdropContractAddress?.[chainId]],
           enabled: isValid,
           chainId,
         });
@@ -167,7 +194,6 @@ const useTokenData = ({ contractAddress }) => {
           formattedBalance: balance?.result
             ? formatUnits(balance?.result, decimals?.result || 18)
             : "0",
-          isERC721: false,
           isValid,
           name: name?.result,
           standard: "ERC20",

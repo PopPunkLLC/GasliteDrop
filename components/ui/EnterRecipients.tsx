@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import clsx from "clsx";
 import {
+  erc1155RecipientsParser,
   erc721RecipientsParser,
   recipientsParser,
 } from "@/components/types/parsers";
@@ -16,6 +17,10 @@ const erc20RecipientPlaceholder = `0x3a6372B2013f9876a84761187d933DEe0653E377, 4
 0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD 4.20
 0x1a0ad011913A150f69f6A19DF447A0CfD9551054=690000000000000`;
 
+const erc1155RecipientPlaceholder = `0x3a6372B2013f9876a84761187d933DEe0653E377, 0, 1
+0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD 69 1`;
+
+// Tuple
 const parseERC20Text = (text): [string, string][] => {
   const regex = /^0x[a-fA-F0-9]{40}(?= ?[^ ])([=,]?) *(\d*(\.\d*)?)$/;
   const lines = text.trim().split("\n");
@@ -32,6 +37,7 @@ const parseERC20Text = (text): [string, string][] => {
   }, []);
 };
 
+// Tuple
 const parseERC721Text = (text): [string, string][] => {
   const regex = /^0x[a-fA-F0-9]{40}[=,\s] *(\d+)$/;
   const lines = text.trim().split("\n");
@@ -45,18 +51,51 @@ const parseERC721Text = (text): [string, string][] => {
   }, []);
 };
 
-const EnterRecipients = ({ isERC721, symbol, decimals, onSubmit }) => {
+// Triplet
+const parseERC1155Text = (text): [string, string, string][] => {
+  const regex = /^0x[a-fA-F0-9]{40}[,\s] *(\d+)[,\s] *(\d+)$/;
+  const lines = text.trim().split("\n");
+  const validLines = lines.filter((line) => regex.test(line));
+  return validLines.reduce((acc, line) => {
+    let [, tokenId, value] = line.match(regex);
+    // Address is always the full 42 characters (0x plus 40 hex characters)
+    const address = line.slice(0, 42);
+    acc.push([address, tokenId, value]);
+    return acc;
+  }, []);
+};
+
+const standardToContent = {
+  ERC20: {
+    help: "Enter addresses and amounts. Accepts the following formats:",
+    placeholder: erc20RecipientPlaceholder,
+  },
+  ERC1155: {
+    help: "Enter addresses, token ID, and amount to send. Accepts the following formats:",
+    placeholder: erc1155RecipientPlaceholder,
+  },
+  ERC721: {
+    help: "Enter addresses and a token ID to send. Accepts the following formats:",
+    placeholder: erc721RecipientPlaceholder,
+  },
+};
+
+const EnterRecipients = ({ standard, symbol, decimals, onSubmit }) => {
   const [recipients, setRecipients] = useState([]);
   const [isCsvUpload, setCsvUpload] = useState(false);
   const [textValue, setTextValue] = useState<String>("");
 
   const parseText = useCallback(
     (text) => {
-      return !isERC721
-        ? recipientsParser(Number(decimals)).parse(parseERC20Text(text))
-        : erc721RecipientsParser().parse(parseERC721Text(text));
+      if (standard === "ERC20") {
+        return recipientsParser(Number(decimals)).parse(parseERC20Text(text));
+      } else if (standard === "ERC1155") {
+        return erc1155RecipientsParser().parse(parseERC1155Text(text));
+      } else if (standard === "ERC721") {
+        return erc721RecipientsParser().parse(parseERC721Text(text));
+      }
     },
-    [isERC721, decimals]
+    [standard, decimals]
   );
 
   useEffect(() => {
@@ -78,10 +117,23 @@ const EnterRecipients = ({ isERC721, symbol, decimals, onSubmit }) => {
       return setRecipients([]);
     }
 
+    let csvText;
+
     // Process csv data back into string and validate lines
-    const csvText = data
-      .map(([address, value]) => `${address}${value ? `, ${value}` : ""}`)
-      .join("\n");
+    if (standard === "ERC1155") {
+      csvText = data
+        .map(
+          ([address, tokenId, amount]) =>
+            `${address}${tokenId ? `, ${tokenId}` : ""}${
+              amount ? `, ${amount}` : ""
+            }`
+        )
+        .join("\n");
+    } else {
+      csvText = data
+        .map(([address, amount]) => `${address}${amount ? `, ${amount}` : ""}`)
+        .join("\n");
+    }
 
     // Set text if they want to manually edit the csv
     setTextValue(csvText);
@@ -90,11 +142,7 @@ const EnterRecipients = ({ isERC721, symbol, decimals, onSubmit }) => {
 
   return (
     <div className="flex flex-col space-y-2 w-full">
-      <h2 className="text-sm">
-        {isERC721
-          ? "Enter addresses and a token ID to send. Accepts the following formats:"
-          : "Enter addresses and amounts. Accepts the following formats:"}
-      </h2>
+      <h2 className="text-sm">{standardToContent[standard]?.help}</h2>
       <div className="flex flex-col w-full">
         {isCsvUpload ? (
           <div className="min-h-fit mt-2 space-y-2">
@@ -104,7 +152,7 @@ const EnterRecipients = ({ isERC721, symbol, decimals, onSubmit }) => {
               row
             </h4>
             <CSVUpload
-              isERC721={isERC721}
+              standard={standard}
               onUpload={onHandleUpload}
               onReset={() => {
                 setRecipients([]);
@@ -119,11 +167,7 @@ const EnterRecipients = ({ isERC721, symbol, decimals, onSubmit }) => {
               onChange={(e) => {
                 setTextValue(e.target.value);
               }}
-              placeholder={
-                isERC721
-                  ? erc721RecipientPlaceholder
-                  : erc20RecipientPlaceholder
-              }
+              placeholder={standardToContent[standard]?.placeholder}
             />
             <button
               type="button"

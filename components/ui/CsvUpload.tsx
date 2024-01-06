@@ -6,13 +6,13 @@ import { toast } from "sonner";
 import { findDuplicateTokenIds } from "../types/parsers";
 
 interface ICSVUploadProps<T = string[]> {
-  isERC721: boolean;
+  standard: string;
   onUpload: (data: ParseResult<T>) => void;
   onReset: () => void;
 }
 
 export default function CSVUpload<T = string[]>({
-  isERC721,
+  standard,
   onUpload,
   onReset,
 }: ICSVUploadProps<T>) {
@@ -45,7 +45,7 @@ export default function CSVUpload<T = string[]>({
       onUploadAccepted={(data: ParseResult<T>) => {
         const trimmedData = trimAmounts(data);
 
-        if (!isERC721) {
+        if (standard === "ERC20" || standard === "ERC1155") {
           if (data.errors.length > 0) {
             console.error(data.errors);
             setFileCompleted("error");
@@ -56,36 +56,35 @@ export default function CSVUpload<T = string[]>({
             setFileCompleted("success");
             return onUpload(trimmedData);
           }
-        }
-
-        const duplicateIDs = findDuplicateTokenIds(
-          trimmedData.data as [string, string][]
-        );
-
-        if (duplicateIDs.length > 0) {
-          setFileCompleted("error");
-          toast.error(
-            `Check your CSV, duplicate IDs were found for ID${
-              duplicateIDs.length === 1 ? "" : "s"
-            }: ${duplicateIDs.join(", ")}`
+        } else if (standard === "ERC721") {
+          const duplicateIDs = findDuplicateTokenIds(
+            trimmedData.data as [string, string][]
           );
-          return;
-        }
 
-        if (data.errors.length > 0) {
-          setFileCompleted("error");
-          console.error(data.errors);
-          return toast.error(
-            "There was an error while processing CSV file. Fix and try again."
-          );
-        } else {
-          setFileCompleted("success");
-          return onUpload(trimmedData);
+          if (duplicateIDs.length > 0) {
+            setFileCompleted("error");
+            toast.error(
+              `Check your CSV, duplicate IDs were found for ID${
+                duplicateIDs.length === 1 ? "" : "s"
+              }: ${duplicateIDs.join(", ")}`
+            );
+            return;
+          }
+
+          if (data.errors.length > 0) {
+            setFileCompleted("error");
+            console.error(data.errors);
+            return toast.error(
+              "There was an error while processing CSV file. Fix and try again."
+            );
+          } else {
+            setFileCompleted("success");
+            return onUpload(trimmedData);
+          }
         }
       }}
       onUploadRejected={() => {
         setFileCompleted("error");
-
         toast.error(
           "Upload rejected - check to make sure your CSV is properly formatted"
         );

@@ -45,7 +45,7 @@ const FriendTechDrop = () => {
           recipients={airdrop}
           token={{
             isLoading: false,
-            isERC721: false,
+            standard: "ERC20",
             symbol: "ETH",
             decimals: 18,
             balance: balance?.value,
