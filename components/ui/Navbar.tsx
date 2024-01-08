@@ -22,48 +22,33 @@ export default function Navbar() {
   const chainName = chain?.name?.toUpperCase().replace(" ", "_") ?? "ETHEREUM";
 
   const getBlockExplorer = (chainName: string) => {
+    const chainId = chain?.id || "1";
     const explorers: any = {
-      ETHEREUM: `${mainnet.blockExplorers.etherscan.url}/address/${
-        airdropContractAddress?.[chain?.id]
-      }`,
-      ARBITRUM: `${arbitrum.blockExplorers.etherscan.url}/address/${
-        airdropContractAddress?.[chain?.id]
-      }`,
-      MATIC: `${polygon.blockExplorers.etherscan.url}/address/${
-        airdropContractAddress?.[chain?.id]
-      }`,
-      OPTIMISM: `${optimism.blockExplorers.etherscan.url}/address/${
-        airdropContractAddress?.[chain?.id]
-      }`,
-      SEPOLIA: `${sepolia.blockExplorers.etherscan.url}/address/${
-        airdropContractAddress?.[chain?.id]
-      }`,
-      // BSC: `${bsc.blockExplorers.etherscan.url}/address/${airdropContractAddress?.[chain?.id]}`,
-      BASE: `${base.blockExplorers.etherscan.url}/address/${
-        airdropContractAddress?.[chain?.id]
-      }`,
-      BASE_SEPOLIA: `${baseSepolia.blockExplorers.default.url}/address/${
-        airdropContractAddress?.[chain?.id]
-      }`,
+      ETHEREUM: `${mainnet.blockExplorers.etherscan.url}/address/${airdropContractAddress?.[chainId]}`,
+      ARBITRUM: `${arbitrum.blockExplorers.etherscan.url}/address/${airdropContractAddress?.[chainId]}`,
+      MATIC: `${polygon.blockExplorers.etherscan.url}/address/${airdropContractAddress?.[chainId]}`,
+      OPTIMISM: `${optimism.blockExplorers.etherscan.url}/address/${airdropContractAddress?.[chainId]}`,
+      SEPOLIA: `${sepolia.blockExplorers.etherscan.url}/address/${airdropContractAddress?.[chainId]}`,
+      // BSC: `${bsc.blockExplorers.etherscan.url}/address/${airdropContractAddress?.[chainId]}`,
+      BASE: `${base.blockExplorers.etherscan.url}/address/${airdropContractAddress?.[chainId]}`,
+      BASE_SEPOLIA: `${baseSepolia.blockExplorers.default.url}/address/${airdropContractAddress?.[chainId]}`,
     };
-
     return explorers[chainName];
   };
 
   const getContractReaderURL = (chainName: string) => {
     const base = "https://contractreader.io/contract";
-
+    const chainId = chain?.id || "1";
     const explorers: any = {
-      ETHEREUM: `${base}/mainnet/${airdropContractAddress?.[chain?.id]}`,
-      ARBITRUM: `${base}/arbitrum/${airdropContractAddress?.[chain?.id]}`,
-      MATIC: `${base}/polygon/${airdropContractAddress?.[chain?.id]}`,
-      OPTIMISM: `${base}/optimism/${airdropContractAddress?.[chain?.id]}`,
-      SEPOLIA: `${base}/sepolia/${airdropContractAddress?.[chain?.id]}`,
-      // BSC: `${base}/bsc/${airdropContractAddress?.[chain?.id]}`,
-      BASE: `${base}/base/${airdropContractAddress?.[chain?.id]}`,
-      BASE_SEPOLIA: `${base}/base/${airdropContractAddress?.[chain?.id]}`,
+      ETHEREUM: `${base}/mainnet/${airdropContractAddress?.[chainId]}`,
+      ARBITRUM: `${base}/arbitrum/${airdropContractAddress?.[chainId]}`,
+      MATIC: `${base}/polygon/${airdropContractAddress?.[chainId]}`,
+      OPTIMISM: `${base}/optimism/${airdropContractAddress?.[chainId]}`,
+      SEPOLIA: `${base}/sepolia/${airdropContractAddress?.[chainId]}`,
+      // BSC: `${base}/bsc/${airdropContractAddress?.[chainId]}`,
+      BASE: `${base}/base/${airdropContractAddress?.[chainId]}`,
+      BASE_SEPOLIA: `${base}/base/${airdropContractAddress?.[chainId]}`,
     };
-
     return explorers[chainName];
   };
 
