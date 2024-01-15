@@ -24,7 +24,6 @@ const deriveTweetUrl = (username, id) =>
   `https://twitter.com/${username}/status/${id}`;
 
 const deriveSharedTweet = ({ token, recipients, isNativeToken, tweetId }) => {
-  console.log(token, recipients, isNativeToken, tweetId);
   return `https://twitter.com/intent/tweet?text=You%20were%20airdropped! ${recipients
     .map(({ user }) => `@${user.username}`)
     .join(" ")}&via=gasliteGG&in_reply_to=${tweetId}`;

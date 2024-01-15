@@ -144,8 +144,10 @@ const useTokenDrop = ({ contractAddress, recipients, token }) => {
   const requiredAllowance = useMemo(() => {
     return (
       // ERC721/ERC1155 just use setApproval for all check
-      token?.standard !== "ERC20"
+      token?.standard === "ERC1155"
         ? 0n
+        : token?.standard === "ERC721"
+        ? BigInt(recipientAmounts.length)
         : recipientAmounts.reduce((acc, amount) => acc + amount, 0n)
     );
   }, [JSON.stringify(recipientAmounts)]);
@@ -421,7 +423,7 @@ const AirdropModal = ({
 
   const formattedTotal = useMemo(
     () =>
-      requiredAllowance
+      requiredAllowance > 0n
         ? standard === "ERC721"
           ? String(requiredAllowance)
           : formatUnits(requiredAllowance, decimals || 18)
@@ -430,6 +432,7 @@ const AirdropModal = ({
   );
 
   const formattedRemaining = useMemo(() => {
+    if (standard === "ERC1155") return "0"; // Ignore remaining
     const remainingBalance = balance - requiredAllowance;
     return remainingBalance
       ? formatUnits(
