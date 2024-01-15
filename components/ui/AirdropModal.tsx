@@ -430,8 +430,6 @@ const AirdropModal = ({
   );
 
   const formattedRemaining = useMemo(() => {
-    console.log(balance, requiredAllowance);
-
     const remainingBalance = balance - requiredAllowance;
     return remainingBalance
       ? formatUnits(
