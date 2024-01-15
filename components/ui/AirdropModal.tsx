@@ -421,13 +421,6 @@ const AirdropModal = ({
     token,
   });
 
-  console.log({
-    token,
-    hasApprovals,
-    requiredAllowance,
-    insufficientFunds,
-  });
-
   const formattedTotal = useMemo(
     () =>
       requiredAllowance > 0n
