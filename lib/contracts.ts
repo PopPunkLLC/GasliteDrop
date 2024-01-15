@@ -37,11 +37,11 @@ export const airdropContractAddress = {
 };
 
 export const airdrop1155ContractAddress = {
-  [mainnet.id]: "0x1571b5Cf5D1a1140AD336FF5351d2D050c03CaB8",
-  [sepolia.id]: "0x1571b5Cf5D1a1140AD336FF5351d2D050c03CaB8",
-  [arbitrum.id]: "0x1571b5Cf5D1a1140AD336FF5351d2D050c03CaB8",
-  [optimism.id]: "0x1571b5Cf5D1a1140AD336FF5351d2D050c03CaB8",
-  [polygon.id]: "0x1571b5Cf5D1a1140AD336FF5351d2D050c03CaB8",
-  [base.id]: "0x1571b5Cf5D1a1140AD336FF5351d2D050c03CaB8",
+  [mainnet.id]: "0x1155D79afC98dad97Ee4b0c747398DcF5b631155",
+  [sepolia.id]: "0x1155D79afC98dad97Ee4b0c747398DcF5b631155",
+  [arbitrum.id]: "0x1155D79afC98dad97Ee4b0c747398DcF5b631155",
+  [optimism.id]: "0x1155D79afC98dad97Ee4b0c747398DcF5b631155",
+  [polygon.id]: "0x1155D79afC98dad97Ee4b0c747398DcF5b631155",
+  [base.id]: "0x1155D79afC98dad97Ee4b0c747398DcF5b631155",
   [baseSepolia.id]: "0x09350F89e2D7B6e96bA730783c2d76137B045FEF",
 };
