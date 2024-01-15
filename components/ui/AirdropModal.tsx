@@ -433,7 +433,7 @@ const AirdropModal = ({
     const remainingBalance = balance - requiredAllowance;
     return remainingBalance
       ? formatUnits(
-          remainingBalance,
+          BigInt(remainingBalance),
           standard === "ERC721" ? 0 : decimals || 18
         )
       : "0";
