@@ -22,8 +22,8 @@ function useNetworkNativeToken() {
       case "Polygon":
         return "MATIC";
 
-      // case 'Binance Smart Chain':
-      //   return 'BNB';
+      case "BNB Smart Chain":
+        return "BNB";
 
       case "Base":
         return "Base ETH";

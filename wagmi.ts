@@ -5,7 +5,7 @@ import {
   mainnet,
   arbitrum,
   polygon,
-  // bsc,
+  bsc,
   base,
 } from "@wagmi/chains";
 import { configureChains, createConfig, WebSocketPublicClient } from "wagmi";
@@ -24,9 +24,8 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
     optimism,
     polygon,
     base,
-    // bsc
-    baseSepolia,
-    ...(process.env.NODE_ENV === "development" ? [sepolia] : []),
+    bsc,
+    ...(process.env.NODE_ENV === "development" ? [sepolia, baseSepolia] : []),
   ],
   [
     publicProvider(),

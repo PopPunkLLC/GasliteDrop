@@ -7,6 +7,7 @@ import {
   arbitrum,
   polygon,
   base,
+  bsc,
 } from "@wagmi/chains";
 
 const chainIdToAlchemySettings = {
@@ -40,6 +41,11 @@ const ownership = async (req, res) => {
   try {
     const { contractAddress, chainId = 1 } = req?.query;
     const settings = chainIdToAlchemySettings[chainId];
+
+    if (!settings) {
+      throw new Error(`No settings found for ${chainId}`);
+    }
+
     const alchemy = new Alchemy(settings);
     const { owners } = await alchemy.nft.getOwnersForContract(contractAddress);
     return res.json({
