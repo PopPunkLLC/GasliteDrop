@@ -25,7 +25,7 @@ import {
   airdropContractAddress,
   airdrop1155ContractAddress,
 } from "@/lib/contracts";
-import { arbitrum, base, optimism, polygon, sepolia } from "@wagmi/chains";
+import { arbitrum, base, optimism, polygon, sepolia, bsc } from "@wagmi/chains";
 import { baseSepolia } from "viem/chains";
 
 const deriveExternalLink = (txHash, chainId) => {
@@ -42,6 +42,8 @@ const deriveExternalLink = (txHash, chainId) => {
       return `https://basescan.org/tx/${txHash}`;
     case baseSepolia.id:
       return `${baseSepolia.blockExplorers.default.url}/tx/${txHash}`;
+    case bsc.id:
+      return `https://bscscan.com/tx/${txHash}`;
     default:
       return `https://etherscan.io/tx/${txHash}`;
   }
