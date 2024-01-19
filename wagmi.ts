@@ -25,7 +25,8 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
     polygon,
     base,
     bsc,
-    ...(process.env.NODE_ENV === "development" ? [sepolia, baseSepolia] : []),
+    sepolia,
+    baseSepolia,
   ],
   [
     publicProvider(),
