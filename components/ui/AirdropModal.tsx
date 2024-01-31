@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useKeyboardEvent } from "@react-hookz/web";
-import { formatUnits } from "viem";
+import { formatUnits, parseAbi } from "viem";
 import { toast } from "sonner";
 import { FaSpinner as SpinnerIcon } from "react-icons/fa";
 import clsx from "clsx";
@@ -27,6 +27,12 @@ import {
 } from "@/lib/contracts";
 import { arbitrum, base, optimism, polygon, sepolia, bsc } from "@wagmi/chains";
 import { baseSepolia } from "viem/chains";
+
+// Override the ERC20 "approve" call for tokens that do not return a value (we don't check the return)
+// value anyway and it causes an error in the UI for tokens that don't return a boolean
+const erc20approveAbi = parseAbi([
+  "function approve(address spender, uint256 amount) public",
+])
 
 const deriveExternalLink = (txHash, chainId) => {
   switch (chainId) {
@@ -179,7 +185,7 @@ const useTokenDrop = ({ contractAddress, recipients, token }) => {
     // ERC20
     return {
       address: contractAddress,
-      abi: erc20ABI,
+      abi: erc20approveAbi,
       functionName: "approve",
       args: [airdropContractAddress?.[chainId], requiredAllowance],
       enabled: Boolean(contractAddress),
