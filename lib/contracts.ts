@@ -9,6 +9,8 @@ import {
   bsc,
 } from "@wagmi/chains";
 
+import { blast } from "../blast";
+
 export const baseSepolia = defineChain({
   id: 84532,
   name: "Base Sepolia Testnet",
@@ -36,6 +38,7 @@ export const airdropContractAddress = {
   [base.id]: "0x09350F89e2D7B6e96bA730783c2d76137B045FEF",
   [baseSepolia.id]: "0xf6c3555139aeA30f4a2be73EBC46ba64BAB8ac12",
   [bsc.id]: "0xf6c3555139aeA30f4a2be73EBC46ba64BAB8ac12",
+  [blast.id]: "0x2EA391c57bDE02019EFbBEb0C05f104877c975C4",
 };
 
 export const airdrop1155ContractAddress = {
