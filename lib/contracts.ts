@@ -9,7 +9,7 @@ import {
   bsc,
 } from "@wagmi/chains";
 
-import { blast } from "../blast";
+import { blast } from "@/lib/chains/blast";
 
 export const baseSepolia = defineChain({
   id: 84532,
