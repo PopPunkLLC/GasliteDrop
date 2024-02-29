@@ -12,7 +12,7 @@ import { configureChains, createConfig, WebSocketPublicClient } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { publicProvider } from "wagmi/providers/public";
 import { baseSepolia } from "viem/chains";
-import { blast } from "./blast";
+import { blast } from "@/lib/chains/blast";
 
 // NOTE: On the providers, there are some issues with Sepolia currently and Wagmi.
 // The setup below will work. Adding an Alchemy provider, for example, will break things

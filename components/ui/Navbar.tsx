@@ -12,6 +12,7 @@ import {
   // bsc,
   base,
 } from "@wagmi/chains";
+import { blast } from "@/lib/chains/blast";
 import { airdropContractAddress } from "@/lib/contracts";
 import { baseSepolia } from "viem/chains";
 
@@ -32,6 +33,7 @@ export default function Navbar() {
       // BSC: `${bsc.blockExplorers.etherscan.url}/address/${airdropContractAddress?.[chainId]}`,
       BASE: `${base.blockExplorers.etherscan.url}/address/${airdropContractAddress?.[chainId]}`,
       BASE_SEPOLIA: `${baseSepolia.blockExplorers.default.url}/address/${airdropContractAddress?.[chainId]}`,
+      BLAST: `${blast.blockExplorers.default.url}/address/${airdropContractAddress?.[chainId]}`
     };
     return explorers[chainName];
   };

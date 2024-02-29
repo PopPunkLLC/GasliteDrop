@@ -25,4 +25,5 @@ export const blast = defineChain({
         url: 'https://blastscan.io',
       },
     },
+    iconUrl: "https://blast.io/icons/blast-color.svg"
   });

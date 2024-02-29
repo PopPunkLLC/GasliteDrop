@@ -9,7 +9,7 @@ import {
   // bsc,
   base,
 } from "@wagmi/chains";
-import { blast } from "./blast";
+import { blast } from "@/lib/chains/blast";
 
 export const airdropContractAddress =
   "0x09350F89e2D7B6e96bA730783c2d76137B045FEF";
