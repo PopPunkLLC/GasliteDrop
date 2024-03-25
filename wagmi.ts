@@ -7,6 +7,7 @@ import {
   polygon,
   bsc,
   base,
+  zora,
 } from "@wagmi/chains";
 import { configureChains, createConfig, WebSocketPublicClient } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
@@ -29,6 +30,7 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
     sepolia,
     baseSepolia,
     blast,
+    zora,
   ],
   [
     publicProvider(),

@@ -25,7 +25,7 @@ import {
   airdropContractAddress,
   airdrop1155ContractAddress,
 } from "@/lib/contracts";
-import { arbitrum, base, optimism, polygon, sepolia, bsc } from "@wagmi/chains";
+import { arbitrum, base, optimism, polygon, sepolia, bsc, zora, } from "@wagmi/chains";
 import { baseSepolia } from "viem/chains";
 
 // Override the ERC20 "approve" call for tokens that do not return a value (we don't check the return)
@@ -50,6 +50,8 @@ const deriveExternalLink = (txHash, chainId) => {
       return `${baseSepolia.blockExplorers.default.url}/tx/${txHash}`;
     case bsc.id:
       return `https://bscscan.com/tx/${txHash}`;
+    case zora.id:
+      return `https://zora.superscan.network/tx/${txHash}`;
     default:
       return `https://etherscan.io/tx/${txHash}`;
   }
