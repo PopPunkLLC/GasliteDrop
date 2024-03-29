@@ -61,7 +61,7 @@ const useDeployBytecode20 = ({ tokenName, symbol, totalSupply, decimals }) => {
             args: [totalSupply, decimals, tokenName, "1", symbol],
           });
           console.log("Deployed contract with hash", hash);
-          const receipt = await waitForTransaction({ confirmations: 3, hash });
+          const receipt = await waitForTransaction({ confirmations: 2, hash });
           console.log("Receipt", receipt);
           return receipt;
         } catch (e) {
