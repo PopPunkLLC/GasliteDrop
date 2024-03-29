@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAccount, useNetwork, useBalance } from "wagmi";
 import { toast } from "sonner";
 import DeployModal from "@/components/ui/DeployModal";
@@ -10,11 +10,49 @@ import Input from "@/components/ui/Input";
 import clsx from "clsx";
 import ExpectedBytecode from "../../contracts/out/Bytecode20.sol/ExpectedBytecode.json";
 import { getPublicClient } from "@wagmi/core";
+import { http, createPublicClient, stringify } from "viem";
+import { arbitrum, base, optimism, polygon, sepolia, bsc, zora } from "@wagmi/chains";
+import { baseSepolia } from "viem/chains";
 
-const publicClient = getPublicClient();
+const publicClients = [
+  createPublicClient({
+    chain: sepolia,
+    transport: http(),
+  }),
+  createPublicClient({
+    chain: arbitrum,
+    transport: http(),
+  }),
+  createPublicClient({
+    chain: base,
+    transport: http(),
+  }),
+  createPublicClient({
+    chain: optimism,
+    transport: http(),
+  }),
+  createPublicClient({
+    chain: polygon,
+    transport: http(),
+  }),
+  createPublicClient({
+    chain: bsc,
+    transport: http(),
+  }),
+  createPublicClient({
+    chain: zora,
+    transport: http(),
+  }),
+  createPublicClient({
+    chain: baseSepolia,
+    transport: http(),
+  }),
+];
 
 const useFetchByteCode = ({ contractAddress }) => {
   const [isProcessing, setIsProcessing] = useState(false);
+  const { chain } = useNetwork();
+  const publicClient = publicClients.find((client) => client.chain.id === chain.id);
 
   return {
     isProcessing,
@@ -41,22 +79,16 @@ const VerifyERC20 = () => {
   const [fetchedBytecode, setFetchedBytecode] = useState(null);
   const [contractAddress, setContractAddress] = useState(null);
 
-
   const correctBytecode = ExpectedBytecode.bytecode;
 
   const onHandleFetchBytecode = async () => {
     try {
       const receipt = await actions.onFetch();
-      if (!receipt) throw new Error("Failed to retreive bytecode");
-
       //slice the bytecode to leave only the first 1146 characters
-      const fetchedBytecode = receipt.slice(0, 1146);
-
-      setFetchedBytecode(fetchedBytecode);
-      console.log("Fetched bytecode", fetchedBytecode);
+      const slicedReceipt = receipt ? receipt.slice(0, 1146) : null;
+      setFetchedBytecode(slicedReceipt || "error");
     } catch (e) {
-      console.error(e);
-      toast.error("Failed to retreive bytecode");
+      toast.error(e.message);
     }
   };
 
@@ -84,9 +116,9 @@ const VerifyERC20 = () => {
               onClick={onHandleFetchBytecode}
               className={clsx("bg-primary text-white rounded-md p-2", {
                 "!text-base-100/75 opacity-50 !hover:bg-primary cursor-not-allowed":
-                  (!contractAddress || contractAddress.length != 42) || isProcessing,
+                  !contractAddress || contractAddress.length != 42 || isProcessing,
               })}
-              disabled={(!contractAddress || contractAddress.length != 42) || isProcessing}
+              disabled={!contractAddress || contractAddress.length != 42 || isProcessing}
             >
               {isProcessing
                 ? "Fetching..."
@@ -98,6 +130,13 @@ const VerifyERC20 = () => {
               <div className="bg-green-200 border-l-4 border-green-500 text-green-700 p-4" role="alert">
                 <p className="font-bold">Success</p>
                 <p>Bytecode matches the expected Bytecode20 deployment</p>
+              </div>
+            ) : fetchedBytecode == "error" ? (
+              <div className="bg-yellow-200 border-l-4 border-yellow-500 text-yellow-700 p-4" role="error">
+                <p className="font-bold">Error</p>
+                <p>
+                  Error fetching deployed bytecode. <br></br>Please verify contract address and network.
+                </p>
               </div>
             ) : fetchedBytecode ? (
               <div className="bg-red-200 border-l-4 border-green-500 text-green-700 p-4" role="alert">
