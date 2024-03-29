@@ -45,6 +45,9 @@ const Home = () => {
         <Link href="/deploy/erc20" className="underline">
           or deploy an ERC-20 and airdrop it
         </Link>
+        <Link href="/verify/erc20" className="underline">
+          or check if a deployed contract is Bytecode20
+        </Link>
       </div>
       {contractAddress && !isValid && !isLoading && (
         <p className=" mt-6 text-black bg-critical bg-opacity-50 border border-critical p-4 rounded-md">
