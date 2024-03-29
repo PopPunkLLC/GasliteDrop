@@ -28,7 +28,7 @@ const Home = () => {
     <div className="flex flex-col">
       <p className="mb-2 text-2xl">{`Let's get started!`}</p>
       <p className="text-base mb-6 text-grey">
-        Enter an ERC-20, ERC-721, ERC1155 contract address:
+        Enter an ERC-20, ERC-721, ERC-1155 contract address:
       </p>
       <Input
         value={contractAddress}
