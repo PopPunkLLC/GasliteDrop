@@ -54,6 +54,18 @@ const DeployERC20 = () => {
           </div>
           {hasBalance ? (
             <div className="flex flex-col space-y-1">
+              <p className="text-base mb-6 text-grey">
+                You are deploying{" "}
+                <a
+                  href="https://github.com/PopPunkLLC/gaslite-core/blob/main/src/Bytecode20.sol"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline text-primary"
+                >
+                  Bytecode20
+                </a>
+                , a Turbo gas optimized ERC20 written in EVM bytecode.
+              </p>
               <Input
                 value={tokenName}
                 onChange={(name) => {
