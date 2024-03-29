@@ -48,6 +48,9 @@ const Home = () => {
         <Link href="/drop/x" className="underline">
           or airdrop to X post
         </Link>
+        <Link href="/deploy/erc20" className="underline">
+          or deploy an ERC-20 and airdrop it
+        </Link>
       </div>
       {contractAddress && !isValid && !isLoading && (
         <p className=" mt-6 text-black bg-critical bg-opacity-50 border border-critical p-4 rounded-md">

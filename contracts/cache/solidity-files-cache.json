@@ -6,9 +6,7 @@
     "sources": "src",
     "tests": "test",
     "scripts": "script",
-    "libraries": [
-      "lib"
-    ]
+    "libraries": ["lib"]
   },
   "files": {
     "src/GasliteDrop.sol": {
@@ -28,9 +26,7 @@
           },
           "outputSelection": {
             "*": {
-              "": [
-                "ast"
-              ],
+              "": ["ast"],
               "*": [
                 "abi",
                 "evm.bytecode",
@@ -49,6 +45,42 @@
       "artifacts": {
         "GasliteDrop": {
           "0.8.19+commit.7dd6d404.Windows.msvc": "GasliteDrop.sol\\GasliteDrop.json"
+        }
+      }
+    },
+    "src/Bytecode20.sol": {
+      "lastModificationDate": 1711644660170,
+      "contentHash": "1d744a64a223e357ac5530b0731cc74b",
+      "sourceName": "src/Bytecode20.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": { "enabled": true, "runs": 999999 },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "viaIR": false,
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": "^0.8.20",
+      "artifacts": {
+        "Bytecode20": {
+          "0.8.20+commit.a1b79de6.Darwin.appleclang": "Bytecode20.sol/Bytecode20.json"
         }
       }
     }
