@@ -47,7 +47,7 @@ const deriveExternalLink = (txHash, chainId) => {
     case base.id:
       return `https://basescan.org/tx/${txHash}`;
     case baseSepolia.id:
-      return `${baseSepolia.blockExplorers.default.url}/tx/${txHash}`;
+      return `https://sepolia.basescan.org/tx/${txHash}`;
     case bsc.id:
       return `https://bscscan.com/tx/${txHash}`;
     case zora.id:
@@ -461,7 +461,7 @@ const AirdropModal = ({
       if (!hasApprovals) {
         const approval = await actions.onApprove();
         if (!approval) throw new Error("Approval unsuccessful");
-        await onRefresh();
+        // await onRefresh();
         toast.success("Token approved for airdrop");
       }
 

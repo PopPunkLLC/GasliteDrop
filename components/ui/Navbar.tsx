@@ -32,7 +32,7 @@ export default function Navbar() {
       SEPOLIA: `${sepolia.blockExplorers.etherscan.url}/address/${airdropContractAddress?.[chainId]}`,
       // BSC: `${bsc.blockExplorers.etherscan.url}/address/${airdropContractAddress?.[chainId]}`,
       BASE: `${base.blockExplorers.etherscan.url}/address/${airdropContractAddress?.[chainId]}`,
-      BASE_SEPOLIA: `${baseSepolia.blockExplorers.default.url}/address/${airdropContractAddress?.[chainId]}`,
+      BASE_SEPOLIA: `https://sepolia.basescan.org/address/${airdropContractAddress?.[chainId]}`,
       BLAST: `${blast.blockExplorers.default.url}/address/${airdropContractAddress?.[chainId]}`
     };
     return explorers[chainName];

@@ -17,7 +17,7 @@ const deriveExternalLink = (tokenAddress, chainId) => {
     case base.id:
       return `https://basescan.org/address/${tokenAddress}`;
     case baseSepolia.id:
-      return `${baseSepolia.blockExplorers.default.url}/address/${tokenAddress}`;
+      return `https://sepolia.basescan.org/address/${tokenAddress}`;
     case bsc.id:
       return `https://bscscan.com/address/${tokenAddress}`;
     case zora.id:

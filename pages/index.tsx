@@ -28,7 +28,7 @@ const Home = () => {
     <div className="flex flex-col">
       <p className="mb-2 text-2xl">{`Let's get started!`}</p>
       <p className="text-base mb-6 text-grey">
-        Enter an ERC-20, ERC-721, ERC1155 contract address:
+        Enter an ERC-20, ERC-721, ERC-1155 contract address:
       </p>
       <Input
         value={contractAddress}
@@ -42,11 +42,11 @@ const Home = () => {
         <Link href="/drop/native" className="underline">
           or airdrop {nativeToken}
         </Link>
-        <Link href="/drop/friendtech" className="underline">
-          or airdrop to Friendtech Key holders
+        <Link href="/deploy/erc20" className="underline">
+          or deploy an ERC-20 and airdrop it
         </Link>
-        <Link href="/drop/x" className="underline">
-          or airdrop to X post
+        <Link href="/verify/erc20" className="underline">
+          or check if a deployed contract is Bytecode20
         </Link>
       </div>
       {contractAddress && !isValid && !isLoading && (
