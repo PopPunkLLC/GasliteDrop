@@ -42,12 +42,6 @@ const Home = () => {
         <Link href="/drop/native" className="underline">
           or airdrop {nativeToken}
         </Link>
-        <Link href="/drop/friendtech" className="underline">
-          or airdrop to Friendtech Key holders
-        </Link>
-        <Link href="/drop/x" className="underline">
-          or airdrop to X post
-        </Link>
         <Link href="/deploy/erc20" className="underline">
           or deploy an ERC-20 and airdrop it
         </Link>
