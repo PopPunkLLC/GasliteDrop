@@ -43,6 +43,14 @@ export default function Footer() {
             >
               @scottybmitch
             </Link>
+            <Link
+              className="hover:text-markPink-500"
+              href="https://twitter.com/whiteoakkong"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              @whiteoakkong
+            </Link>
           </div>
         </div>
         <div className="flex flex-col md:flex-row w-full gap-1">
