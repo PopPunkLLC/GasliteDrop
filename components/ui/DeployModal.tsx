@@ -24,7 +24,7 @@ const deriveExternalLink = (txHash, chainId) => {
     case base.id:
       return `https://basescan.org/tx/${txHash}`;
     case baseSepolia.id:
-      return `${baseSepolia.blockExplorers.default.url}/tx/${txHash}`;
+      return `https://sepolia.basescan.org/tx/${txHash}`;
     case bsc.id:
       return `https://bscscan.com/tx/${txHash}`;
     case zora.id:
