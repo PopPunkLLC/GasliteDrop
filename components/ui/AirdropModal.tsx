@@ -461,7 +461,7 @@ const AirdropModal = ({
       if (!hasApprovals) {
         const approval = await actions.onApprove();
         if (!approval) throw new Error("Approval unsuccessful");
-        await onRefresh();
+        // await onRefresh();
         toast.success("Token approved for airdrop");
       }
 
