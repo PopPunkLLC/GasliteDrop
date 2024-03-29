@@ -11,10 +11,15 @@ import clsx from "clsx";
 import ExpectedBytecode from "../../contracts/out/Bytecode20.sol/ExpectedBytecode.json";
 import { getPublicClient } from "@wagmi/core";
 import { http, createPublicClient, stringify } from "viem";
-import { arbitrum, base, optimism, polygon, sepolia, bsc, zora } from "@wagmi/chains";
+import { mainnet, arbitrum, base, optimism, polygon, sepolia, bsc, zora } from "@wagmi/chains";
 import { baseSepolia } from "viem/chains";
+import { blast } from "@/lib/chains/blast";
 
 const publicClients = [
+  createPublicClient({
+    chain: mainnet,
+    transport: http(),
+  }),
   createPublicClient({
     chain: sepolia,
     transport: http(),
@@ -45,6 +50,10 @@ const publicClients = [
   }),
   createPublicClient({
     chain: baseSepolia,
+    transport: http(),
+  }),
+  createPublicClient({
+    chain: blast,
     transport: http(),
   }),
 ];
