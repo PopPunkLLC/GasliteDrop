@@ -1,16 +1,8 @@
 import { defineChain } from "viem";
-import {
-  arbitrum,
-  base,
-  mainnet,
-  optimism,
-  polygon,
-  sepolia,
-  bsc,
-  zora
-} from "@wagmi/chains";
+import { arbitrum, base, mainnet, optimism, polygon, sepolia, bsc, zora } from "@wagmi/chains";
 
 import { blast } from "@/lib/chains/blast";
+import { degen } from "@/lib/chains/degen";
 
 export const baseSepolia = defineChain({
   id: 84532,
@@ -41,6 +33,7 @@ export const airdropContractAddress = {
   [bsc.id]: "0xf6c3555139aeA30f4a2be73EBC46ba64BAB8ac12",
   [blast.id]: "0x2EA391c57bDE02019EFbBEb0C05f104877c975C4",
   [zora.id]: "0x0eBa170fDC5edC7f528AdbEebC6a1bFc55343181",
+  [degen.id]: "0x0eBa170fDC5edC7f528AdbEebC6a1bFc55343181",
 };
 
 export const airdrop1155ContractAddress = {
