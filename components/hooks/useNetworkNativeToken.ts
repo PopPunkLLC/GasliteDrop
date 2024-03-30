@@ -28,6 +28,9 @@ function useNetworkNativeToken() {
       case "Base":
         return "Base ETH";
 
+      case "Degen":
+        return "DEGEN";
+
       default:
         return "ETH";
     }

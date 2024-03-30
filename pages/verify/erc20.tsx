@@ -14,6 +14,7 @@ import { http, createPublicClient, stringify } from "viem";
 import { mainnet, arbitrum, base, optimism, polygon, sepolia, bsc, zora } from "@wagmi/chains";
 import { baseSepolia } from "viem/chains";
 import { blast } from "@/lib/chains/blast";
+import { degen } from "@/lib/chains/degen";
 
 const publicClients = [
   createPublicClient({
@@ -54,6 +55,10 @@ const publicClients = [
   }),
   createPublicClient({
     chain: blast,
+    transport: http(),
+  }),
+  createPublicClient({
+    chain: degen,
     transport: http(),
   }),
 ];

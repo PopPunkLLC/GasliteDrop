@@ -10,6 +10,8 @@ import { arbitrum, base, optimism, polygon, sepolia, bsc, zora } from "@wagmi/ch
 import { baseSepolia } from "viem/chains";
 import Bytecode20 from "../../contracts/out/Bytecode20.sol/Bytecode20.json";
 import { useRouter } from "next/router";
+import { blast } from "@/lib/chains/blast";
+import { degen } from "@/lib/chains/degen";
 
 const deriveExternalLink = (txHash, chainId) => {
   switch (chainId) {
@@ -29,6 +31,10 @@ const deriveExternalLink = (txHash, chainId) => {
       return `https://bscscan.com/tx/${txHash}`;
     case zora.id:
       return `https://zora.superscan.network/tx/${txHash}`;
+    case blast.id:
+      return `https://blastscan.io/tx/${txHash}`;
+    case degen.id:
+      return `https://explorer.degen.tips/tx/${txHash}`;
     default:
       return `https://etherscan.io/tx/${txHash}`;
   }
