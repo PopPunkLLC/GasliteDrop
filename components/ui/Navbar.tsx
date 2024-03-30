@@ -40,44 +40,15 @@ export default function Navbar() {
     return explorers[chainName];
   };
 
-  const getContractReaderURL = (chainName: string) => {
-    const base = "https://contractreader.io/contract";
-    const chainId = chain?.id || "1";
-    const explorers: any = {
-      ETHEREUM: `${base}/mainnet/${airdropContractAddress?.[chainId]}`,
-      ARBITRUM: `${base}/arbitrum/${airdropContractAddress?.[chainId]}`,
-      MATIC: `${base}/polygon/${airdropContractAddress?.[chainId]}`,
-      OPTIMISM: `${base}/optimism/${airdropContractAddress?.[chainId]}`,
-      SEPOLIA: `${base}/sepolia/${airdropContractAddress?.[chainId]}`,
-      // BSC: `${base}/bsc/${airdropContractAddress?.[chainId]}`,
-      BASE: `${base}/base/${airdropContractAddress?.[chainId]}`,
-      BASE_SEPOLIA: `${base}/base/${airdropContractAddress?.[chainId]}`,
-    };
-    return explorers[chainName];
-  };
-
   const explorerURL = `${getBlockExplorer(chainName)}`;
-  const contractReaderURL = `${getContractReaderURL(chainName)}`;
+  
 
   const size = "20";
 
   return (
     <header className="flex flex-row min-h-[80px] items-center justify-center w-full mx-auto mb-4 mt-[4px] space-x-2">
       {/* TODO: add dropdown to show both contract addresses */}
-      <Link
-        href={contractReaderURL}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="hidden md:block flex-shrink-0"
-      >
-        <Image
-          src={`/contractreader-logo.svg`}
-          alt="ContractReader.io Logo"
-          className="w-7 h-7 mr-4"
-          width={size}
-          height={size}
-        />
-      </Link>
+     
 
       <Link
         href={explorerURL}
