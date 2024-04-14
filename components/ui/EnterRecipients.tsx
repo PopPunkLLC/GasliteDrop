@@ -26,7 +26,9 @@ const parseERC20Text = (text): [string, string][] => {
   const lines = text.trim().split("\n");
   const validLines = lines.filter((line) => regex.test(line));
   return validLines.reduce((acc, line) => {
-    let [address, value] = line.split(",");
+    let [, , value] = line.match(regex);
+    // Address is always the full 42 characters (0x plus 40 hex characters)
+    const address = line.slice(0, 42);
     value = value?.replace(/^[^0-9.]+/, "");
     // add 0 for straight decimal value
     if (value?.startsWith(".")) {
