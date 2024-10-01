@@ -1,8 +1,18 @@
 import { defineChain } from "viem";
-import { arbitrum, base, mainnet, optimism, polygon, sepolia, bsc, zora } from "@wagmi/chains";
+import {
+  arbitrum,
+  base,
+  mainnet,
+  optimism,
+  polygon,
+  sepolia,
+  bsc,
+  zora,
+} from "@wagmi/chains";
 
 import { blast } from "@/lib/chains/blast";
 import { degen } from "@/lib/chains/degen";
+import { sanko } from "@/lib/chains/sanko";
 
 export const baseSepolia = defineChain({
   id: 84532,
@@ -34,6 +44,7 @@ export const airdropContractAddress = {
   [blast.id]: "0x2EA391c57bDE02019EFbBEb0C05f104877c975C4",
   [zora.id]: "0x0eBa170fDC5edC7f528AdbEebC6a1bFc55343181",
   [degen.id]: "0x0eBa170fDC5edC7f528AdbEebC6a1bFc55343181",
+  [sanko.id]: "0x0eBa170fDC5edC7f528AdbEebC6a1bFc55343181",
 };
 
 export const airdrop1155ContractAddress = {
@@ -45,4 +56,5 @@ export const airdrop1155ContractAddress = {
   [base.id]: "0x1155D79afC98dad97Ee4b0c747398DcF5b631155",
   [baseSepolia.id]: "0x1155D79afC98dad97Ee4b0c747398DcF5b631155",
   [bsc.id]: "0x53d097F8f78Ada73085fAF3A4c36B9Ec58E7E172",
+  [sanko.id]: "0xeCC9a57543bFDe6BBc01420680Fc4a1BC51B6D1A",
 };

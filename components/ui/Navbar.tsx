@@ -14,6 +14,7 @@ import {
 } from "@wagmi/chains";
 import { blast } from "@/lib/chains/blast";
 import { degen } from "@/lib/chains/degen";
+import { sanko } from "@/lib/chains/sanko";
 import { airdropContractAddress } from "@/lib/contracts";
 import { baseSepolia } from "viem/chains";
 
@@ -36,6 +37,7 @@ export default function Navbar() {
       BASE_SEPOLIA: `https://sepolia.basescan.org/address/${airdropContractAddress?.[chainId]}`,
       BLAST: `${blast.blockExplorers.default.url}/address/${airdropContractAddress?.[chainId]}`,
       DEGEN: `${degen.blockExplorers.default.url}/address/${airdropContractAddress?.[chainId]}`,
+      SANKO: `${sanko.blockExplorers.default.url}/address/${airdropContractAddress?.[chainId]}`,
     };
     return explorers[chainName];
   };
