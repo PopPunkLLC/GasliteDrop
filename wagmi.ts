@@ -15,6 +15,7 @@ import { publicProvider } from "wagmi/providers/public";
 import { baseSepolia } from "viem/chains";
 import { blast } from "@/lib/chains/blast";
 import { degen } from "@/lib/chains/degen";
+import { sanko } from "@/lib/chains/sanko";
 
 // NOTE: On the providers, there are some issues with Sepolia currently and Wagmi.
 // The setup below will work. Adding an Alchemy provider, for example, will break things
@@ -33,6 +34,7 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
     blast,
     zora,
     degen,
+    sanko,
   ],
   [
     publicProvider(),

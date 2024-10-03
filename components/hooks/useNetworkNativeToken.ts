@@ -31,6 +31,9 @@ function useNetworkNativeToken() {
       case "Degen":
         return "DEGEN";
 
+      case "Sanko":
+        return "DMT";
+
       default:
         return "ETH";
     }
