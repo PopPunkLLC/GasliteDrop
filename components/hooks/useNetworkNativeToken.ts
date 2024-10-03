@@ -34,6 +34,9 @@ function useNetworkNativeToken() {
       case "Sanko":
         return "DMT";
 
+      case "Apechain":
+        return "APECHAIN";
+
       default:
         return "ETH";
     }

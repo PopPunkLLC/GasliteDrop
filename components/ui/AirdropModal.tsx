@@ -30,6 +30,7 @@ import { baseSepolia } from "viem/chains";
 import { blast } from "@/lib/chains/blast";
 import { degen } from "@/lib/chains/degen";
 import { sanko } from "@/lib/chains/sanko";
+import { apechain } from "@/lib/chains/apechain";
 
 // Override the ERC20 "approve" call for tokens that do not return a value (we don't check the return)
 // value anyway and it causes an error in the UI for tokens that don't return a boolean
@@ -61,6 +62,8 @@ const deriveExternalLink = (txHash, chainId) => {
       return `https://explorer.degen.tips/tx/${txHash}`;
     case sanko.id:
       return `https://explorer.sanko.xyz/tx/${txHash}`;
+    case apechain.id:
+      return `https://apescan.io/tx/${txHash}`;
     default:
       return `https://etherscan.io/tx/${txHash}`;
   }

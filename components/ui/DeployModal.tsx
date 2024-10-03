@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import { blast } from "@/lib/chains/blast";
 import { degen } from "@/lib/chains/degen";
 import { sanko } from "@/lib/chains/sanko";
+import { apechain } from "@/lib/chains/apechain";
 
 const deriveExternalLink = (txHash, chainId) => {
   switch (chainId) {
@@ -38,6 +39,8 @@ const deriveExternalLink = (txHash, chainId) => {
       return `https://explorer.degen.tips/tx/${txHash}`;
     case sanko.id:
       return `https://explorer.sanko.xyz/tx/${txHash}`;
+    case apechain.id:
+      return `https://apescan.io/tx/${txHash}`;
     default:
       return `https://etherscan.io/tx/${txHash}`;
   }
