@@ -3,7 +3,7 @@ import { defineChain } from "viem";
 export const apechain = defineChain({
   network: "Apechain",
   id: 33139,
-  name: "Apechain",
+  name: "ApeChain",
   nativeCurrency: {
     decimals: 18,
     name: "Ape",
@@ -20,7 +20,7 @@ export const apechain = defineChain({
   blockExplorers: {
     default: {
       name: "Apescan",
-      url: "https://apescan.io/",
+      url: "https://apescan.io",
     },
   },
   iconUrl: "https://apescan.io/assets/ape/images/svg/logos/token-dim.svg?v=24.9.2.0",
