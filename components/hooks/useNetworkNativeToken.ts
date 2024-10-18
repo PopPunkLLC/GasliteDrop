@@ -35,7 +35,7 @@ function useNetworkNativeToken() {
         return "DMT";
 
       case "Apechain":
-        return "APECHAIN";
+        return "APE";
 
       default:
         return "ETH";
