@@ -34,7 +34,7 @@ function useNetworkNativeToken() {
       case "Sanko":
         return "DMT";
 
-      case "Apechain":
+      case "ApeChain":
         return "APE";
 
       default:
