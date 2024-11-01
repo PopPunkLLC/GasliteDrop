@@ -1,0 +1,8 @@
+[profile.default]
+src = "contracts"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.19"
+
+[profile.default.zksync]
+zksolc = "1.5.6"
