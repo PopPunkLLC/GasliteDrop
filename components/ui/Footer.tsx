@@ -112,6 +112,14 @@ export default function Footer() {
             >
               @emo_eth
             </Link>
+            <Link
+              className="hover:text-markPink-500"
+              href="https://twitter.com/kryptopauldev"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              @kryptopauldev
+            </Link>
           </div>
         </div>
         <div className="flex items-center justify-center flex-row w-full py-4">
