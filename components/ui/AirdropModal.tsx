@@ -31,6 +31,7 @@ import { blast } from "@/lib/chains/blast";
 import { degen } from "@/lib/chains/degen";
 import { sanko } from "@/lib/chains/sanko";
 import { apechain } from "@/lib/chains/apechain";
+import { abstract } from "@/lib/chains/abstract";
 
 // Override the ERC20 "approve" call for tokens that do not return a value (we don't check the return)
 // value anyway and it causes an error in the UI for tokens that don't return a boolean
@@ -64,6 +65,8 @@ const deriveExternalLink = (txHash, chainId) => {
       return `https://explorer.sanko.xyz/tx/${txHash}`;
     case apechain.id:
       return `https://apescan.io/tx/${txHash}`;
+    case abstract.id:
+      return `https://abscan.org/tx/${txHash}`;
     default:
       return `https://etherscan.io/tx/${txHash}`;
   }

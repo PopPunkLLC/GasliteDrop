@@ -37,6 +37,9 @@ function useNetworkNativeToken() {
       case "ApeChain":
         return "APE";
 
+      case "Abstract":
+        return "ETH";        
+
       default:
         return "ETH";
     }

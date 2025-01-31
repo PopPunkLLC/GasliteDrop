@@ -16,6 +16,7 @@ import { blast } from "@/lib/chains/blast";
 import { degen } from "@/lib/chains/degen";
 import { sanko } from "@/lib/chains/sanko";
 import { apechain } from "@/lib/chains/apechain";
+import { abstract } from "@/lib/chains/abstract";
 import { airdropContractAddress } from "@/lib/contracts";
 import { baseSepolia } from "viem/chains";
 
@@ -40,6 +41,7 @@ export default function Navbar() {
       DEGEN: `${degen.blockExplorers.default.url}/address/${airdropContractAddress?.[chainId]}`,
       SANKO: `${sanko.blockExplorers.default.url}/address/${airdropContractAddress?.[chainId]}`,
       APECHAIN: `${apechain.blockExplorers.default.url}/address/${airdropContractAddress?.[chainId]}`,
+      ABSTRACT: `${abstract.blockExplorers.default.url}/address/${airdropContractAddress?.[chainId]}`,
     };
     return explorers[chainName];
   };
