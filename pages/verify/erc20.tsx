@@ -17,6 +17,7 @@ import { blast } from "@/lib/chains/blast";
 import { degen } from "@/lib/chains/degen";
 import { sanko } from "@/lib/chains/sanko";
 import { apechain } from "@/lib/chains/apechain";
+import { abstract } from "@/lib/chains/abstract";
 
 const chains = [
   mainnet,
@@ -32,6 +33,7 @@ const chains = [
   degen,
   sanko,
   apechain,
+  abstract,
 ];
 
 const publicClients = chains.map(chain => createPublicClient({

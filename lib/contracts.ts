@@ -14,6 +14,7 @@ import { blast } from "@/lib/chains/blast";
 import { degen } from "@/lib/chains/degen";
 import { sanko } from "@/lib/chains/sanko";
 import { apechain } from "@/lib/chains/apechain";
+import { abstract } from "@/lib/chains/abstract";
 
 export const baseSepolia = defineChain({
   id: 84532,
@@ -47,6 +48,7 @@ export const airdropContractAddress = {
   [degen.id]: "0x0eBa170fDC5edC7f528AdbEebC6a1bFc55343181",
   [sanko.id]: "0x0eBa170fDC5edC7f528AdbEebC6a1bFc55343181",
   [apechain.id]: "0x54b5cd30582ddc305d814c95138a5bce04419249",
+  [abstract.id]: "0xe231Aa7183862CEe136D8414E5638764c4297E79",
 };
 
 export const airdrop1155ContractAddress = {
@@ -59,4 +61,5 @@ export const airdrop1155ContractAddress = {
   [baseSepolia.id]: "0x1155D79afC98dad97Ee4b0c747398DcF5b631155",
   [bsc.id]: "0x53d097F8f78Ada73085fAF3A4c36B9Ec58E7E172",
   [sanko.id]: "0xeCC9a57543bFDe6BBc01420680Fc4a1BC51B6D1A",
+  [abstract.id]: "", // not deployed yet!
 };
