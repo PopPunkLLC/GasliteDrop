@@ -40,8 +40,6 @@ export const chains = [
 
 const defaultWallets = getDefaultWallets();
 
-console.log(JSON.stringify(defaultWallets, null, 2));
-
 export const config = createConfig({
   chains,
   connectors: connectorsForWallets(
