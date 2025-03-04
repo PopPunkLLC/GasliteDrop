@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react";
-import { erc20ABI, erc721ABI, useAccount, useChainId } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { readContract, readContracts } from "@wagmi/core";
 import { formatUnits } from "viem";
 import {
   airdropContractAddress,
   airdrop1155ContractAddress,
 } from "@/lib/contracts";
-import { erc1155ABI, supportsInterfaceABI } from "@/lib/abis";
+import {
+  erc1155Abi,
+  supportsInterfaceABI,
+  erc721Abi,
+  erc20Abi,
+} from "@/lib/abis";
+import { config } from "@/lib/wagmi";
 
 const ERC1155InterfaceId: string = "0xd9b67a26";
 const ERC721InterfaceId: string = "0x80ac58cd";
@@ -23,8 +29,10 @@ const useTokenData = ({ contractAddress }) => {
 
     setIsLoading(true);
 
+    console.log("fetching token data", contractAddress, chainId);
+
     try {
-      const [is721, is1155] = await readContracts({
+      const [is721, is1155] = await readContracts(config, {
         contracts: [
           // Check 721 support
           {
@@ -53,30 +61,33 @@ const useTokenData = ({ contractAddress }) => {
         tokenType = "ERC1155";
       }
     } catch (e) {
-      // console.error(e);
+      console.error(e);
+      return;
     }
+
+    console.log("token type", tokenType);
 
     try {
       if (tokenType === "ERC721") {
-        const data = await readContracts({
+        const data = await readContracts(config, {
           contracts: [
             {
               address: contractAddress,
-              abi: erc721ABI,
+              abi: erc721Abi,
               functionName: "name",
               enabled: contractAddress,
               chainId,
             },
             {
               address: contractAddress,
-              abi: erc721ABI,
+              abi: erc721Abi,
               functionName: "symbol",
               enabled: contractAddress,
               chainId,
             },
             {
               address: contractAddress,
-              abi: erc721ABI,
+              abi: erc721Abi,
               functionName: "balanceOf",
               args: [address],
               enabled: contractAddress,
@@ -84,7 +95,7 @@ const useTokenData = ({ contractAddress }) => {
             },
             {
               address: contractAddress,
-              abi: erc721ABI,
+              abi: erc721Abi,
               functionName: "isApprovedForAll",
               args: [address!, airdropContractAddress?.[chainId]], // the signing wallet, the airdrop contract (operator)
               enabled: address && contractAddress,
@@ -112,11 +123,11 @@ const useTokenData = ({ contractAddress }) => {
           symbol: symbol?.result,
         });
       } else if (tokenType === "ERC1155") {
-        const data = await readContracts({
+        const data = await readContracts(config, {
           contracts: [
             {
               address: contractAddress,
-              abi: erc1155ABI,
+              abi: erc1155Abi,
               functionName: "isApprovedForAll",
               args: [address!, airdrop1155ContractAddress?.[chainId]], // the signing wallet, the airdrop contract (operator)
               enabled: address && contractAddress,
@@ -138,32 +149,32 @@ const useTokenData = ({ contractAddress }) => {
           symbol: "",
         });
       } else {
-        const data = await readContracts({
+        const data = await readContracts(config, {
           contracts: [
             {
               address: contractAddress,
-              abi: erc20ABI,
+              abi: erc20Abi,
               functionName: "name",
               enabled: contractAddress,
               chainId,
             },
             {
               address: contractAddress,
-              abi: erc20ABI,
+              abi: erc20Abi,
               functionName: "symbol",
               enabled: contractAddress,
               chainId,
             },
             {
               address: contractAddress,
-              abi: erc20ABI,
+              abi: erc20Abi,
               functionName: "decimals",
               enabled: contractAddress,
               chainId,
             },
             {
               address: contractAddress,
-              abi: erc20ABI,
+              abi: erc20Abi,
               functionName: "balanceOf",
               args: [address],
               enabled: contractAddress,
@@ -177,9 +188,9 @@ const useTokenData = ({ contractAddress }) => {
         const isValid =
           name?.status === "success" && symbol?.status === "success";
 
-        const allowance = await readContract({
+        const allowance = await readContract(config, {
           address: contractAddress,
-          abi: erc20ABI,
+          abi: erc20Abi,
           functionName: "allowance",
           args: [address!, airdropContractAddress?.[chainId]],
           enabled: isValid,

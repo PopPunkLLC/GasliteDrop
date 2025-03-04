@@ -1,7 +1,7 @@
-import { useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 
 function useNetworkNativeToken() {
-  const { chain } = useNetwork();
+  const { chain } = useAccount();
 
   const getNetworkNativeToken = () => {
     if (!chain) return "ETH";
@@ -38,7 +38,7 @@ function useNetworkNativeToken() {
         return "APE";
 
       case "Abstract":
-        return "ETH";        
+        return "ETH";
 
       default:
         return "ETH";

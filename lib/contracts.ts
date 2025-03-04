@@ -1,38 +1,19 @@
-import { defineChain } from "viem";
 import {
   arbitrum,
   base,
+  baseSepolia,
   mainnet,
   optimism,
   polygon,
   sepolia,
   bsc,
   zora,
-} from "@wagmi/chains";
-
-import { blast } from "@/lib/chains/blast";
-import { degen } from "@/lib/chains/degen";
-import { sanko } from "@/lib/chains/sanko";
-import { apechain } from "@/lib/chains/apechain";
-import { abstract } from "@/lib/chains/abstract";
-
-export const baseSepolia = defineChain({
-  id: 84532,
-  name: "Base Sepolia Testnet",
-  nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-  rpcUrls: {
-    default: { http: ["https://sepolia.base.org"] },
-  },
-  blockExplorers: {
-    default: { name: "Basescan", url: "https://sepolia.basescan.org" },
-  },
-  contracts: {
-    multicall3: {
-      address: "0xca11bde05977b3631167028862be2a173976ca11",
-      blockCreated: 1059647,
-    },
-  },
-});
+  blast,
+  degen,
+  sanko,
+  apeChain,
+  abstract,
+} from "viem/chains";
 
 export const airdropContractAddress = {
   [mainnet.id]: "0x09350F89e2D7B6e96bA730783c2d76137B045FEF",
@@ -47,7 +28,7 @@ export const airdropContractAddress = {
   [zora.id]: "0x0eBa170fDC5edC7f528AdbEebC6a1bFc55343181",
   [degen.id]: "0x0eBa170fDC5edC7f528AdbEebC6a1bFc55343181",
   [sanko.id]: "0x0eBa170fDC5edC7f528AdbEebC6a1bFc55343181",
-  [apechain.id]: "0x54b5cd30582ddc305d814c95138a5bce04419249",
+  [apeChain.id]: "0x54b5cd30582ddc305d814c95138a5bce04419249",
   [abstract.id]: "0xe231Aa7183862CEe136D8414E5638764c4297E79",
 };
 
@@ -62,4 +43,8 @@ export const airdrop1155ContractAddress = {
   [bsc.id]: "0x53d097F8f78Ada73085fAF3A4c36B9Ec58E7E172",
   [sanko.id]: "0xeCC9a57543bFDe6BBc01420680Fc4a1BC51B6D1A",
   [abstract.id]: "", // not deployed yet!
+  [blast.id]: "", // not deployed yet!
+  [degen.id]: "", // not deployed yet!
+  [zora.id]: "", // not deployed yet!
+  [apeChain.id]: "", // not deployed yet!
 };

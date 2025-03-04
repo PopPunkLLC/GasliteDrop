@@ -1,4 +1,3 @@
-import { keyBy, values, zipObject } from "lodash";
 import { Network, Alchemy } from "alchemy-sdk";
 import {
   sepolia,
@@ -7,8 +6,7 @@ import {
   arbitrum,
   polygon,
   base,
-  bsc,
-} from "@wagmi/chains";
+} from "viem/chains";
 
 const chainIdToAlchemySettings = {
   [mainnet.id]: {

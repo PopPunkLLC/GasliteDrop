@@ -10,7 +10,7 @@ import {
   DEFAULT_TWITTER_EXCLUSIONS,
 } from "@/components/ui/constants";
 import { shortenAddress } from "@/components/utils";
-import { chains } from "@/wagmi";
+import { chains } from "@/lib/wagmi";
 
 const TwitterTable = ({ data }) => (
   <table className="w-full">
@@ -107,7 +107,7 @@ const TwitterAddressModal = ({
       }
     },
     [],
-    { eventOptions: { passive: true } }
+    { eventOptions: { passive: true } },
   );
 
   return (
@@ -343,7 +343,7 @@ const TwitterAddressModal = ({
                 "py-4 rounded-md w-full my-4 text-white bg-markPink-900 font-bold tracking-wide",
                 {
                   "opacity-30 cursor-not-allowed": data.length === 0,
-                }
+                },
               )}
               onClick={onClose}
               disabled={data.length === 0}
@@ -356,7 +356,7 @@ const TwitterAddressModal = ({
                 "py-4 rounded-md w-full my-4 text-white bg-blue-400 font-bold tracking-wide",
                 {
                   "opacity-30 cursor-not-allowed": data.length === 0,
-                }
+                },
               )}
               onClick={() => {
                 // Headers
@@ -387,7 +387,7 @@ const TwitterAddressModal = ({
                       item?.user?.public_metrics?.following_count,
                       item?.user?.public_metrics?.like_count,
                       item?.user?.public_metrics?.tweet_count,
-                    ].join(",")}\n`
+                    ].join(",")}\n`,
                 );
 
                 const blob = new Blob([csvData], {
