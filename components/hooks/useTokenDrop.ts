@@ -15,12 +15,16 @@ import {
 } from "lodash";
 import { toast } from "sonner";
 import { parseAbi } from "viem";
-import { erc721ABI, erc1155ABI } from "wagmi";
 import {
   airdropContractAddress,
   airdrop1155ContractAddress,
 } from "@/lib/contracts";
-import { abi as airdropAbi, airdrop1155Abi } from "@/lib/abis";
+import {
+  abi as airdropAbi,
+  airdrop1155Abi,
+  erc721Abi,
+  erc1155Abi,
+} from "@/lib/abis";
 import { config } from "@/lib/wagmi";
 
 const erc20approveAbi = parseAbi([
@@ -79,7 +83,7 @@ export const useTokenDrop = ({
     if (token.standard === "ERC721") {
       return {
         address: contractAddress,
-        abi: erc721ABI,
+        abi: erc721Abi,
         functionName: "setApprovalForAll",
         args: [airdropContractAddress?.[chainId], true],
         chainId,
@@ -88,7 +92,7 @@ export const useTokenDrop = ({
     if (token.standard === "ERC1155") {
       return {
         address: contractAddress,
-        abi: erc1155ABI,
+        abi: erc1155Abi,
         functionName: "setApprovalForAll",
         args: [airdrop1155ContractAddress?.[chainId], true],
         chainId,
@@ -187,7 +191,7 @@ export const useTokenDrop = ({
           distinctIds.map(async (tid) => {
             const bal = await readContract({
               address: contractAddress!,
-              abi: erc1155ABI,
+              abi: erc1155Abi,
               functionName: "balanceOf",
               args: [address!, BigInt(tid)],
               chainId,

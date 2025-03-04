@@ -1,29 +1,53 @@
 import React from "react";
 import { FaExternalLinkAlt as ExternalLinkIcon } from "react-icons/fa";
 import { shortenAddress } from "@/components/utils";
-import { sepolia, optimism, arbitrum, polygon, base, bsc, zora, } from "@wagmi/chains";
-import { baseSepolia } from "viem/chains";
+import {
+  sepolia,
+  optimism,
+  arbitrum,
+  polygon,
+  base,
+  bsc,
+  zora,
+  baseSepolia,
+  blast,
+  degen,
+  sanko,
+  apeChain,
+  abstract,
+  mainnet,
+} from "viem/chains";
 
 const deriveExternalLink = (tokenAddress, chainId) => {
   switch (chainId) {
     case sepolia.id:
-      return `https://sepolia.etherscan.io/address/${tokenAddress}`;
+      return `${sepolia.blockExplorers.default.url}/address/${tokenAddress}`;
     case optimism.id:
-      return `https://optimistic.etherscan.io/address/${tokenAddress}`;
+      return `${optimism.blockExplorers.default.url}/address/${tokenAddress}`;
     case arbitrum.id:
-      return `https://arbiscan.io/address/${tokenAddress}`;
+      return `${arbitrum.blockExplorers.default.url}/address/${tokenAddress}`;
     case polygon.id:
-      return `https://polygonscan.com/address/${tokenAddress}`;
+      return `${polygon.blockExplorers.default.url}/address/${tokenAddress}`;
     case base.id:
-      return `https://basescan.org/address/${tokenAddress}`;
+      return `${base.blockExplorers.default.url}/address/${tokenAddress}`;
     case baseSepolia.id:
-      return `https://sepolia.basescan.org/address/${tokenAddress}`;
+      return `${baseSepolia.blockExplorers.default.url}/address/${tokenAddress}`;
     case bsc.id:
-      return `https://bscscan.com/address/${tokenAddress}`;
+      return `${bsc.blockExplorers.default.url}/address/${tokenAddress}`;
     case zora.id:
-      return `https://zora.superscan.network/address/${tokenAddress}`;
+      return `${zora.blockExplorers.default.url}/address/${tokenAddress}`;
+    case blast.id:
+      return `${blast.blockExplorers.default.url}/address/${tokenAddress}`;
+    case degen.id:
+      return `${degen.blockExplorers.default.url}/address/${tokenAddress}`;
+    case sanko.id:
+      return `${sanko.blockExplorers.default.url}/address/${tokenAddress}`;
+    case apeChain.id:
+      return `${apeChain.blockExplorers.default.url}/address/${tokenAddress}`;
+    case abstract.id:
+      return `${abstract.blockExplorers.default.url}/address/${tokenAddress}`;
     default:
-      return `https://etherscan.io/address/${tokenAddress}`;
+      return `${mainnet.blockExplorers.default.url}/address/${tokenAddress}`;
   }
 };
 

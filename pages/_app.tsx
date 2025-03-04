@@ -9,8 +9,7 @@ import {
   RainbowKitProvider,
   type Locale,
 } from "@rainbow-me/rainbowkit";
-import { config } from "@/lib/wagmi";
-import { chains } from "@/wagmi";
+import { config, chains } from "@/lib/wagmi";
 import Layout from "@/components/ui/Layout";
 
 interface BigInt {

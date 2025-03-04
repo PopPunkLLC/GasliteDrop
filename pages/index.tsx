@@ -12,12 +12,10 @@ const Home = () => {
   const { nativeToken } = useNetworkNativeToken();
   const [contractAddress, setContractAddress] = useState<Address>(null);
 
-  // Fetch token information
   const { isLoading, isValid } = useTokenData({
     contractAddress,
   });
 
-  // Redirect to proper route based on token data input
   useEffect(() => {
     if (contractAddress && isValid) {
       router.push(contractAddress);

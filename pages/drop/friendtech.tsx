@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useState } from "react";
-import { useAccount, useAccount, useBalance } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { toast } from "sonner";
 import { MdWarning as WarningIcon } from "react-icons/md";
 import clsx from "clsx";
