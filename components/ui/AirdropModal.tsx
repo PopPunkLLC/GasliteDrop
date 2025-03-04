@@ -129,8 +129,7 @@ const AirdropModal = ({
     hasApprovals,
     requiredAllowance,
     actions,
-    airdropConfig,
-    approvalConfig,
+    isBatchEnabled,
   } = useTokenDrop({
     contractAddress,
     recipients: editableRecipients,
@@ -152,14 +151,14 @@ const AirdropModal = ({
     if (standard === "ERC721") {
       return String(requiredAllowance);
     }
-    return formatUnits(requiredAllowance, decimals);
+    return formatUnits(requiredAllowance, Number(decimals));
   }, [requiredAllowance, standard, decimals]);
 
   const formattedRemaining = useMemo(() => {
     if (standard === "ERC1155") return "0";
     const remain = balance - requiredAllowance;
     return remain > 0n
-      ? formatUnits(remain, standard === "ERC721" ? 0 : decimals)
+      ? formatUnits(remain, standard === "ERC721" ? 0 : Number(decimals))
       : "0";
   }, [standard, balance, requiredAllowance, decimals]);
 
@@ -185,7 +184,13 @@ const AirdropModal = ({
         toast.success("Token approved for airdrop");
       }
 
-      const txHash = await actions.onAirdrop();
+      let txHash;
+
+      if (isBatchEnabled) {
+        txHash = await actions.onBatchApproveAndAirdrop();
+      } else {
+        txHash = await actions.onAirdrop();
+      }
 
       if (!txHash) throw new Error("Airdrop unsuccessful");
       setAirdropHash(txHash);

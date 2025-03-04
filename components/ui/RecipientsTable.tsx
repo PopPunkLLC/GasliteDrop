@@ -72,7 +72,7 @@ const RecipientsTable = ({ data, decimals, standard, onExclude }: Props) => {
                     ? tokenId?.toString()
                     : amount?.toString(),
                 ),
-                standard === "ERC20" ? decimals : 0,
+                standard === "ERC20" ? Number(decimals) : 0,
               )}
             </td>
             {standard === "ERC1155" && (

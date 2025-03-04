@@ -1,3 +1,10 @@
+import { abstractWallet } from "@abstract-foundation/agw-react/connectors";
+import {
+  connectorsForWallets,
+  getDefaultWallets,
+} from "@rainbow-me/rainbowkit";
+import { createConfig } from "wagmi";
+import { createClient, http } from "viem";
 import {
   arbitrum,
   base,
@@ -12,20 +19,14 @@ import {
   apeChain,
   abstract,
   sepolia,
-} from "wagmi/chains";
-import { abstractWallet } from "@abstract-foundation/agw-react/connectors";
-import {
-  connectorsForWallets,
-  getDefaultWallets,
-} from "@rainbow-me/rainbowkit";
-import { createConfig } from "wagmi";
-import { createClient, http } from "viem";
+} from "viem/chains";
 import { eip712WalletActions } from "viem/zksync";
 
 export const chains = [
+  abstract,
+  mainnet,
   arbitrum,
   base,
-  mainnet,
   optimism,
   polygon,
   bsc,
@@ -34,7 +35,6 @@ export const chains = [
   degen,
   sanko,
   apeChain,
-  abstract,
   ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true" ? [sepolia] : []),
 ];
 
@@ -63,5 +63,20 @@ export const config = createConfig({
       chain,
       transport: http(),
     }).extend(eip712WalletActions());
+  },
+  transports: {
+    [abstract.id]: http(),
+    [mainnet.id]: http(),
+    [arbitrum.id]: http(),
+    [base.id]: http(),
+    [optimism.id]: http(),
+    [polygon.id]: http(),
+    [bsc.id]: http(),
+    [zora.id]: http(),
+    [blast.id]: http(),
+    [degen.id]: http(),
+    [sanko.id]: http(),
+    [apeChain.id]: http(),
+    [sepolia.id]: http(),
   },
 });
