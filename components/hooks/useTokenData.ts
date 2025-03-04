@@ -29,7 +29,7 @@ const useTokenData = ({ contractAddress }) => {
 
     setIsLoading(true);
 
-    console.log("fetching token data", contractAddress, chainId);
+    // console.log("fetching token data", contractAddress, chainId);
 
     try {
       const [is721, is1155] = await readContracts(config, {
@@ -65,7 +65,7 @@ const useTokenData = ({ contractAddress }) => {
       return;
     }
 
-    console.log("token type", tokenType);
+    // console.log("token type", tokenType);
 
     try {
       if (tokenType === "ERC721") {
@@ -113,9 +113,10 @@ const useTokenData = ({ contractAddress }) => {
           balance: balance?.result,
           contractAddress,
           decimals: 0,
-          formattedBalance: balance?.result
-            ? formatUnits(balance?.result, 0)
-            : "0",
+          formattedBalance:
+            balance?.status === "success"
+              ? formatUnits(balance?.result, 0)
+              : "0",
           isApprovedForAll: isApprovedForAll?.result,
           isValid,
           name: name?.result,
@@ -202,9 +203,10 @@ const useTokenData = ({ contractAddress }) => {
           balance: balance?.result,
           contractAddress,
           decimals: decimals?.result,
-          formattedBalance: balance?.result
-            ? formatUnits(balance?.result, decimals?.result || 18)
-            : "0",
+          formattedBalance:
+            balance?.status === "success"
+              ? formatUnits(balance?.result, Number(decimals?.result || 18))
+              : "0",
           isValid,
           name: name?.result,
           standard: "ERC20",

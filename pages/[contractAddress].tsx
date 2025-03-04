@@ -66,7 +66,7 @@ const TokenDrop = () => {
               <Pill>
                 {`Your allowance is ${formatUnits(
                   BigInt(allowance?.toString()),
-                  decimals,
+                  Number(decimals),
                 )} ${symbol}`}
               </Pill>
             )}

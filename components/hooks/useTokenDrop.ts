@@ -14,7 +14,7 @@ import {
   reduce as reduceObject,
 } from "lodash";
 import { toast } from "sonner";
-import { parseAbi } from "viem";
+import { encodeFunctionData, parseAbi } from "viem";
 import {
   airdropContractAddress,
   airdrop1155ContractAddress,
@@ -26,6 +26,7 @@ import {
   erc1155Abi,
 } from "@/lib/abis";
 import { config } from "@/lib/wagmi";
+import useAGW from "./useAGW";
 
 const erc20approveAbi = parseAbi([
   "function approve(address spender, uint256 amount) public",
@@ -51,6 +52,8 @@ interface UseTokenDropParams {
   token: TokenData;
 }
 
+const PAYMASTER_ADDRESS = "0x60C1bc25aFF26749Aa68736158De66e6bCE27CEb";
+
 export const useTokenDrop = ({
   contractAddress,
   recipients,
@@ -58,6 +61,12 @@ export const useTokenDrop = ({
 }: UseTokenDropParams) => {
   const isNativeToken = !contractAddress;
   const { address, chainId } = useAccount();
+
+  const {
+    isAGW,
+    client: agwClient,
+    getGeneralPaymasterInput,
+  } = useAGW(address);
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCheckingBalances, setIsCheckingBalances] = useState(false);
@@ -231,7 +240,10 @@ export const useTokenDrop = ({
     validRecipients,
   ]);
 
+  const isBatchEnabled = isAGW;
+
   return {
+    isBatchEnabled,
     isProcessing,
     isCheckingBalances,
     insufficientFunds,
@@ -240,12 +252,56 @@ export const useTokenDrop = ({
     approvalConfig,
     hasApprovals:
       isNativeToken ||
+      isBatchEnabled ||
       (token.standard !== "ERC20" && token.isApprovedForAll) ||
       (token.standard === "ERC20" &&
         token.allowance &&
         token.allowance >= requiredAllowance),
 
     actions: {
+      onBatchApproveAndAirdrop: async () => {
+        if (!approvalConfig || !airdropConfig) return null;
+        if (!isBatchEnabled) return null;
+
+        setIsProcessing(true);
+
+        try {
+          if (isAGW && agwClient) {
+            const hash = await agwClient.sendTransactionBatch({
+              calls: [
+                {
+                  to: approvalConfig.address,
+                  args: approvalConfig.args,
+                  data: encodeFunctionData({
+                    abi: approvalConfig.abi,
+                    functionName: approvalConfig.functionName,
+                    args: approvalConfig.args,
+                  }),
+                },
+                {
+                  to: airdropConfig.address,
+                  data: encodeFunctionData({
+                    abi: airdropConfig.abi,
+                    functionName: airdropConfig.functionName,
+                    args: airdropConfig.args,
+                  }),
+                },
+              ],
+              paymaster: PAYMASTER_ADDRESS,
+              paymasterInput: getGeneralPaymasterInput({
+                innerInput: "0x",
+              }),
+            });
+
+            return hash;
+          }
+        } catch (e) {
+          console.log(e);
+          return null;
+        } finally {
+          setIsProcessing(false);
+        }
+      },
       onApprove: async () => {
         if (!approvalConfig) return true;
 
