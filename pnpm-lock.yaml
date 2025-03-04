@@ -17,6 +17,9 @@ importers:
       '@iconify/react':
         specifier: ^4.1.0
         version: 4.1.1(react@18.2.0)
+      '@privy-io/cross-app-connect':
+        specifier: ^0.1.5
+        version: 0.1.8(@rainbow-me/rainbowkit@2.2.4(@tanstack/react-query@5.67.1(react@18.2.0))(@types/react@18.2.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(viem@2.23.5(bufferutil@4.0.9)(typescript@5.2.2)(utf-8-validate@5.0.10)(zod@3.24.2))(wagmi@2.14.12(@tanstack/query-core@5.67.1)(@tanstack/react-query@5.67.1(react@18.2.0))(@types/react@18.2.21)(@vercel/kv@1.0.1)(bufferutil@4.0.9)(encoding@0.1.13)(react@18.2.0)(typescript@5.2.2)(utf-8-validate@5.0.10)(viem@2.23.5(bufferutil@4.0.9)(typescript@5.2.2)(utf-8-validate@5.0.10)(zod@3.24.2))(zod@3.24.2)))(@wagmi/core@2.16.5(@tanstack/query-core@5.67.1)(@types/react@18.2.21)(react@18.2.0)(typescript@5.2.2)(use-sync-external-store@1.4.0(react@18.2.0))(viem@2.23.5(bufferutil@4.0.9)(typescript@5.2.2)(utf-8-validate@5.0.10)(zod@3.24.2)))(viem@2.23.5(bufferutil@4.0.9)(typescript@5.2.2)(utf-8-validate@5.0.10)(zod@3.24.2))
       '@rainbow-me/rainbowkit':
         specifier: ^2.2.4
         version: 2.2.4(@tanstack/react-query@5.67.1(react@18.2.0))(@types/react@18.2.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(viem@2.23.5(bufferutil@4.0.9)(typescript@5.2.2)(utf-8-validate@5.0.10)(zod@3.24.2))(wagmi@2.14.12(@tanstack/query-core@5.67.1)(@tanstack/react-query@5.67.1(react@18.2.0))(@types/react@18.2.21)(@vercel/kv@1.0.1)(bufferutil@4.0.9)(encoding@0.1.13)(react@18.2.0)(typescript@5.2.2)(utf-8-validate@5.0.10)(viem@2.23.5(bufferutil@4.0.9)(typescript@5.2.2)(utf-8-validate@5.0.10)(zod@3.24.2))(zod@3.24.2))
@@ -5223,7 +5226,7 @@ snapshots:
       '@react-aria/interactions': 3.23.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@react-aria/utils': 3.27.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@react-types/shared': 3.27.0(react@18.2.0)
-      '@swc/helpers': 0.5.1
+      '@swc/helpers': 0.5.15
       clsx: 2.1.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -5233,13 +5236,13 @@ snapshots:
       '@react-aria/ssr': 3.9.7(react@18.2.0)
       '@react-aria/utils': 3.27.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@react-types/shared': 3.27.0(react@18.2.0)
-      '@swc/helpers': 0.5.1
+      '@swc/helpers': 0.5.15
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
   '@react-aria/ssr@3.9.7(react@18.2.0)':
     dependencies:
-      '@swc/helpers': 0.5.1
+      '@swc/helpers': 0.5.15
       react: 18.2.0
 
   '@react-aria/utils@3.27.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
@@ -5247,7 +5250,7 @@ snapshots:
       '@react-aria/ssr': 3.9.7(react@18.2.0)
       '@react-stately/utils': 3.10.5(react@18.2.0)
       '@react-types/shared': 3.27.0(react@18.2.0)
-      '@swc/helpers': 0.5.1
+      '@swc/helpers': 0.5.15
       clsx: 2.1.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -5264,7 +5267,7 @@ snapshots:
 
   '@react-stately/utils@3.10.5(react@18.2.0)':
     dependencies:
-      '@swc/helpers': 0.5.1
+      '@swc/helpers': 0.5.15
       react: 18.2.0
 
   '@react-types/shared@3.27.0(react@18.2.0)':
@@ -7651,7 +7654,7 @@ snapshots:
 
   extension-port-stream@3.0.0:
     dependencies:
-      readable-stream: 3.6.2
+      readable-stream: 4.7.0
       webextension-polyfill: 0.10.0
 
   eyes@0.1.8: {}
