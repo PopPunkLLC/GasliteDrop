@@ -104,10 +104,6 @@ const useTokenData = ({ contractAddress }) => {
           ],
         });
 
-        console.log({
-          data,
-        });
-
         const [name, symbol, balance, isApprovedForAll] = data ?? [];
 
         const isValid =
@@ -138,10 +134,6 @@ const useTokenData = ({ contractAddress }) => {
               chainId,
             },
           ],
-        });
-
-        console.log({
-          data,
         });
 
         const [isApprovedForAll] = data ?? [];
@@ -189,10 +181,6 @@ const useTokenData = ({ contractAddress }) => {
               chainId,
             },
           ],
-        });
-
-        console.log({
-          data,
         });
 
         const [name, symbol, decimals, balance] = data ?? [];
