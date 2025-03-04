@@ -263,17 +263,9 @@ export const useTokenDrop = ({
         if (!approvalConfig || !airdropConfig) return null;
         if (!isBatchEnabled) return null;
 
-        console.log({
-          approvalConfig,
-          airdropConfig,
-          isBatchEnabled,
-          agwClient,
-        });
-
         setIsProcessing(true);
 
         try {
-          // Perform approve and airdrop in a single transaction using AGW
           if (isAGW && agwClient) {
             const hash = await agwClient.sendTransactionBatch({
               calls: [
