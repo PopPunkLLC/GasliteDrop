@@ -11,6 +11,8 @@
     "pretty": "npx prettier . --write"
   },
   "dependencies": {
+    "@abstract-foundation/agw-client": "^1.4.2",
+    "@abstract-foundation/agw-react": "^1.5.4",
     "@iconify/react": "^4.1.0",
     "@rainbow-me/rainbowkit": "^2.2.4",
     "@react-hookz/web": "^23.1.0",
