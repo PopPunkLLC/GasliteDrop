@@ -3,11 +3,19 @@ import { useKeyboardEvent } from "@react-hookz/web";
 import { toast } from "sonner";
 import { FaSpinner as SpinnerIcon } from "react-icons/fa";
 import clsx from "clsx";
-import { useNetwork, useWalletClient } from "wagmi";
+import { useWalletClient, useAccount } from "wagmi";
 import { waitForTransaction } from "@wagmi/core";
 import { MdCheck as CheckIcon, MdClose as CloseIcon } from "react-icons/md";
-import { arbitrum, base, optimism, polygon, sepolia, bsc, zora } from "@wagmi/chains";
-import { baseSepolia } from "viem/chains";
+import {
+  arbitrum,
+  base,
+  baseSepolia,
+  optimism,
+  polygon,
+  sepolia,
+  bsc,
+  zora,
+} from "viem/chains";
 import Bytecode20 from "../../contracts/out/Bytecode20.sol/Bytecode20.json";
 import { useRouter } from "next/router";
 import { blast } from "@/lib/chains/blast";
@@ -91,7 +99,7 @@ const useDeployBytecode20 = ({ tokenName, symbol, totalSupply, decimals }) => {
 };
 
 const DeployModal = ({ token, onClose }) => {
-  const { chain } = useNetwork();
+  const { chain } = useAccount();
   const [deployHash, setDeployHash] = useState(null);
   const [contractAddress, setContractAddress] = useState(null);
   const router = useRouter();
@@ -112,10 +120,18 @@ const DeployModal = ({ token, onClose }) => {
     },
 
     [],
-    { eventOptions: { passive: true } }
+    { eventOptions: { passive: true } },
   );
 
-  const { isLoading, standard, symbol, decimals, balance, formattedBalance, onRefresh } = token;
+  const {
+    isLoading,
+    standard,
+    symbol,
+    decimals,
+    balance,
+    formattedBalance,
+    onRefresh,
+  } = token;
 
   const { actions, isProcessing } = useDeployBytecode20({
     tokenName: token.name,
@@ -149,8 +165,12 @@ const DeployModal = ({ token, onClose }) => {
         ) : deployHash ? (
           <>
             <div className="mx-auto text-center my-8 space-y-4">
-              <h1 className="text-3xl text-black font-bold text-primary">Congratulations!</h1>
-              <p>You contract has been deployed to address: {contractAddress}</p>
+              <h1 className="text-3xl text-black font-bold text-primary">
+                Congratulations!
+              </h1>
+              <p>
+                You contract has been deployed to address: {contractAddress}
+              </p>
               <a
                 className="underline text-primary"
                 href={deriveExternalLink(deployHash, chain.id)}
@@ -160,7 +180,9 @@ const DeployModal = ({ token, onClose }) => {
                 View transaction
               </a>
 
-              <p className="pt-6 text-sm text-grey">Thanks for using Gaslite Drop</p>
+              <p className="pt-6 text-sm text-grey">
+                Thanks for using Gaslite Drop
+              </p>
             </div>
             <button
               className="bg-markPink-700 font-medium rounded-md text-white backdrop-blur w-full capitalize p-4 tracking-wide"
@@ -179,13 +201,19 @@ const DeployModal = ({ token, onClose }) => {
                 <CloseIcon className="text-2xl text-grey" />
               </button>
             </header>
-            <p className="text-sm text-grey">Make sure everything looks good below before you deploy your contract</p>
+            <p className="text-sm text-grey">
+              Make sure everything looks good below before you deploy your
+              contract
+            </p>
             <div className="flex flex-col w-full pt-4 space-y-4">
               <div className="w-full border-2 border-neutral-700 bg-transparent rounded-md border-separate border-spacing-0 overflow-auto">
                 <div className="flex flex-col text p-5">
                   <TokenDetails title="Token Name" value={token.name} />
                   <TokenDetails title="Token Symbol" value={token.symbol} />
-                  <TokenDetails title="Total Supply" value={`${token.totalSupply} ${token.symbol}`} />
+                  <TokenDetails
+                    title="Total Supply"
+                    value={`${token.totalSupply} ${token.symbol}`}
+                  />
                   <TokenDetails title="Decimals" value={token.decimals} />
                 </div>
               </div>
@@ -194,15 +222,18 @@ const DeployModal = ({ token, onClose }) => {
                 className={clsx(
                   "flex flex-row items-center justify-center bg-markPink-700 font-medium spacing-wide py-4 rounded-md text-white backdrop-blur w-full capitalize",
                   {
-                    "!text-base-100/75 opacity-50 !hover:bg-primary cursor-not-allowed": isProcessing,
-                  }
+                    "!text-base-100/75 opacity-50 !hover:bg-primary cursor-not-allowed":
+                      isProcessing,
+                  },
                 )}
                 disabled={isProcessing}
                 onClick={onHandleDeploy}
               >
                 <div className="flex flex-row items-center font-bold tracking-wide">
                   <div className="mx-auto flex flex-row items-center ml-2">
-                    {isProcessing ? "Processing..." : `Deploy ${token.name} to ${chain.name}`}
+                    {isProcessing
+                      ? "Processing..."
+                      : `Deploy ${token.name} to ${chain.name}`}
                   </div>
                 </div>
               </button>

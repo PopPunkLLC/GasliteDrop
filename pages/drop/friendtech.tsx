@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useState } from "react";
-import { useAccount, useNetwork, useBalance } from "wagmi";
+import { useAccount, useAccount, useBalance } from "wagmi";
 import { toast } from "sonner";
 import { MdWarning as WarningIcon } from "react-icons/md";
 import clsx from "clsx";
@@ -12,8 +12,7 @@ import useFriendTechData from "@/components/hooks/useFriendTechData";
 import { recipientsParser } from "@/components/types/parsers";
 
 const FriendTechDrop = () => {
-  const { chain } = useNetwork();
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const { nativeToken } = useNetworkNativeToken();
   const [friendTechAddress, setFriendTechAddress] = useState(null);
   const [airdropValue, setAirdropValue] = useState(null);
@@ -33,8 +32,8 @@ const FriendTechDrop = () => {
   }) => {
     setAirdrop(
       recipientsParser(18).parse(
-        holders.map((holder) => [holder, amountPerHolder])
-      )
+        holders.map((holder) => [holder, amountPerHolder]),
+      ),
     );
   };
 
@@ -42,6 +41,7 @@ const FriendTechDrop = () => {
     <>
       {airdrop?.length > 0 && (
         <AirdropModal
+          contractAddress={friendTechAddress}
           recipients={airdrop}
           token={{
             isLoading: false,
@@ -95,7 +95,7 @@ const FriendTechDrop = () => {
                 </div>
                 <textarea
                   value={data?.join(
-                    `,${airdropValue ? `${airdropValue},` : ""}\n`
+                    `,${airdropValue ? `${airdropValue},` : ""}\n`,
                   )}
                   className="w-full min-h-[200px] max-h-[400px] p-3 text-black border-black border-2 rounded-md"
                   readOnly
@@ -107,7 +107,7 @@ const FriendTechDrop = () => {
                     {
                       "opacity-30 cursor-not-allowed":
                         data.length === 0 || !airdropValue,
-                    }
+                    },
                   )}
                   onClick={handleFriendTechAirdrop.bind(null, {
                     data,

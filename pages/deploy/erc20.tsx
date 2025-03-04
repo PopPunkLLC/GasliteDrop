@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useAccount, useNetwork, useBalance } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { toast } from "sonner";
 import DeployModal from "@/components/ui/DeployModal";
 import PageTitle from "@/components/ui/PageTitle";
@@ -10,8 +10,7 @@ import Input from "@/components/ui/Input";
 import clsx from "clsx";
 
 const DeployERC20 = () => {
-  const { chain } = useNetwork();
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const { nativeToken } = useNetworkNativeToken();
   const [tokenName, setTokenName] = useState(null);
   const [decimals, setDecimals] = useState(18);
@@ -100,10 +99,16 @@ const DeployERC20 = () => {
               />
               <button
                 type="button"
-                className={clsx("py-4 rounded-md w-full my-4 text-white bg-markPink-900 font-bold tracking-wide", {
-                  "opacity-30 cursor-not-allowed": tokenName == null || symbol == null || decimals == null,
-                })}
-                disabled={tokenName == null || symbol == null || decimals == null}
+                className={clsx(
+                  "py-4 rounded-md w-full my-4 text-white bg-markPink-900 font-bold tracking-wide",
+                  {
+                    "opacity-30 cursor-not-allowed":
+                      tokenName == null || symbol == null || decimals == null,
+                  },
+                )}
+                disabled={
+                  tokenName == null || symbol == null || decimals == null
+                }
                 onClick={() => {
                   setCont(true);
                 }}

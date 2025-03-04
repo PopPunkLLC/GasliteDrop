@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { formatUnits } from "viem";
 import { useRouter } from "next/router";
-import { useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 import { FaSpinner as SpinnerIcon } from "react-icons/fa";
 import useTokenData from "@/components/hooks/useTokenData";
 import PageTitle from "@/components/ui/PageTitle";
@@ -12,7 +12,7 @@ import EnterRecipients from "@/components/ui/EnterRecipients";
 import NoBalanceWarning from "@/components/ui/NoBalanceWarning";
 
 const TokenDrop = () => {
-  const { chain } = useNetwork();
+  const { chain } = useAccount();
   const router = useRouter();
   const { contractAddress } = router.query;
   const [airdrop, setAirdrop] = useState(null);
@@ -66,7 +66,7 @@ const TokenDrop = () => {
               <Pill>
                 {`Your allowance is ${formatUnits(
                   BigInt(allowance?.toString()),
-                  decimals
+                  decimals,
                 )} ${symbol}`}
               </Pill>
             )}

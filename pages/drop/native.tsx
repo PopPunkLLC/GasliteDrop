@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useAccount, useNetwork, useBalance } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { toast } from "sonner";
 import AirdropModal from "@/components/ui/AirdropModal";
 import PageTitle from "@/components/ui/PageTitle";
@@ -9,8 +9,7 @@ import NoBalanceWarning from "@/components/ui/NoBalanceWarning";
 import useNetworkNativeToken from "@/components/hooks/useNetworkNativeToken";
 
 const NativeTokenDrop = () => {
-  const { chain } = useNetwork();
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const { nativeToken } = useNetworkNativeToken();
   const [airdrop, setAirdrop] = useState(null);
 
@@ -26,6 +25,7 @@ const NativeTokenDrop = () => {
     <>
       {airdrop?.length > 0 && (
         <AirdropModal
+          contractAddress={null}
           recipients={airdrop}
           token={{
             isLoading: false,

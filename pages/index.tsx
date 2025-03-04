@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { Address, useNetwork } from "wagmi";
+import { Address, useAccount } from "wagmi";
 import useNetworkNativeToken from "@/components/hooks/useNetworkNativeToken";
 import useTokenData from "@/components/hooks/useTokenData";
 import Input from "@/components/ui/Input";
 
 const Home = () => {
   const router = useRouter();
-  const { chain } = useNetwork();
+  const { chain } = useAccount();
   const { nativeToken } = useNetworkNativeToken();
   const [contractAddress, setContractAddress] = useState<Address>(null);
 

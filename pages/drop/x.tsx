@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
-import { useAccount, useNetwork, useBalance } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { toast } from "sonner";
 import { isAddress } from "viem";
 import { MdWarning as WarningIcon, MdEdit as EditIcon } from "react-icons/md";
@@ -39,7 +39,7 @@ const useOwnershipData = ({ address, chainId }) => {
         try {
           setIsLoading(true);
           const { addresses } = await fetch(
-            `/api/ownership?contractAddress=${address}&chainId=${chainId}`
+            `/api/ownership?contractAddress=${address}&chainId=${chainId}`,
           ).then((res) => res.json());
           setOwners(addresses);
         } catch (e) {
@@ -59,8 +59,7 @@ const useOwnershipData = ({ address, chainId }) => {
 };
 
 const TwitterDrop = () => {
-  const { chain } = useNetwork();
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const { nativeToken } = useNetworkNativeToken();
   const router = useRouter();
   const [airdrop, setAirdrop] = useState(null);
@@ -94,13 +93,13 @@ const TwitterDrop = () => {
           null,
           {
             shallow: true,
-          }
+          },
         );
       }
     },
     [contractAddress],
     200,
-    500
+    500,
   );
 
   useDebouncedEffect(
@@ -113,12 +112,12 @@ const TwitterDrop = () => {
         null,
         {
           shallow: true,
-        }
+        },
       );
     },
     [tweetId],
     200,
-    500
+    500,
   );
 
   const { data: balance, refetch: onRefresh } = useBalance({
@@ -154,16 +153,16 @@ const TwitterDrop = () => {
     }) => {
       setAirdrop(
         recipientsParser(tokenAddress ? token?.decimals : 18).parse(
-          addresses.map((address) => [address, amountPerHolder])
-        )
+          addresses.map((address) => [address, amountPerHolder]),
+        ),
       );
     },
-    [JSON.stringify(token)]
+    [JSON.stringify(token)],
   );
 
   const foundTweetUrl = useMemo(
     () => deriveTweetUrl(tweet?.user?.username, tweet?.conversation_id),
-    [JSON.stringify(tweet)]
+    [JSON.stringify(tweet)],
   );
 
   const onApplyExclusion = async (change) => {
@@ -406,7 +405,7 @@ const TwitterDrop = () => {
                     {
                       "opacity-30 cursor-not-allowed":
                         addresses.length === 0 || !airdropValue,
-                    }
+                    },
                   )}
                   onClick={() => {
                     handleTwitterAirdrop({
