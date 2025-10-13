@@ -40,6 +40,9 @@ function useNetworkNativeToken() {
       case "Abstract":
         return "ETH";
 
+      case "Flow EVM Mainnet":
+        return "FLOW";
+
       default:
         return "ETH";
     }

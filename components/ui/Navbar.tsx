@@ -17,6 +17,7 @@ import {
   sanko,
   apeChain,
   abstract,
+  flowMainnet
 } from "viem/chains";
 
 import { airdropContractAddress } from "@/lib/contracts";
@@ -43,6 +44,7 @@ export default function Navbar() {
       SANKO: `${sanko.blockExplorers.default.url}/address/${airdropContractAddress?.[chainId]}`,
       apeChain: `${apeChain.blockExplorers.default.url}/address/${airdropContractAddress?.[chainId]}`,
       ABSTRACT: `${abstract.blockExplorers.default.url}/address/${airdropContractAddress?.[chainId]}`,
+      FLOWEVM: `${flowMainnet.blockExplorers.default.url}/address/${airdropContractAddress?.[chainId]}`,
     };
 
     return explorers[chainName];
