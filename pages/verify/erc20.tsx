@@ -22,6 +22,7 @@ import {
   sanko,
   apeChain,
   abstract,
+  flowMainnet
 } from "viem/chains";
 
 const chains = [
@@ -39,6 +40,7 @@ const chains = [
   sanko,
   apeChain,
   abstract,
+  flowMainnet
 ];
 
 const publicClients = chains.map((chain) =>

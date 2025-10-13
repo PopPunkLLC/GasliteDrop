@@ -16,6 +16,7 @@ import {
   apeChain,
   abstract,
   mainnet,
+  flowMainnet
 } from "viem/chains";
 
 const deriveExternalLink = (tokenAddress, chainId) => {
@@ -46,6 +47,8 @@ const deriveExternalLink = (tokenAddress, chainId) => {
       return `${apeChain.blockExplorers.default.url}/address/${tokenAddress}`;
     case abstract.id:
       return `${abstract.blockExplorers.default.url}/address/${tokenAddress}`;
+    case flowMainnet.id:
+      return `${flowMainnet.blockExplorers.default.url}/address/${tokenAddress}`;
     default:
       return `${mainnet.blockExplorers.default.url}/address/${tokenAddress}`;
   }

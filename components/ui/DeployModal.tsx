@@ -15,6 +15,7 @@ import {
   sepolia,
   bsc,
   zora,
+  flowMainnet
 } from "viem/chains";
 import Bytecode20 from "../../contracts/out/Bytecode20.sol/Bytecode20.json";
 import { useRouter } from "next/router";
@@ -23,6 +24,7 @@ import { degen } from "@/lib/chains/degen";
 import { sanko } from "@/lib/chains/sanko";
 import { apechain } from "@/lib/chains/apechain";
 import { abstract } from "@/lib/chains/abstract";
+import { flowevm } from "@/lib/chains/flowevm";
 
 const deriveExternalLink = (txHash, chainId) => {
   switch (chainId) {
@@ -52,6 +54,8 @@ const deriveExternalLink = (txHash, chainId) => {
       return `https://apescan.io/tx/${txHash}`;
     case abstract.id:
       return `https://abscan.org/tx/${txHash}`;
+    case flowMainnet.id:
+      return `https://evm.flowscan.io/tx/${txHash}`;
     default:
       return `https://etherscan.io/tx/${txHash}`;
   }

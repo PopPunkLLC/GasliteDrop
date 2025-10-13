@@ -23,6 +23,7 @@ import {
   sanko,
   apeChain,
   abstract,
+  flowMainnet,
 } from "viem/chains";
 
 interface Recipient {
@@ -85,6 +86,8 @@ const deriveExternalLink = (txHash: string, chainId?: number) => {
       return `https://apescan.io/tx/${txHash}`;
     case abstract.id:
       return `https://abscan.org/tx/${txHash}`;
+    case flowMainnet.id:
+      return `https://evm.flowscan.io/tx/${txHash}`;
     default:
       return `https://etherscan.io/tx/${txHash}`;
   }

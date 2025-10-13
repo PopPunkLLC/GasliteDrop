@@ -13,6 +13,7 @@ import {
   sanko,
   apeChain,
   abstract,
+  flowMainnet
 } from "viem/chains";
 
 export const airdropContractAddress = {
@@ -30,6 +31,7 @@ export const airdropContractAddress = {
   [sanko.id]: "0x0eBa170fDC5edC7f528AdbEebC6a1bFc55343181",
   [apeChain.id]: "0x54b5cd30582ddc305d814c95138a5bce04419249",
   [abstract.id]: "0xe231Aa7183862CEe136D8414E5638764c4297E79",
+  [flowMainnet.id]: "0xD9D7aA276E216922016386Bdf0AE9F9B4b167F3B",
 };
 
 export const airdrop1155ContractAddress = {
@@ -43,6 +45,7 @@ export const airdrop1155ContractAddress = {
   [bsc.id]: "0x53d097F8f78Ada73085fAF3A4c36B9Ec58E7E172",
   [sanko.id]: "0xeCC9a57543bFDe6BBc01420680Fc4a1BC51B6D1A",
   [abstract.id]: "0xa5a2e5A4aa8Fd0CB021c00fc62283F337c175d07",
+  [flowMainnet.id]: "0x853EcD46B0701FF8f7d3Aabd24C3e8fb60F520c8",
   [blast.id]: "", // not deployed yet!
   [degen.id]: "", // not deployed yet!
   [zora.id]: "", // not deployed yet!

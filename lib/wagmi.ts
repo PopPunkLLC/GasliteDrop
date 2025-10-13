@@ -19,6 +19,7 @@ import {
   apeChain,
   abstract,
   sepolia,
+  flowMainnet
 } from "viem/chains";
 import { eip712WalletActions } from "viem/zksync";
 
@@ -35,6 +36,7 @@ export const chains = [
   degen,
   sanko,
   apeChain,
+  flowMainnet,
   ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true" ? [sepolia] : []),
 ];
 
@@ -77,6 +79,7 @@ export const config = createConfig({
     [degen.id]: http(),
     [sanko.id]: http(),
     [apeChain.id]: http(),
+    [flowMainnet.id]: http(),
     [sepolia.id]: http(),
   },
 });
